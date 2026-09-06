@@ -90,7 +90,8 @@ def index(
         from framework.indexer.graph_extract import build_extracts
         build_extracts(device)
     if graph:
-        console.print("[yellow]--graph not yet implemented (Step 4)[/]")
+        from framework.indexer.graph_load import build_graph_index
+        build_graph_index(device)
 
 
 @app.command()
