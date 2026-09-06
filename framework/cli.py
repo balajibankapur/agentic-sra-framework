@@ -66,9 +66,18 @@ def status(
 
 
 @app.command()
-def index() -> None:
-    """Build vector + graph indices from input/. Wired up in Steps 2-4."""
-    console.print("[yellow]index not yet implemented (Steps 2-4)[/]")
+def index(
+    device: str = typer.Option(..., "--device", help="Device to index."),
+    vectors: bool = typer.Option(True, "--vectors/--no-vectors", help="Build the Chroma vector index."),
+    graph: bool = typer.Option(True, "--graph/--no-graph", help="Build the Kuzu graph index (Step 4)."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Chunk and count only; skip embedding + writes."),
+) -> None:
+    """Build vector + graph indices from input/<device>/."""
+    if vectors:
+        from framework.indexer.vector import build_vector_index
+        build_vector_index(device, dry_run=dry_run)
+    if graph:
+        console.print("[yellow]--graph not yet implemented (Step 4)[/]")
 
 
 @app.command()
