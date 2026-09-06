@@ -66,9 +66,19 @@ def status(
 
 
 @app.command()
+def extract(
+    device: str = typer.Option(..., "--device", help="Device to extract graph JSON for."),
+) -> None:
+    """Parse the corpus into 7 JSON extract files under stores/extracts/<device>/."""
+    from framework.indexer.graph_extract import build_extracts
+    build_extracts(device)
+
+
+@app.command()
 def index(
     device: str = typer.Option(..., "--device", help="Device to index."),
     vectors: bool = typer.Option(True, "--vectors/--no-vectors", help="Build the Chroma vector index."),
+    extract_json: bool = typer.Option(True, "--extract/--no-extract", help="Build the graph JSON extracts."),
     graph: bool = typer.Option(True, "--graph/--no-graph", help="Build the Kuzu graph index (Step 4)."),
     dry_run: bool = typer.Option(False, "--dry-run", help="Chunk and count only; skip embedding + writes."),
 ) -> None:
@@ -76,6 +86,9 @@ def index(
     if vectors:
         from framework.indexer.vector import build_vector_index
         build_vector_index(device, dry_run=dry_run)
+    if extract_json:
+        from framework.indexer.graph_extract import build_extracts
+        build_extracts(device)
     if graph:
         console.print("[yellow]--graph not yet implemented (Step 4)[/]")
 
