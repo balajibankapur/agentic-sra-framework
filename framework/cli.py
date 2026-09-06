@@ -95,6 +95,67 @@ def index(
 
 
 @app.command()
+def mcp(
+    server: str = typer.Argument(..., help="One of: vector, graph, files"),
+    device: str = typer.Option("pmx100", "--device", help="Device the server reads from."),
+) -> None:
+    """Launch an MCP server on stdio (for debugging or connecting a client)."""
+    import os
+    os.environ.setdefault("SRA_DEVICE", device)
+    if server == "vector":
+        from framework.mcp_servers.corpus_vector_server import main
+    elif server == "graph":
+        from framework.mcp_servers.corpus_graph_server import main
+    elif server == "files":
+        from framework.mcp_servers.corpus_files_server import main
+    else:
+        console.print(f"[red]Unknown server '{server}'. Choose: vector | graph | files[/]")
+        raise typer.Exit(code=2)
+    main()
+
+
+@app.command("mcp-test")
+def mcp_test(
+    device: str = typer.Option("pmx100", "--device", help="Device to test against."),
+) -> None:
+    """In-process smoke test — calls each server's tool functions directly."""
+    import os
+    os.environ.setdefault("SRA_DEVICE", device)
+    from framework.mcp_servers import corpus_vector_server as v
+    from framework.mcp_servers import corpus_graph_server as g
+    from framework.mcp_servers import corpus_files_server as f
+
+    console.rule("[bold]corpus-vector[/]")
+    cols = v.list_collections()
+    for c in cols:
+        console.print(f"  collection {c['name']:15s} count={c['count']}")
+    hits = v.search("firmware update signature verification", k=3)
+    console.print(f"\n  search top-3:")
+    for h in hits:
+        console.print(f"    {h['score']:.3f}  [{h['id']}]  {h['text'][:80]}...")
+
+    console.rule("[bold]corpus-graph[/]")
+    schema = g.list_schema()
+    console.print(f"  node tables: {schema['node_tables']}")
+    console.print(f"  rel tables:  {schema['rel_tables']}")
+    rows = g.cypher(
+        "MATCH (v:Vulnerability {id: 'VULN-01'})-[:LOCATED_IN]->(c:CodeArtifact) "
+        "RETURN v.severity AS sev, c.path AS path, c.function AS fn;"
+    )
+    console.print(f"\n  VULN-01 -[:LOCATED_IN]-> {rows}")
+    nbrs = g.neighbors("VULN-01", edge_type="LOCATED_IN")
+    console.print(f"  neighbors(VULN-01, LOCATED_IN): {nbrs}")
+
+    console.rule("[bold]corpus-files[/]")
+    top = f.list_dir("")
+    console.print(f"  root entries: {[e['name'] for e in top]}")
+    hits = f.grep(r"verify_signature", glob="firmware/**/*.c", max_hits=5)
+    console.print(f"\n  grep 'verify_signature' in firmware/*.c: {len(hits)} hits")
+    for h in hits[:5]:
+        console.print(f"    {h['path']}:{h['line']}  {h['match'][:70]}")
+
+
+@app.command()
 def draft(
     device: str = typer.Option(..., "--device", help="Device to draft SRA for."),
 ) -> None:
