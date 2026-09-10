@@ -80,6 +80,8 @@ def index(
     vectors: bool = typer.Option(True, "--vectors/--no-vectors", help="Build the Chroma vector index."),
     extract_json: bool = typer.Option(True, "--extract/--no-extract", help="Build the graph JSON extracts."),
     graph: bool = typer.Option(True, "--graph/--no-graph", help="Build the Kuzu graph index (Step 4)."),
+    regulatory: bool = typer.Option(True, "--regulatory/--no-regulatory",
+                                    help="Also (re)build the regulatory collection."),
     dry_run: bool = typer.Option(False, "--dry-run", help="Chunk and count only; skip embedding + writes."),
 ) -> None:
     """Build vector + graph indices from input/<device>/."""
@@ -92,6 +94,9 @@ def index(
     if graph:
         from framework.indexer.graph_load import build_graph_index
         build_graph_index(device)
+    if regulatory and not dry_run:
+        from framework.indexer.regulatory import build_regulatory_index
+        build_regulatory_index()
 
 
 @app.command()

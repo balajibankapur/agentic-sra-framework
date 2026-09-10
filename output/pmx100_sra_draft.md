@@ -18,11 +18,3 @@ P5-B stub entry — real agent lands in P5-E.
 
 P5-B stub entry — real agent lands in P5-E.
 
----
-
-## DF-EMR-T · Man-in-the-middle HL7/FHIR replay
-**STRIDE:** T   **CVSS:** 6.5 Medium   **Priority:** P1   **Effort:** 0 eng-weeks
-**Residual risk:** Medium — P5-B stub — no analysis performed yet.
-
-P5-B stub entry — real agent lands in P5-E.
-

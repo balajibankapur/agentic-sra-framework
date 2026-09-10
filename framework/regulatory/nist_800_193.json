@@ -1,0 +1,31 @@
+{
+  "standard": "NIST SP 800-193 Platform Firmware Resiliency Guidelines",
+  "version": "May 2018",
+  "source_url": "https://csrc.nist.gov/publications/detail/sp/800-193/final",
+  "clauses": [
+    {
+      "id": "NIST-800-193-4.2",
+      "standard": "NIST 800-193",
+      "section": "4.2",
+      "title": "Firmware update authentication",
+      "body": "All firmware updates shall be authenticated by verifying a digital signature over the update image using a public key rooted in a trusted key store. Authentication shall occur before the update is applied. Rollback protection shall prevent installation of older, vulnerable versions unless explicitly authorized.",
+      "keywords": ["firmware update", "digital signature", "authentication", "rollback"]
+    },
+    {
+      "id": "NIST-800-193-4.3",
+      "standard": "NIST 800-193",
+      "section": "4.3",
+      "title": "Root of trust for update",
+      "body": "The platform shall include a Root of Trust for Update (RTU) — immutable or protected code and data that authenticate firmware updates. The RTU shall be protected against unauthorized modification for the life of the platform.",
+      "keywords": ["root of trust", "RTU", "immutable", "trust anchor"]
+    },
+    {
+      "id": "NIST-800-193-5.2",
+      "standard": "NIST 800-193",
+      "section": "5.2",
+      "title": "Platform integrity detection",
+      "body": "The platform shall detect corruption of firmware code, firmware data, and critical platform configuration. Detection may occur at boot time, at runtime, or through periodic integrity verification, and shall be reported to a management interface.",
+      "keywords": ["integrity", "detection", "corruption", "boot"]
+    }
+  ]
+}

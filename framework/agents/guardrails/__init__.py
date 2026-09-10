@@ -27,6 +27,7 @@ class GuardrailContext:
     retrieved_chunks: dict[str, str] = field(default_factory=dict)  # chunk_id -> text
     known_node_ids: set[str] = field(default_factory=set)           # from Kuzu
     device: str = ""
+    agent_name: str = ""                                            # for schema_check binding
 
 
 @dataclass

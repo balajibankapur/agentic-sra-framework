@@ -1,0 +1,31 @@
+{
+  "standard": "AAMI TIR57 Principles for medical device security — Risk management",
+  "version": "2016 (R2019)",
+  "source_url": "https://www.aami.org/",
+  "clauses": [
+    {
+      "id": "AAMI-TIR57-6.2.1",
+      "standard": "AAMI TIR57",
+      "section": "6.2.1",
+      "title": "Security risk assessment",
+      "body": "The manufacturer shall perform a security risk assessment that identifies assets, threats, vulnerabilities, and existing controls, and shall estimate the risk associated with each identified threat considering both likelihood of exploitation and impact on safety, effectiveness, and privacy.",
+      "keywords": ["risk assessment", "assets", "threats", "vulnerabilities"]
+    },
+    {
+      "id": "AAMI-TIR57-6.3.2",
+      "standard": "AAMI TIR57",
+      "section": "6.3.2",
+      "title": "Security risk control",
+      "body": "For each security risk that exceeds the acceptable level, the manufacturer shall specify and implement risk-control measures. Where cybersecurity controls also affect safety, they shall be reviewed under the ISO 14971 safety risk management process.",
+      "keywords": ["risk control", "controls", "residual risk", "ISO 14971"]
+    },
+    {
+      "id": "AAMI-TIR57-7.1",
+      "standard": "AAMI TIR57",
+      "section": "7.1",
+      "title": "Post-market security surveillance",
+      "body": "The manufacturer shall establish a post-market process to monitor emerging vulnerabilities that may affect the device, to assess their applicability, and to communicate mitigations to users and, when appropriate, regulators.",
+      "keywords": ["post-market", "surveillance", "vulnerability monitoring"]
+    }
+  ]
+}

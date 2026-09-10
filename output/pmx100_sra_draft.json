@@ -50,31 +50,5 @@
     "warnings": [],
     "parse_error": false,
     "raw_llm_response": null
-  },
-  {
-    "threat_id": "DF-EMR-T",
-    "title": "Man-in-the-middle HL7/FHIR replay",
-    "stride": "T",
-    "assets_affected": [],
-    "existing_controls": [],
-    "gap_analysis": [],
-    "cvss_v31": {
-      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
-      "base_score": 6.5,
-      "temporal_score": null,
-      "environmental_score": null,
-      "severity": "Medium"
-    },
-    "residual_risk": "Medium",
-    "residual_risk_reason": "P5-B stub — no analysis performed yet.",
-    "proposed_controls": [],
-    "proposed_doc_changes": [],
-    "proposed_code_changes": [],
-    "priority": "P1",
-    "effort_engineer_weeks": 0.0,
-    "narrative": "P5-B stub entry — real agent lands in P5-E.",
-    "warnings": [],
-    "parse_error": false,
-    "raw_llm_response": null
   }
 ]

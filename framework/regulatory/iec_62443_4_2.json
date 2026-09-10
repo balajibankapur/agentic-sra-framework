@@ -1,0 +1,55 @@
+{
+  "standard": "IEC 62443-4-2 Security for industrial automation and control systems — Part 4-2: Technical security requirements for IACS components",
+  "version": "2019",
+  "source_url": "https://webstore.iec.ch/publication/34421",
+  "clauses": [
+    {
+      "id": "IEC-62443-4-2-CR-1.1",
+      "standard": "IEC 62443-4-2",
+      "section": "CR 1.1",
+      "title": "Human user identification and authentication",
+      "body": "Components shall provide the capability to identify and authenticate all human users. The authentication mechanism shall enforce commonly accepted security practices for password strength, storage, and lifetime.",
+      "keywords": ["authentication", "identity", "credentials", "password"]
+    },
+    {
+      "id": "IEC-62443-4-2-CR-1.5",
+      "standard": "IEC 62443-4-2",
+      "section": "CR 1.5",
+      "title": "Authenticator management",
+      "body": "Components shall provide the capability to change all default authenticators upon installation, and to change authenticators subsequently on demand. Default credentials shall not be used in the deployed configuration.",
+      "keywords": ["default password", "authenticator", "credentials"]
+    },
+    {
+      "id": "IEC-62443-4-2-CR-3.4",
+      "standard": "IEC 62443-4-2",
+      "section": "CR 3.4",
+      "title": "Software and information integrity",
+      "body": "Components shall provide the capability to detect, record, report, and respond to unauthorized changes to software and configuration. Cryptographic mechanisms shall be used where feasible.",
+      "keywords": ["integrity", "unauthorized change", "cryptographic", "detection"]
+    },
+    {
+      "id": "IEC-62443-4-2-CR-3.10",
+      "standard": "IEC 62443-4-2",
+      "section": "CR 3.10",
+      "title": "Support for updates",
+      "body": "Components shall provide the capability to update software and firmware. Update mechanisms shall verify the authenticity and integrity of the update prior to installation using cryptographic mechanisms.",
+      "keywords": ["updates", "firmware", "signature", "authenticity"]
+    },
+    {
+      "id": "IEC-62443-4-2-CR-4.1",
+      "standard": "IEC 62443-4-2",
+      "section": "CR 4.1",
+      "title": "Information confidentiality",
+      "body": "Components shall provide the capability to protect the confidentiality of information at rest and in transit using cryptographic mechanisms appropriate to the sensitivity of the information.",
+      "keywords": ["confidentiality", "encryption", "at rest", "in transit"]
+    },
+    {
+      "id": "IEC-62443-4-2-CR-4.3",
+      "standard": "IEC 62443-4-2",
+      "section": "CR 4.3",
+      "title": "Use of cryptography",
+      "body": "When cryptographic mechanisms are used, the component shall use algorithms, key lengths, and modes of operation that follow current, generally accepted good security practice.",
+      "keywords": ["cryptography", "algorithms", "key length", "modes"]
+    }
+  ]
+}

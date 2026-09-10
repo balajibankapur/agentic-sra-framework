@@ -1,0 +1,103 @@
+{
+  "standard": "FDA 2023 Cybersecurity in Medical Devices: Quality System Considerations and Content of Premarket Submissions",
+  "version": "September 2023",
+  "source_url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/cybersecurity-medical-devices-quality-system-considerations-and-content-premarket-submissions",
+  "clauses": [
+    {
+      "id": "FDA-2023-V.A.1",
+      "standard": "FDA 2023",
+      "section": "V.A.1",
+      "title": "Secure Product Development Framework (SPDF)",
+      "body": "The device manufacturer shall document a Secure Product Development Framework (SPDF) integrating cybersecurity considerations throughout the product lifecycle. The SPDF shall address threat modeling, secure design, secure implementation, and security testing, with evidence of execution captured in the design history file.",
+      "keywords": ["SPDF", "lifecycle", "threat modeling", "design history"]
+    },
+    {
+      "id": "FDA-2023-V.B.1",
+      "standard": "FDA 2023",
+      "section": "V.B.1",
+      "title": "Authentication of users and services",
+      "body": "The device shall enforce identity authentication for all human users and for services interacting with the device. Default or shared credentials shall not be permitted for production deployment. Password complexity and rotation policies shall be enforced.",
+      "keywords": ["authentication", "credentials", "default password", "identity"]
+    },
+    {
+      "id": "FDA-2023-V.B.2",
+      "standard": "FDA 2023",
+      "section": "V.B.2",
+      "title": "Authorization and access control",
+      "body": "The device shall implement role-based authorization such that users and services are granted only the minimum privileges required for their function (principle of least privilege). Administrative functions shall be separated from clinical use.",
+      "keywords": ["authorization", "least privilege", "RBAC", "access control"]
+    },
+    {
+      "id": "FDA-2023-V.B.3",
+      "standard": "FDA 2023",
+      "section": "V.B.3",
+      "title": "Cryptographic integrity of firmware and update mechanisms",
+      "body": "Firmware images and any over-the-air or in-field update artifacts shall be protected with cryptographic authenticity verification using signature schemes based on modern asymmetric cryptography. Integrity-only checks such as CRC or non-cryptographic hashes are insufficient. The device shall refuse to install any firmware or update whose signature cannot be verified against a manufacturer-controlled trust anchor.",
+      "keywords": ["firmware", "signature", "OTA", "update", "authenticity", "integrity"]
+    },
+    {
+      "id": "FDA-2023-V.B.4",
+      "standard": "FDA 2023",
+      "section": "V.B.4",
+      "title": "Confidentiality of data at rest and in transit",
+      "body": "Patient health information (PHI) and sensitive configuration data shall be protected in confidentiality both at rest on the device and during transmission over any network interface. Encryption shall use current, standards-based algorithms and appropriate key management.",
+      "keywords": ["encryption", "PHI", "at rest", "in transit", "confidentiality"]
+    },
+    {
+      "id": "FDA-2023-V.B.5",
+      "standard": "FDA 2023",
+      "section": "V.B.5",
+      "title": "Transport layer security for network communications",
+      "body": "Network communications shall use transport-layer encryption (TLS 1.2 or later) with mutual authentication where feasible, and with certificate validation including hostname verification and pinning to trusted certificate authorities appropriate for the deployment context.",
+      "keywords": ["TLS", "certificate", "pinning", "mutual authentication", "transport"]
+    },
+    {
+      "id": "FDA-2023-V.B.6",
+      "standard": "FDA 2023",
+      "section": "V.B.6",
+      "title": "Wireless pairing and link security",
+      "body": "Bluetooth, Wi-Fi, and other wireless links shall be paired using authenticated, encrypted mechanisms. Just Works or unauthenticated pairing shall not be used for links that carry patient data or control commands. Bluetooth Low Energy shall use LE Secure Connections with numeric comparison or out-of-band authentication.",
+      "keywords": ["BLE", "wireless", "pairing", "Just Works", "LE Secure Connections"]
+    },
+    {
+      "id": "FDA-2023-V.B.7",
+      "standard": "FDA 2023",
+      "section": "V.B.7",
+      "title": "Secure boot and integrity monitoring",
+      "body": "The device shall implement a secure boot chain such that only cryptographically verified firmware may execute after power-on. Runtime integrity monitoring of critical safety code shall detect and respond to unauthorized modification.",
+      "keywords": ["secure boot", "boot", "runtime integrity", "firmware verification"]
+    },
+    {
+      "id": "FDA-2023-V.B.8",
+      "standard": "FDA 2023",
+      "section": "V.B.8",
+      "title": "Audit logging and event traceability",
+      "body": "The device shall log security-relevant events including authentication attempts, privileged operations, configuration changes, and update activities. Logs shall carry tamper-evident properties and be exportable in a machine-readable format.",
+      "keywords": ["audit", "logging", "tamper-evident", "traceability"]
+    },
+    {
+      "id": "FDA-2023-V.B.9",
+      "standard": "FDA 2023",
+      "section": "V.B.9",
+      "title": "Physical port and debug interface hardening",
+      "body": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+      "keywords": ["JTAG", "debug", "service port", "USB", "physical"]
+    },
+    {
+      "id": "FDA-2023-V.C.1",
+      "standard": "FDA 2023",
+      "section": "V.C.1",
+      "title": "Software Bill of Materials (SBOM)",
+      "body": "The device manufacturer shall provide a machine-readable Software Bill of Materials (SBOM) in a standard format (SPDX or CycloneDX) enumerating all included software components, their versions, suppliers, and known vulnerabilities. The SBOM shall be maintained across the product lifecycle.",
+      "keywords": ["SBOM", "SPDX", "CycloneDX", "components", "vulnerabilities"]
+    },
+    {
+      "id": "FDA-2023-V.C.2",
+      "standard": "FDA 2023",
+      "section": "V.C.2",
+      "title": "Coordinated vulnerability disclosure",
+      "body": "The manufacturer shall maintain a coordinated vulnerability disclosure process with a public contact channel, timely acknowledgement of reports, and documented triage and remediation timelines aligned with severity.",
+      "keywords": ["vulnerability disclosure", "CVD", "reporting", "triage"]
+    }
+  ]
+}
