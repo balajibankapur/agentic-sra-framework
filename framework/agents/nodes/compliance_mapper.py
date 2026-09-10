@@ -29,11 +29,14 @@ AGENT_NAME = "compliance_mapper"
 
 # Pydantic schema the LLM output must satisfy for this agent.
 class ComplianceFindingOut(BaseModel):
+    # Widened `quote` and `reason` above the prompt's stated caps so a mildly
+    # verbose LLM doesn't fail schema_check. Downstream conversion to
+    # ClauseFinding truncates to the tighter internal caps for storage.
     clause_id: str
-    clause_short_title: str = Field(max_length=120)
+    clause_short_title: str = Field(max_length=180)
     verdict: Literal["present", "partial", "missing"]
-    quote: str = Field(max_length=400)
-    reason: str = Field(max_length=300)
+    quote: str = Field(max_length=800)
+    reason: str = Field(max_length=500)
     existing_controls: list[str] = Field(default_factory=list)
 
 
@@ -112,7 +115,6 @@ def run_compliance_mapper(state: SRAState) -> dict:
         agent_name=AGENT_NAME,
     )
     passed, hard, soft = run_guardrails(result.parsed_json, ctx, prompt.guardrails_post)
-
     warnings: list[str] = list(soft)
     if not passed:
         return {
