@@ -46,6 +46,7 @@ class SRAState(BaseModel):
     current_threat: str | None = None
     compliance_findings: list[ClauseFinding] = Field(default_factory=list)
     code_findings: list[CodeFinding] = Field(default_factory=list)
+    pending_entry: dict | None = None      # TCR emits → Report Generator consumes
     completed_entries: int = 0
     fallback_used: dict[str, str] = Field(default_factory=dict)
     warnings: list[str] = Field(default_factory=list)

@@ -158,9 +158,17 @@ def mcp_test(
 @app.command()
 def draft(
     device: str = typer.Option(..., "--device", help="Device to draft SRA for."),
+    profile: str = typer.Option("hybrid", "--profile", help="free | hybrid | openai (SRS-CLI-0016)."),
+    category: str | None = typer.Option(None, "--category", help="Filter threats to one category (e.g. OTA)."),
+    threat: str | None = typer.Option(None, "--threat", help="Draft a single threat id."),
+    limit: int | None = typer.Option(None, "--limit", help="Cap total threats processed."),
 ) -> None:
-    """Run the agents to produce output/<device>_sra_draft.md. Wired up in Steps 6-11."""
-    console.print(f"[yellow]draft not yet implemented — will produce output/{device}_sra_draft.md[/]")
+    """Run the LangGraph pipeline over each threat and write output/<device>_sra_draft.{md,json}."""
+    from framework.agents.runner import run_draft
+    if profile not in {"free", "hybrid", "openai"}:
+        console.print(f"[red]--profile must be one of free|hybrid|openai (got {profile!r})[/]")
+        raise typer.Exit(code=2)
+    run_draft(device=device, profile=profile, category=category, threat=threat, limit=limit)
 
 
 @app.command()
