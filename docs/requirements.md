@@ -1,6 +1,6 @@
 # Agentic SRA Framework — Software Requirements Specification (SRS)
 
-**Document:** SRS-FW-001 · **Version:** 1.0 · **Status:** Approved (2026-09-10)
+**Document:** SRS-FW-001 · **Version:** 1.1 · **Status:** Approved (2026-09-10)
 **Traces up to:** `docs/use_cases.md` v1.0
 **Audience:** Cybersecurity engineers, regulatory reviewers, capstone advisor
 
@@ -203,12 +203,14 @@ Model selection shall be driven by the `--profile` flag on `sra draft` (SRS-CLI-
 
 | Agent | `free` profile | `hybrid` profile (default) | `openai` profile |
 |---|---|---|---|
-| Ingestion | `groq/openai/gpt-oss-120b` | `groq/openai/gpt-oss-120b` | `openai/gpt-4o-mini` |
+| Ingestion | *n/a — pure Cypher in v1* | *n/a — pure Cypher in v1* | *n/a — pure Cypher in v1* |
 | Compliance Mapper | `gemini/gemini-2.5-flash` | `gemini/gemini-2.5-flash` | `openai/gpt-4o-mini` |
 | Code Analysis | `groq/openai/gpt-oss-120b` | `groq/openai/gpt-oss-120b` | `openai/gpt-4o-mini` |
 | **Threat / Control / Risk** | `groq/openai/gpt-oss-120b` | **`openai/gpt-4o`** | `openai/gpt-4o` |
 | Report Generator | `groq/openai/gpt-oss-120b` | `groq/openai/gpt-oss-120b` | `openai/gpt-4o-mini` |
 | Embeddings (build-time) | `openai/text-embedding-3-large` | same | same |
+
+**Note (v1.1):** Ingestion is deterministic Cypher in v1 per SDD-AGT-01 design decision — see `docs/detail_design.md` §2.1. LLM-augmented triage moves to future work.
 
 Cross-provider fallback per SRS-AGT-0007 applies to every non-OpenAI slot.
 *Priority:* High · *Traces to:* UC-FW-02, SRS-NFR-0002, SRS-NFR-0005, SRS-NFR-0011 · *Verify:* Integration test per profile
@@ -379,5 +381,6 @@ Any requirement without a UC trace is a defect and must be either linked or remo
 
 ## 8. Change log
 
+- **v1.1 (2026-09-10)** — Updated SRS-AGT-0011: Ingestion row marked *n/a — pure Cypher in v1* per SDD-AGT-01 design decision in `docs/detail_design.md` v1.0 §2.1. No requirement text changed; only the per-profile model plan was refined.
 - **v1.0 (2026-09-10)** — Approved. Added SRS-CLI-0016 (`--profile` flag), SRS-AGT-0011 (per-profile model table), reworked SRS-AGT-0007 (cross-provider fallback), reworked SRS-NFR-0002 (per-profile cost caps), reworked SRS-NFR-0005 (OpenAI + Groq + Gemini via LiteLLM), reworked SRS-NFR-0011 (free-tier default demo). Raised SRS-CLI-0005 and SRS-NFR-0011 to High priority.
 - **v0.1 (2026-09-10)** — Initial draft. 56 functional + 15 non-functional requirements traced to `docs/use_cases.md` v1.0.
