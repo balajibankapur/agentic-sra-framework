@@ -17,6 +17,7 @@ and raw_llm_response preserved so the reviewer can inspect + fix.
 from __future__ import annotations
 
 from framework.agents.guardrails import GuardrailContext, run_guardrails
+from framework.agents.guardrails.cvss_check import _score as _cvss_score, _severity_band as _cvss_band, _VECTOR_RE
 from framework.agents.llm_router import LLMRouter
 from framework.agents.prompt_store import load_prompt
 from framework.agents.state import SRAState
@@ -93,6 +94,10 @@ def run_threat_control_risk(state: SRAState) -> dict:
         return _fallback_entry(state, reason="LLM returned unparseable JSON",
                                raw=result.content)
 
+    # Auto-correct CVSS: vector is the truth, score is derived. LLMs get
+    # the rounding wrong; recompute rather than reject.
+    _autocorrect_cvss(result.parsed_json)
+
     # Guardrails
     ctx = GuardrailContext(
         threat_id=state.current_threat,
@@ -123,6 +128,29 @@ def run_threat_control_risk(state: SRAState) -> dict:
                                raw=result.content, warnings=warnings)
 
     return {"pending_entry": entry.model_dump(mode="json")}
+
+
+# ---------------------------------------------------------------------------
+# Auto-correct CVSS score/severity from vector before guardrails run.
+
+
+def _autocorrect_cvss(entry: dict) -> None:
+    """LLMs often mis-round CVSS scores; the vector is authoritative.
+    If the vector parses, recompute base_score and severity so the entry
+    is internally consistent before schema/cvss guardrails run.
+    """
+    cv = entry.get("cvss_v31")
+    if not isinstance(cv, dict):
+        return
+    vector = cv.get("vector", "")
+    if not _VECTOR_RE.match(vector):
+        return
+    try:
+        computed = _cvss_score(vector)
+    except Exception:
+        return
+    cv["base_score"] = round(computed, 1)
+    cv["severity"] = _cvss_band(computed)
 
 
 # ---------------------------------------------------------------------------

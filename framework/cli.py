@@ -177,6 +177,17 @@ def draft(
 
 
 @app.command()
+def export(
+    device: str = typer.Option(..., "--device", help="Device to export SRA for."),
+    profile: str = typer.Option("hybrid", "--profile",
+                                help="Profile the draft was produced under (for provenance)."),
+) -> None:
+    """Assemble final SRA artifacts: MD + PDF + DOCX + JSON + provenance."""
+    from framework.sra.export import run_export
+    run_export(device=device, profile=profile)
+
+
+@app.command()
 def review() -> None:
     """Launch the Streamlit review UI. Wired up in Step 12."""
     console.print("[yellow]review not yet implemented (Step 12)[/]")

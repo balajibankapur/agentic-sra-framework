@@ -29,12 +29,11 @@ _BANNED_TOKENS = [
 ]
 _BANNED_RE = re.compile("|".join(_BANNED_TOKENS), re.IGNORECASE)
 
-_RECOMMENDATION_HINT = re.compile(
-    r"\b(shall|should|use|recommend|propose|adopt|upgrade to|switch to)\b",
-    re.IGNORECASE,
-)
-
-_RECOMMENDATION_PATH_HINTS = ("proposed_", "recommend", "resolution", "residual_risk_reason", "narrative")
+# Only scan proposal-fields. Legacy state descriptions in `narrative` /
+# `reason` / `residual_risk_reason` legitimately mention banned tokens
+# ("the current use of TLS 1.0 is deprecated"); scanning them produces
+# false positives that noise up the warnings list.
+_RECOMMENDATION_PATH_HINTS = ("proposed_",)
 
 
 def check(entry: dict[str, Any], ctx: GuardrailContext) -> GuardrailResult:
@@ -46,13 +45,11 @@ def check(entry: dict[str, Any], ctx: GuardrailContext) -> GuardrailResult:
         if not m:
             continue
         token = m.group(0)
-        looks_like_recommendation = (
-            any(hint in path for hint in _RECOMMENDATION_PATH_HINTS)
-            or _RECOMMENDATION_HINT.search(text) is not None
-        )
-        if looks_like_recommendation:
-            warnings.append(f"banned crypto {token!r} appears in recommendation at {path}: "
-                            f"{text[:120]!r}")
+        # Only flag banned tokens in proposal fields — descriptions of
+        # legacy state (in `narrative`, `reason`, `residual_risk_reason`)
+        # legitimately mention MD5/SHA-1/TLS 1.0/etc.
+        if any(hint in path for hint in _RECOMMENDATION_PATH_HINTS):
+            warnings.append(f"banned crypto {token!r} in proposal at {path}: {text[:120]!r}")
     if warnings:
         return GuardrailResult.soft_warn(*warnings[:6])
     return GuardrailResult.ok()

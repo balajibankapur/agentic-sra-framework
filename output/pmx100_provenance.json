@@ -1,0 +1,96 @@
+{
+  "device": "pmx100",
+  "profile": "hybrid",
+  "corpus_commit_sha": "36f702814af03b2afb4a3a0a3157abe9e189de9e",
+  "framework_commit_sha": "d897488aebbe7e182627b3540ba9810730788c3b",
+  "embedding_model": "openai/text-embedding-3-large",
+  "started_at_utc": "2026-09-10T18:34:01Z",
+  "completed_at_utc": "2026-09-10T18:35:11.256095Z",
+  "total_cost_usd_est": 0.03513,
+  "entries": {
+    "DF-BLEPAIR-I": {
+      "threat_id": "DF-BLEPAIR-I",
+      "prompt_versions": {
+        "compliance_mapper": "1.0",
+        "code_analysis": "1.0",
+        "threat_control_risk": "1.0"
+      },
+      "models_used": {
+        "compliance_mapper": "gemini/gemini-2.5-flash",
+        "code_analysis": "groq/openai/gpt-oss-120b",
+        "threat_control_risk": "openai/gpt-4o"
+      },
+      "tokens": {
+        "compliance_mapper": {
+          "in": 1459,
+          "out": 3876
+        },
+        "code_analysis": {
+          "in": 1368,
+          "out": 291
+        },
+        "threat_control_risk": {
+          "in": 2241,
+          "out": 1161
+        }
+      },
+      "guardrail_results": {},
+      "review_decision": "pending",
+      "reviewer_name": null,
+      "review_timestamp_utc": null,
+      "review_notes": ""
+    },
+    "DF-BLEVITALS-T": {
+      "threat_id": "DF-BLEVITALS-T",
+      "prompt_versions": {
+        "compliance_mapper": "1.0",
+        "threat_control_risk": "1.0"
+      },
+      "models_used": {
+        "compliance_mapper": "gemini/gemini-2.5-flash",
+        "threat_control_risk": "openai/gpt-4o"
+      },
+      "tokens": {
+        "compliance_mapper": {
+          "in": 1505,
+          "out": 3986
+        },
+        "threat_control_risk": {
+          "in": 1406,
+          "out": 521
+        }
+      },
+      "guardrail_results": {},
+      "review_decision": "pending",
+      "reviewer_name": null,
+      "review_timestamp_utc": null,
+      "review_notes": ""
+    },
+    "DF-EMR-T": {
+      "threat_id": "DF-EMR-T",
+      "prompt_versions": {
+        "compliance_mapper": "1.0",
+        "threat_control_risk": "1.0"
+      },
+      "models_used": {
+        "compliance_mapper": "gemini/gemini-2.5-flash",
+        "threat_control_risk": "openai/gpt-4o"
+      },
+      "tokens": {
+        "compliance_mapper": {
+          "in": 1465,
+          "out": 3394
+        },
+        "threat_control_risk": {
+          "in": 1373,
+          "out": 576
+        }
+      },
+      "guardrail_results": {},
+      "review_decision": "pending",
+      "reviewer_name": null,
+      "review_timestamp_utc": null,
+      "review_notes": ""
+    }
+  }
+}
