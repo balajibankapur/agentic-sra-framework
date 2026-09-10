@@ -13,8 +13,10 @@ from framework.agents.guardrails.banned_crypto import check as banned_crypto
 from framework.agents.guardrails.citation_verify import check as citation_verify
 from framework.agents.guardrails.citation_verify_file import check as citation_verify_file
 from framework.agents.guardrails.cvss_check import check as cvss_check
+from framework.agents.guardrails.legacy_taxonomy_check import check as legacy_taxonomy_check
 from framework.agents.guardrails.quote_check import check as quote_check
 from framework.agents.guardrails.schema_check import make_schema_check
+from framework.agents.guardrails.scope_check import check as scope_check
 from framework.sra.entry import SRAEntry
 
 
@@ -44,5 +46,6 @@ RESOLVERS: dict[str, Callable[[dict[str, Any], GuardrailContext], GuardrailResul
     "citation_verify_file": citation_verify_file,
     "quote_check": quote_check,
     "banned_crypto": banned_crypto,
-    # legacy_taxonomy_check, scope_check — added in P5-E.
+    "legacy_taxonomy_check": legacy_taxonomy_check,
+    "scope_check": scope_check,
 }

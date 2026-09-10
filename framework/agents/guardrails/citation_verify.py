@@ -23,7 +23,9 @@ from framework.agents.guardrails import GuardrailContext, GuardrailResult
 
 
 _CTRL_RE = re.compile(r"^CTRL:")
-_DOC_ID_RE = re.compile(r"^(SRS|SDD|SDS|SAD)-[A-Z]+-(\d{4}|SEC-NEW-\d+)$")
+# Accept both existing items (SRS-STOR-0001) and new-item proposals
+# (SRS-SEC-NEW-01, SDD-SEC-NEW-12, etc.)
+_DOC_ID_RE = re.compile(r"^(SRS|SDD|SDS|SAD)-([A-Z]+-\d{4}|SEC-NEW-\d+)$")
 _CLAUSE_RE = re.compile(r"^(FDA-\d{4}|IEC-\d{5}-\d-\d|AAMI-TIR\d+|NIST-\d{3}-\d{3})-[A-Z0-9]+(\.[A-Z0-9]+)*$")
 
 
@@ -62,14 +64,22 @@ def check(entry: dict[str, Any], ctx: GuardrailContext) -> GuardrailResult:
         if isinstance(cl, str) and not _CLAUSE_RE.match(cl):
             problems.append(f"{path}: {cl!r} does not match a known clause id pattern")
 
-    # Code artifact paths (only when we know the graph's code paths)
+    # Code artifact paths — only when the change touches an existing file.
+    # For new files (action=create_file), the path legitimately isn't in the graph yet.
     if known:
         code_paths_in_graph = {nid.split(":", 2)[1] for nid in known
                                if isinstance(nid, str) and nid.startswith("CODE:")}
-        for path, cp in _collect(entry, "path"):
-            if isinstance(cp, str) and cp.startswith("firmware/"):
-                if code_paths_in_graph and cp not in code_paths_in_graph:
-                    problems.append(f"{path}: {cp!r} not present as CodeArtifact in graph")
+        for code_change in entry.get("proposed_code_changes", []) or []:
+            if not isinstance(code_change, dict):
+                continue
+            action = code_change.get("action", "")
+            cp = code_change.get("path", "")
+            if action == "create_file":
+                continue          # new files aren't in the graph — expected
+            if isinstance(cp, str) and cp.startswith("firmware/") and code_paths_in_graph:
+                if cp not in code_paths_in_graph:
+                    problems.append(f"proposed_code_changes.path: {cp!r} "
+                                    f"(action={action}) not present as CodeArtifact in graph")
 
     if problems:
         return GuardrailResult.hard_fail(*problems[:8])
