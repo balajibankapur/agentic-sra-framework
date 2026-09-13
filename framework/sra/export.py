@@ -47,14 +47,26 @@ def run_export(device: str, profile: str = "hybrid") -> None:
     if not isinstance(entries, list) or not entries:
         raise RuntimeError(f"{draft_json} contains no entries.")
 
+    review_state_path = OUTPUT_DIR / f"{device}_review_state.json"
     final_md = OUTPUT_DIR / f"{device}_sra_final.md"
     final_pdf = OUTPUT_DIR / f"{device}_sra_final.pdf"
     final_docx = OUTPUT_DIR / f"{device}_sra_final.docx"
     final_json = OUTPUT_DIR / f"{device}_sra_final.json"
     prov_path = OUTPUT_DIR / f"{device}_provenance.json"
 
-    # 1. Final JSON is a straight copy of the draft (review step will trim later)
-    shutil.copyfile(draft_json, final_json)
+    # Apply review decisions if present:
+    #   approved / (no state)  -> entry as-is
+    #   edited                 -> substitute reviewer's edited_entry
+    #   rejected / deferred    -> drop from final
+    entries, rejected_count, deferred_count, edited_count, reviewer = _apply_review_state(
+        entries, review_state_path
+    )
+
+    # 1. Final JSON is the reviewed entry set
+    final_json.write_text(
+        json.dumps(entries, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
 
     # 2. Final markdown = header + summary + draft body
     _write_final_md(device=device, entries=entries, final_md=final_md,
@@ -75,7 +87,46 @@ def run_export(device: str, profile: str = "hybrid") -> None:
     prov_path.write_text(prov.model_dump_json(indent=2), encoding="utf-8")
 
     # 5. Summary to terminal
-    _print_summary(device, entries, prov, final_md, final_pdf, final_docx, prov_path)
+    _print_summary(device, entries, prov, final_md, final_pdf, final_docx, prov_path,
+                   rejected_count=rejected_count, deferred_count=deferred_count,
+                   edited_count=edited_count, reviewer=reviewer)
+
+
+def _apply_review_state(
+    entries: list[dict],
+    state_path: Path,
+) -> tuple[list[dict], int, int, int, str]:
+    """Overlay reviewer decisions onto the draft entries.
+
+    Returns (final_entries, rejected_count, deferred_count, edited_count, reviewer).
+    """
+    if not state_path.exists():
+        return entries, 0, 0, 0, ""
+    try:
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return entries, 0, 0, 0, ""
+
+    decisions = state.get("decisions", {}) or {}
+    reviewer = state.get("reviewer_name", "") or ""
+    kept: list[dict] = []
+    rejected = deferred = edited = 0
+    for e in entries:
+        d = decisions.get(e["threat_id"]) or {}
+        action = d.get("action", "pending")
+        if action == "rejected":
+            rejected += 1
+            continue
+        if action == "deferred":
+            deferred += 1
+            continue
+        if action == "edited" and d.get("edited_entry"):
+            edited += 1
+            kept.append(d["edited_entry"])
+            continue
+        # approved OR pending -> keep the draft entry
+        kept.append(e)
+    return kept, rejected, deferred, edited, reviewer
 
 
 # ---------------------------------------------------------------------------
@@ -168,10 +219,19 @@ def _print_summary(
     final_pdf: Path,
     final_docx: Path,
     prov_path: Path,
+    rejected_count: int = 0,
+    deferred_count: int = 0,
+    edited_count: int = 0,
+    reviewer: str = "",
 ) -> None:
     stats = _entry_stats(entries)
     table = Table(title=f"sra export — {device}", show_header=False)
-    table.add_row("entries", str(len(entries)))
+    if reviewer:
+        table.add_row("reviewer", reviewer)
+    if rejected_count or deferred_count or edited_count:
+        table.add_row("review decisions",
+                      f"edited={edited_count}  rejected={rejected_count}  deferred={deferred_count}")
+    table.add_row("entries in final", str(len(entries)))
     table.add_row("  P0 / P1 / P2",
                   f"{stats['priority']['P0']} / {stats['priority']['P1']} / {stats['priority']['P2']}")
     table.add_row("  Critical / High / Medium / Low",

@@ -1,30 +1,29 @@
 # Security Risk Assessment — pmx100
-*Generated 2026-09-10 18:35 UTC · 3 entries · 0 parse-error entries*
+*Generated 2026-09-13 16:41 UTC · 2 entries · 0 parse-error entries*
 
 ## Summary
 
 | Metric | Count |
 |---|---|
-| Threats analysed | 3 |
-| Priority P0 (Critical) | 0 |
-| Priority P1 (High) | 3 |
+| Threats analysed | 2 |
+| Priority P0 (Critical) | 1 |
+| Priority P1 (High) | 1 |
 | Priority P2 (Medium) | 0 |
-| CVSS Critical (≥ 9.0) | 2 |
+| CVSS Critical (≥ 9.0) | 1 |
 | CVSS High (7.0-8.9) | 1 |
 | CVSS Medium (4.0-6.9) | 0 |
 | CVSS Low / None | 0 |
 | Residual High | 0 |
-| Residual Medium | 3 |
+| Residual Medium | 2 |
 | Residual Low | 0 |
-| Total estimated effort (eng-weeks) | 5.5 |
+| Total estimated effort (eng-weeks) | 4.5 |
 
 ## Entry index
 
 | Threat | Priority | CVSS | Residual | Effort |
 |---|---|---|---|---|
 | `DF-BLEPAIR-I` — Unencrypted BLE Pairing Traffic Capture | P1 | 8.1 High | Medium | 1.5wk |
-| `DF-BLEVITALS-T` — BLE Vitals Spoofing via MITM | P1 | 9.1 Critical | Medium | 2wk |
-| `DF-EMR-T` — Man-in-the-middle HL7/FHIR replay | P1 | 9.1 Critical | Medium | 2wk |
+| `DF-BLEVITALS-T` — BLE Vitals Spoofing via MITM | P0 | 9.1 Critical | Medium | 3wk |
 
 ---
 

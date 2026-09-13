@@ -2,10 +2,10 @@
   "device": "pmx100",
   "profile": "hybrid",
   "corpus_commit_sha": "36f702814af03b2afb4a3a0a3157abe9e189de9e",
-  "framework_commit_sha": "d897488aebbe7e182627b3540ba9810730788c3b",
+  "framework_commit_sha": "e3f29ae9d3629d1358e4fa35299b635ec468689c",
   "embedding_model": "openai/text-embedding-3-large",
   "started_at_utc": "2026-09-10T18:34:01Z",
-  "completed_at_utc": "2026-09-10T18:35:11.256095Z",
+  "completed_at_utc": "2026-09-13T16:41:46.858709Z",
   "total_cost_usd_est": 0.03513,
   "entries": {
     "DF-BLEPAIR-I": {

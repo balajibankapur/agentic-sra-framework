@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -188,9 +190,27 @@ def export(
 
 
 @app.command()
-def review() -> None:
-    """Launch the Streamlit review UI. Wired up in Step 12."""
-    console.print("[yellow]review not yet implemented (Step 12)[/]")
+def review(
+    device: str = typer.Option(..., "--device", help="Device to review."),
+    port: int = typer.Option(8501, "--port", help="Streamlit port (default 8501)."),
+) -> None:
+    """Launch the Streamlit review UI on http://localhost:<port>."""
+    import os
+    import subprocess
+    import sys
+    env = os.environ.copy()
+    env["SRA_DEVICE"] = device
+    app_path = Path(__file__).parent.parent / "review_ui" / "app.py"
+    console.print(f"Launching review UI for [cyan]{device}[/] on "
+                  f"[green]http://localhost:{port}[/] …")
+    console.print("[dim](one reviewer at a time; press Ctrl+C to stop)[/]\n")
+    subprocess.run(
+        [sys.executable, "-m", "streamlit", "run", str(app_path),
+         "--server.port", str(port),
+         "--server.headless", "false",
+         "--browser.gatherUsageStats", "false"],
+        env=env,
+    )
 
 
 if __name__ == "__main__":

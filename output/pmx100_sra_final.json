@@ -131,68 +131,9 @@
         "hunk": "// Implement BLE LE Secure Connections\n// Ensure cryptographic signatures for message authentication\nvoid setup_ble_secure_connections() {\n    // Code to initialize BLE LE Secure Connections\n}\n"
       }
     ],
-    "priority": "P1",
-    "effort_engineer_weeks": 2.0,
-    "narrative": "The BLE Vitals Spoofing threat allows attackers to manipulate vital signs data by exploiting the lack of cryptographic protection. Implementing BLE LE Secure Connections will provide cryptographic signatures to authenticate and verify the integrity of BLE notifications, significantly reducing the risk of spoofing.",
-    "warnings": [],
-    "parse_error": false,
-    "raw_llm_response": null
-  },
-  {
-    "threat_id": "DF-EMR-T",
-    "title": "Man-in-the-middle HL7/FHIR replay",
-    "stride": "T",
-    "assets_affected": [
-      "DFD:DF-EMR"
-    ],
-    "existing_controls": [
-      {
-        "id": "CTRL:tls-1-0-with-system-ca-bundle-for-cert-validation",
-        "description": "TLS 1.0 with system CA bundle for cert validation",
-        "kind": "legacy"
-      }
-    ],
-    "gap_analysis": [],
-    "cvss_v31": {
-      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
-      "base_score": 9.1,
-      "temporal_score": null,
-      "environmental_score": null,
-      "severity": "Critical"
-    },
-    "residual_risk": "Medium",
-    "residual_risk_reason": "Implementing modern TLS and integrity checks reduces risk but does not eliminate it entirely.",
-    "proposed_controls": [
-      {
-        "id": "CTRL:PROPOSED:tls-1-2-with-pinning",
-        "description": "Upgrade to TLS 1.2+ with certificate pinning and AES-256 encryption.",
-        "kind": "proposed"
-      },
-      {
-        "id": "CTRL:PROPOSED:integrity-checks",
-        "description": "Implement SHA-256 based integrity checks for HL7/FHIR data in transit.",
-        "kind": "proposed"
-      }
-    ],
-    "proposed_doc_changes": [
-      {
-        "doc": "SDS.md",
-        "action": "add",
-        "item_id": "SDS-SEC-NEW-01",
-        "body": "Implement TLS 1.2+ with certificate pinning and AES-256 encryption for all HL7/FHIR communications. Add SHA-256 based integrity checks to ensure data integrity in transit."
-      }
-    ],
-    "proposed_code_changes": [
-      {
-        "path": "firmware/network_security.c",
-        "line": 0,
-        "action": "create_file",
-        "hunk": "// Implement TLS 1.2+ with certificate pinning\n// Implement AES-256 encryption\n// Implement SHA-256 integrity checks"
-      }
-    ],
-    "priority": "P1",
-    "effort_engineer_weeks": 2.0,
-    "narrative": "The current use of TLS 1.0 with weak cipher suites allows for man-in-the-middle attacks on HL7/FHIR data. Upgrading to TLS 1.2+ with certificate pinning and implementing SHA-256 integrity checks will significantly enhance security by preventing unauthorized data interception and modification.",
+    "priority": "P0",
+    "effort_engineer_weeks": 3.0,
+    "narrative": "REVIEWED: escalated to P0 by senior cybersecurity engineer.",
     "warnings": [],
     "parse_error": false,
     "raw_llm_response": null
