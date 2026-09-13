@@ -53,18 +53,184 @@ def init(
 def status(
     device: str = typer.Option(..., "--device", help="Device to inspect."),
 ) -> None:
-    """Show what has been cloned and indexed for a device."""
+    """Show the full pipeline state: input, indices, draft, review, final."""
+    from framework.config import CHROMA_DIR, KUZU_DIR, OUTPUT_DIR, device_input_dir
+    import json as _json
+
+    table = Table(title=f"{device} status", show_header=True)
+    table.add_column("Stage")
+    table.add_column("Detail")
+    table.add_column("Status", justify="right")
+
+    # -- Input corpus --------------------------------------------------------
     m = read_manifest(device)
     if m is None:
-        console.print(f"[yellow]No manifest for '{device}'. Run: sra init --repo <URL> --device {device}[/]")
-        raise typer.Exit(code=1)
-    table = Table(title=f"{device} status", show_header=False)
-    table.add_row("repo", m.repo_url)
-    table.add_row("commit", f"{m.commit_sha[:12]}  {m.commit_subject}")
-    table.add_row("files", str(m.file_count))
-    table.add_row("size", _human_bytes(m.total_bytes))
-    table.add_row("cloned_at", m.cloned_at_utc)
+        table.add_row("input", "not cloned", "[red]missing[/]")
+    else:
+        table.add_row(
+            "input",
+            f"{m.commit_sha[:12]} · {m.file_count} files · {_human_bytes(m.total_bytes)}",
+            "[green]ok[/]",
+        )
+
+    # -- Vector store --------------------------------------------------------
+    try:
+        import chromadb
+        from chromadb.config import Settings as _CS
+        client = chromadb.PersistentClient(path=str(CHROMA_DIR),
+                                           settings=_CS(anonymized_telemetry=False))
+        cols = client.list_collections()
+        by_name = {c.name: client.get_collection(c.name).count() for c in cols}
+        docs = by_name.get("device_docs", 0)
+        code = by_name.get("device_code", 0)
+        reg = by_name.get("regulatory", 0)
+        table.add_row("vector store (Chroma)",
+                      f"docs={docs}  code={code}  regulatory={reg}",
+                      "[green]ok[/]" if (docs and code) else "[yellow]incomplete[/]")
+    except Exception as e:
+        table.add_row("vector store (Chroma)", f"error: {e}", "[red]missing[/]")
+
+    # -- Kuzu graph ----------------------------------------------------------
+    kuzu_path = KUZU_DIR / f"{device}.kuzu"
+    if not kuzu_path.exists():
+        table.add_row("graph store (Kuzu)", "not built", "[red]missing[/]")
+    else:
+        try:
+            import kuzu
+            conn = kuzu.Connection(kuzu.Database(str(kuzu_path)))
+            res = conn.execute("MATCH (n) RETURN COUNT(*) AS n;")
+            total_nodes = res.get_next()[0]
+            table.add_row("graph store (Kuzu)",
+                          f"{total_nodes} nodes across 11 tables",
+                          "[green]ok[/]" if total_nodes else "[yellow]empty[/]")
+        except Exception as e:
+            table.add_row("graph store (Kuzu)", f"error: {e}", "[red]error[/]")
+
+    # -- Draft ---------------------------------------------------------------
+    draft_json = OUTPUT_DIR / f"{device}_sra_draft.json"
+    if draft_json.exists():
+        try:
+            draft = _json.loads(draft_json.read_text())
+            errs = sum(1 for e in draft if e.get("parse_error"))
+            table.add_row("draft", f"{len(draft)} entries ({errs} parse_error)",
+                          "[green]ok[/]" if len(draft) else "[yellow]empty[/]")
+        except Exception as e:
+            table.add_row("draft", f"error: {e}", "[red]error[/]")
+    else:
+        table.add_row("draft", "not drafted yet", "[dim]—[/]")
+
+    # -- Prompts log ---------------------------------------------------------
+    plog = OUTPUT_DIR / f"{device}_prompts.jsonl"
+    if plog.exists():
+        n = sum(1 for _ in plog.open())
+        table.add_row("prompts log", f"{n} LLM turns", "[green]ok[/]")
+    else:
+        table.add_row("prompts log", "—", "[dim]—[/]")
+
+    # -- Review state --------------------------------------------------------
+    rev = OUTPUT_DIR / f"{device}_review_state.json"
+    if rev.exists():
+        try:
+            state = _json.loads(rev.read_text())
+            decisions = state.get("decisions", {}) or {}
+            from collections import Counter as _C
+            c = _C(d.get("action", "?") for d in decisions.values())
+            summary = f"{len(decisions)} decisions ({dict(c)})  reviewer='{state.get('reviewer_name','')}'"
+            table.add_row("review state", summary, "[green]ok[/]")
+        except Exception as e:
+            table.add_row("review state", f"error: {e}", "[red]error[/]")
+    else:
+        table.add_row("review state", "no decisions yet", "[dim]—[/]")
+
+    # -- Final artifacts -----------------------------------------------------
+    finals = [f"{device}_sra_final.md", f"{device}_sra_final.pdf",
+              f"{device}_sra_final.docx", f"{device}_sra_final.json",
+              f"{device}_provenance.json"]
+    present = [f for f in finals if (OUTPUT_DIR / f).exists()]
+    if present:
+        total = sum((OUTPUT_DIR / f).stat().st_size for f in present)
+        table.add_row("final artifacts", f"{len(present)}/{len(finals)} files · {_human_bytes(total)}",
+                      "[green]ok[/]" if len(present) == len(finals) else "[yellow]partial[/]")
+    else:
+        table.add_row("final artifacts", "not exported yet", "[dim]—[/]")
+
     console.print(table)
+
+
+@app.command()
+def reset(
+    device: str = typer.Option(..., "--device", help="Device to reset."),
+    draft: bool = typer.Option(True, "--draft/--no-draft",
+                               help="Wipe draft + prompts + review_state + final artifacts."),
+    indices: bool = typer.Option(False, "--indices",
+                                 help="Also wipe Chroma vector store, Kuzu graph, JSON extracts."),
+    corpus: bool = typer.Option(False, "--corpus",
+                                help="Also wipe input/<device>/ (requires re-running `sra init`)."),
+    yes: bool = typer.Option(False, "-y", "--yes",
+                             help="Skip the confirmation prompt."),
+) -> None:
+    """Clean slate for a new run — wipe stale draft / review / index / corpus state."""
+    from framework.config import CHROMA_DIR, EXTRACTS_DIR, KUZU_DIR, OUTPUT_DIR, device_input_dir
+    import shutil
+
+    to_delete: list[Path] = []
+    if draft:
+        for name in (f"{device}_sra_draft.md", f"{device}_sra_draft.json",
+                     f"{device}_prompts.jsonl", f"{device}_review_state.json",
+                     f"{device}_sra_final.md", f"{device}_sra_final.pdf",
+                     f"{device}_sra_final.docx", f"{device}_sra_final.json",
+                     f"{device}_provenance.json"):
+            p = OUTPUT_DIR / name
+            if p.exists():
+                to_delete.append(p)
+    if indices:
+        kuzu_p = KUZU_DIR / f"{device}.kuzu"
+        if kuzu_p.exists():
+            to_delete.append(kuzu_p)
+        wal_p = KUZU_DIR / f"{device}.kuzu.wal"
+        if wal_p.exists():
+            to_delete.append(wal_p)
+        ex = EXTRACTS_DIR / device
+        if ex.exists():
+            to_delete.append(ex)
+        # Chroma stores are shared across devices; only wipe if user really wants
+        if CHROMA_DIR.exists():
+            to_delete.append(CHROMA_DIR)
+    if corpus:
+        cin = device_input_dir(device)
+        if cin.exists():
+            to_delete.append(cin)
+
+    if not to_delete:
+        console.print(f"[yellow]Nothing to reset for '{device}'.[/]")
+        raise typer.Exit(code=0)
+
+    console.print(f"[bold]sra reset[/] · [cyan]{device}[/]  will delete:")
+    for p in to_delete:
+        kind = "dir" if p.is_dir() else "file"
+        console.print(f"  {kind:4s}  [red]{p}[/]")
+    if not yes:
+        confirm = typer.confirm("\nProceed?", default=False)
+        if not confirm:
+            console.print("[yellow]Aborted.[/]")
+            raise typer.Exit(code=1)
+
+    for p in to_delete:
+        if p.is_dir():
+            shutil.rmtree(p, ignore_errors=True)
+        else:
+            try:
+                p.unlink()
+            except OSError:
+                pass
+    console.print(f"[green]✓[/] Deleted {len(to_delete)} items.")
+    console.print(f"\nRebuild:")
+    if corpus:
+        console.print(f"  sra init --repo <URL> --device {device}")
+    if indices or corpus:
+        console.print(f"  sra index --device {device}")
+    if draft or indices or corpus:
+        console.print(f"  sra draft --device {device}")
 
 
 @app.command()

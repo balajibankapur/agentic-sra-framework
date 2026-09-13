@@ -63,10 +63,18 @@ def run_draft(
     draft_md = OUTPUT_DIR / f"{device}_sra_draft.md"
     draft_json = OUTPUT_DIR / f"{device}_sra_draft.json"
     prompt_log = OUTPUT_DIR / f"{device}_prompts.jsonl"
+    review_state = OUTPUT_DIR / f"{device}_review_state.json"
 
-    # Wipe old draft outputs so the run is a fresh baseline
-    for p in (draft_md, draft_json, prompt_log):
+    # Wipe stale draft-side outputs so the new run is unbiased.
+    # We intentionally also wipe review_state — decisions were made against
+    # a previous set of draft entries, and silently reapplying them to a new
+    # draft (potentially different threat ordering or content) would corrupt
+    # the final. If you want to preserve decisions, save the file first.
+    for p in (draft_md, draft_json, prompt_log, review_state):
         if p.exists():
+            if p == review_state:
+                console.print(f"[yellow]Note:[/] wiping stale review decisions in "
+                              f"[dim]{p.name}[/] — old decisions won't be applied to this new draft.")
             p.unlink()
 
     initial_state = SRAState(
