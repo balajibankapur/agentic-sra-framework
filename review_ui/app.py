@@ -379,6 +379,20 @@ def main() -> None:
                                     ["Priority + threat id", "Threat id (A→Z)", "CVSS score (high→low)"])
     show_only = st.sidebar.selectbox("Show",
                                       ["All", "Pending only", "Approved", "Rejected", "Deferred", "Parse errors"])
+    page_size = st.sidebar.slider("Entries per page", min_value=10, max_value=100,
+                                   value=25, step=5)
+
+    # If the filter combo changed, reset to page 0.
+    filter_key = f"{sort_by}|{show_only}|{page_size}"
+    if st.session_state.get("_filter_key") != filter_key:
+        st.session_state["_filter_key"] = filter_key
+        st.session_state["_page"] = 0
+
+    # Sidebar — actions block (export)
+    st.sidebar.divider()
+    st.sidebar.header("Actions")
+    if st.sidebar.button("📤 Export final artifacts", width="stretch"):
+        _run_export_ui(review_state)
 
     # Apply filters
     def _keep(e: dict) -> bool:
@@ -408,10 +422,90 @@ def main() -> None:
         priority_rank = {"P0": 0, "P1": 1, "P2": 2}
         display.sort(key=lambda e: (priority_rank.get(e.get("priority", "P2"), 3), e["threat_id"]))
 
-    st.markdown(f"### {len(display)} entries ({len(entries)} total)")
+    # Pagination
+    total_display = len(display)
+    total_pages = max(1, (total_display + page_size - 1) // page_size)
+    current_page = min(st.session_state.get("_page", 0), total_pages - 1)
+    st.session_state["_page"] = current_page
+    start = current_page * page_size
+    end = min(start + page_size, total_display)
+    page_items = display[start:end]
 
-    for i, e in enumerate(display):
+    st.markdown(
+        f"### {total_display} entries after filter "
+        f"({len(entries)} total)   ·   showing {start + 1}-{end}   ·   "
+        f"page {current_page + 1} of {total_pages}"
+    )
+
+    # Bulk action bar — approve all pending on this page
+    pending_on_page = [
+        e for e in page_items
+        if review_state.get("decisions", {}).get(e["threat_id"], {}).get("action", "pending") == "pending"
+    ]
+    if pending_on_page:
+        col_bulk, col_note = st.columns([1, 3])
+        with col_bulk:
+            if st.button(
+                f"✅ Approve all {len(pending_on_page)} pending on this page",
+                key=f"bulk_approve_{current_page}",
+                width="stretch",
+            ):
+                for e in pending_on_page:
+                    record_decision(review_state, e["threat_id"], "approved")
+                st.rerun()
+        with col_note:
+            st.caption(
+                "_Only pending entries on the current page are approved. "
+                "Use the Show filter + a larger page size to scope wider._"
+            )
+
+    # Render page
+    for i, e in enumerate(page_items):
         render_entry_card(e, review_state, i)
+
+    # Pagination controls
+    if total_pages > 1:
+        st.divider()
+        col_prev, col_mid, col_next = st.columns([1, 3, 1])
+        with col_prev:
+            if st.button("◀ Prev", disabled=(current_page == 0), width="stretch"):
+                st.session_state["_page"] = max(0, current_page - 1)
+                st.rerun()
+        with col_mid:
+            new_page = st.number_input(
+                "Jump to page",
+                min_value=1,
+                max_value=total_pages,
+                value=current_page + 1,
+                step=1,
+                label_visibility="collapsed",
+            )
+            if new_page - 1 != current_page:
+                st.session_state["_page"] = int(new_page) - 1
+                st.rerun()
+        with col_next:
+            if st.button("Next ▶", disabled=(current_page >= total_pages - 1), width="stretch"):
+                st.session_state["_page"] = min(total_pages - 1, current_page + 1)
+                st.rerun()
+
+
+def _run_export_ui(review_state: dict) -> None:
+    """Trigger sra export from within the UI and surface the result."""
+    from framework.config import OUTPUT_DIR
+    from framework.sra.export import run_export
+
+    with st.spinner("Rendering MD + PDF + DOCX + provenance …"):
+        try:
+            run_export(device=DEVICE, profile="hybrid")
+        except Exception as e:
+            st.sidebar.error(f"Export failed: {e}")
+            return
+    st.sidebar.success("Exported. Files:")
+    for name in (f"{DEVICE}_sra_final.md", f"{DEVICE}_sra_final.pdf",
+                 f"{DEVICE}_sra_final.docx", f"{DEVICE}_provenance.json"):
+        p = OUTPUT_DIR / name
+        if p.exists():
+            st.sidebar.markdown(f"- `{p.name}` ({p.stat().st_size:,} B)")
 
 
 main()
