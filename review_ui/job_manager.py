@@ -80,6 +80,9 @@ def start_draft(
     profile: str = "hybrid",
     limit: int | None = None,
     category: str | None = None,
+    threat: str | None = None,
+    extra_context: str = "",
+    strategy: str = "priority",
 ) -> JobStatus:
     """Spawn `sra draft` as a detached background subprocess.
 
@@ -99,6 +102,12 @@ def start_draft(
         cmd += ["--limit", str(int(limit))]
     if category:
         cmd += ["--category", category]
+    if threat:
+        cmd += ["--threat", threat]
+    if extra_context:
+        cmd += ["--extra-context", extra_context]
+    if strategy and strategy != "priority":
+        cmd += ["--strategy", strategy]
 
     log_fh = log_p.open("ab", buffering=0)
     # start_new_session so the child survives if the Streamlit process reloads
@@ -115,6 +124,9 @@ def start_draft(
         "profile": profile,
         "limit": limit,
         "category": category,
+        "threat": threat,
+        "extra_context": extra_context,
+        "strategy": strategy,
         "cmd": cmd,
     }
     control_path(device).write_text(json.dumps(ctl, indent=2))

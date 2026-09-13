@@ -338,6 +338,10 @@ def draft(
     strategy: str = typer.Option(
         "priority", "--strategy",
         help="priority (default) or code-linked (bias toward threats reachable to code artifacts)."),
+    extra_context: str = typer.Option(
+        "", "--extra-context",
+        help="Reviewer-supplied additional guidance appended to TCR's user message "
+             "(most useful with --threat for a targeted re-run)."),
 ) -> None:
     """Run the LangGraph pipeline over each threat and write output/<device>_sra_draft.{md,json}."""
     from framework.agents.runner import run_draft
@@ -348,7 +352,7 @@ def draft(
         console.print(f"[red]--strategy must be one of priority|code-linked (got {strategy!r})[/]")
         raise typer.Exit(code=2)
     run_draft(device=device, profile=profile, category=category, threat=threat,
-              limit=limit, strategy=strategy)
+              limit=limit, strategy=strategy, extra_context=extra_context)
 
 
 @app.command()

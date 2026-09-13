@@ -35,7 +35,9 @@ def run_report_generator(state: SRAState) -> dict:
 
 
 def _append_json(path: Path, entry: SRAEntry) -> None:
-    """Maintain draft.json as a JSON array, appending atomically."""
+    """Maintain draft.json as a JSON array. Upserts by threat_id so a
+    targeted re-run of a single threat replaces the earlier entry
+    instead of duplicating it."""
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
         try:
@@ -46,7 +48,15 @@ def _append_json(path: Path, entry: SRAEntry) -> None:
             existing = []
     else:
         existing = []
-    existing.append(entry.model_dump(mode="json"))
+    dumped = entry.model_dump(mode="json")
+    replaced = False
+    for i, e in enumerate(existing):
+        if isinstance(e, dict) and e.get("threat_id") == entry.threat_id:
+            existing[i] = dumped
+            replaced = True
+            break
+    if not replaced:
+        existing.append(dumped)
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(existing, indent=2, ensure_ascii=False), encoding="utf-8")
     tmp.replace(path)

@@ -50,6 +50,9 @@ class SRAState(BaseModel):
     completed_entries: int = 0
     fallback_used: dict[str, str] = Field(default_factory=dict)
     warnings: list[str] = Field(default_factory=list)
+    extra_context: str = ""                # optional reviewer-supplied guidance
+                                            # appended to TCR's user message on
+                                            # targeted single-threat re-runs
 
     class Config:
         arbitrary_types_allowed = True

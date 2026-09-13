@@ -50,6 +50,7 @@ def run_draft(
     threat: str | None = None,
     limit: int | None = None,
     strategy: str = "priority",
+    extra_context: str = "",
 ) -> SRAState:
     """Kick off the LangGraph draft pipeline for one device.
 
@@ -66,17 +67,35 @@ def run_draft(
     prompt_log = OUTPUT_DIR / f"{device}_prompts.jsonl"
     review_state = OUTPUT_DIR / f"{device}_review_state.json"
 
-    # Wipe stale draft-side outputs so the new run is unbiased.
-    # We intentionally also wipe review_state — decisions were made against
-    # a previous set of draft entries, and silently reapplying them to a new
-    # draft (potentially different threat ordering or content) would corrupt
-    # the final. If you want to preserve decisions, save the file first.
-    for p in (draft_md, draft_json, prompt_log, review_state):
-        if p.exists():
-            if p == review_state:
-                console.print(f"[yellow]Note:[/] wiping stale review decisions in "
-                              f"[dim]{p.name}[/] — old decisions won't be applied to this new draft.")
-            p.unlink()
+    targeted_rerun = bool(threat)   # single-threat re-run keeps prior state
+
+    if not targeted_rerun:
+        # Full or filtered runs: wipe stale draft-side outputs so the new run
+        # is unbiased. review_state is wiped too — old decisions were made
+        # against a previous draft and silently reapplying them would corrupt
+        # the final. Save the file first if you want to preserve decisions.
+        for p in (draft_md, draft_json, prompt_log, review_state):
+            if p.exists():
+                if p == review_state:
+                    console.print(f"[yellow]Note:[/] wiping stale review decisions in "
+                                  f"[dim]{p.name}[/].")
+                p.unlink()
+    else:
+        # Targeted rerun of one threat: PRESERVE draft (Report Generator
+        # upserts by threat_id), prompts log (append), and review_state
+        # (only that entry's decision, if any, is cleared below).
+        console.print(f"[cyan]Targeted rerun[/] for [bold]{threat}[/] — "
+                      f"draft + prompts log preserved; this entry will replace "
+                      f"any earlier version.")
+        if review_state.exists():
+            try:
+                st = json.loads(review_state.read_text())
+                if threat in (st.get("decisions") or {}):
+                    del st["decisions"][threat]
+                    review_state.write_text(json.dumps(st, indent=2))
+                    console.print(f"  cleared prior review decision for [bold]{threat}[/]")
+            except (json.JSONDecodeError, OSError):
+                pass
 
     initial_state = SRAState(
         device=device,
@@ -87,6 +106,7 @@ def run_draft(
         prompt_log_path=prompt_log,
         draft_md_path=draft_md,
         draft_json_path=draft_json,
+        extra_context=extra_context or "",
     )
 
     console.print(f"[bold]sra draft[/] · device=[cyan]{device}[/] profile=[cyan]{profile}[/]"

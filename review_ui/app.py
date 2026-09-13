@@ -40,6 +40,33 @@ from review_ui import job_manager
 DEVICE = os.environ.get("SRA_DEVICE", "pmx100")
 DRAFT_JSON = OUTPUT_DIR / f"{DEVICE}_sra_draft.json"
 STATE_JSON = OUTPUT_DIR / f"{DEVICE}_review_state.json"
+PROMPTS_JSONL = OUTPUT_DIR / f"{DEVICE}_prompts.jsonl"
+
+
+AGENT_ORDER = [
+    "ingestion",
+    "compliance_mapper",
+    "code_analysis:planner",
+    "code_analysis:interpreter",
+    "threat_control_risk",
+    "report_generator",
+]
+
+
+def load_prompt_log() -> list[dict]:
+    """Read every LLM turn from <device>_prompts.jsonl."""
+    if not PROMPTS_JSONL.exists():
+        return []
+    turns: list[dict] = []
+    for line in PROMPTS_JSONL.open("r", encoding="utf-8", errors="ignore"):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            turns.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return turns
 
 
 # ---------------------------------------------------------------------------
@@ -245,6 +272,10 @@ def _render_entry_body(entry: dict, review_state: dict, decision: dict) -> None:
             for w in entry["warnings"]:
                 st.text(w)
 
+    # Agent trace — which LLM turns produced this entry
+    with st.expander("🔍 Agent trace"):
+        _render_entry_agent_trace(tid)
+
     # Raw LLM response (parse_error cases)
     if entry.get("raw_llm_response"):
         with st.expander("Raw LLM response (parse_error diagnostic)"):
@@ -259,7 +290,7 @@ def _render_entry_body(entry: dict, review_state: dict, decision: dict) -> None:
         )
 
     # Action buttons
-    b1, b2, b3, b4, b5 = st.columns(5)
+    b1, b2, b3, b4, b5, b6 = st.columns(6)
     if b1.button("✅ Approve", key=f"approve_{tid}"):
         record_decision(review_state, tid, "approved")
         st.rerun()
@@ -274,6 +305,12 @@ def _render_entry_body(entry: dict, review_state: dict, decision: dict) -> None:
         st.rerun()
     if b5.button("🔍 Ask graph", key=f"ask_{tid}"):
         st.session_state[f"ask_prompt_{tid}"] = True
+        st.rerun()
+    rerun_disabled = job_manager.is_running(DEVICE)
+    if b6.button("🔁 Rerun", key=f"rerun_btn_{tid}", disabled=rerun_disabled,
+                 help=("Re-draft just this entry with additional reviewer context "
+                       "appended to the TCR agent's prompt.")):
+        st.session_state[f"rerun_prompt_{tid}"] = True
         st.rerun()
 
     # Rejection prompt
@@ -292,6 +329,55 @@ def _render_entry_body(entry: dict, review_state: dict, decision: dict) -> None:
                 st.rerun()
         if c2.button("Cancel", key=f"reject_cancel_{tid}"):
             st.session_state[f"reject_prompt_{tid}"] = False
+            st.rerun()
+
+    # Rerun-with-extra-context prompt
+    if st.session_state.get(f"rerun_prompt_{tid}"):
+        st.markdown("**Rerun this entry with additional context**")
+        st.caption(
+            "The text below is appended to the Threat/Control/Risk agent's user "
+            "message for this single re-run. Use it to tell the agent about a "
+            "constraint it missed, a design choice you want reflected, or a "
+            "specific control to consider. The draft entry will be replaced "
+            "(upserted by threat_id), prompts.jsonl gets a new turn appended, "
+            "and any prior review decision for this entry is cleared."
+        )
+        extra = st.text_area(
+            "Additional context / instructions",
+            value=st.session_state.get(f"rerun_extra_{tid}", ""),
+            key=f"rerun_extra_input_{tid}",
+            height=120,
+            placeholder="e.g. Consider that firmware/app_mcu/ble/ble_pairing.c already "
+                        "wraps the mbedtls pairing API, so propose the diff at line 45 "
+                        "rather than a new file.",
+        )
+        profile = st.selectbox(
+            "Profile",
+            ["hybrid", "free", "openai"],
+            index=0,
+            key=f"rerun_profile_{tid}",
+        )
+        c1, c2 = st.columns(2)
+        if c1.button("▶ Start rerun", key=f"rerun_go_{tid}", type="primary"):
+            if not extra.strip():
+                st.error("Please provide some additional context, or Cancel.")
+            else:
+                try:
+                    job_manager.start_draft(
+                        DEVICE,
+                        profile=profile,
+                        threat=tid,
+                        extra_context=extra.strip(),
+                    )
+                    st.session_state[f"rerun_prompt_{tid}"] = False
+                    st.session_state[f"rerun_extra_{tid}"] = ""
+                    st.success(f"Rerun of {tid} started in background.")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Start failed: {e}")
+        if c2.button("Cancel", key=f"rerun_cancel_{tid}"):
+            st.session_state[f"rerun_prompt_{tid}"] = False
+            st.session_state[f"rerun_extra_{tid}"] = ""
             st.rerun()
 
     # Ask-the-graph prompt
@@ -386,7 +472,7 @@ def main() -> None:
     _render_progress_banner()
     render_header(entries, review_state)
 
-    # Sidebar filters
+    # Sidebar filters (always visible regardless of active tab)
     st.sidebar.header("Filters")
     sort_by = st.sidebar.selectbox("Sort by",
                                     ["Priority + threat id", "Threat id (A→Z)", "CVSS score (high→low)"])
@@ -409,6 +495,21 @@ def main() -> None:
         _run_export_ui(review_state)
     _render_reset_sidebar()
 
+    # Main area: two tabs — reviewer workflow + agent activity log
+    tab_review, tab_agents = st.tabs(["📋 Review", "🔍 Agent Activity"])
+    with tab_agents:
+        render_agent_activity_tab()
+    with tab_review:
+        _render_review_body(entries, review_state, sort_by, show_only, page_size)
+
+
+def _render_review_body(
+    entries: list[dict],
+    review_state: dict,
+    sort_by: str,
+    show_only: str,
+    page_size: int,
+) -> None:
     # Apply filters
     def _keep(e: dict) -> bool:
         a = review_state.get("decisions", {}).get(e["threat_id"], {}).get("action", "pending")
@@ -593,20 +694,184 @@ def _render_reset_sidebar() -> None:
         st.rerun()
 
 
+@st.fragment(run_every=3)
 def _render_progress_banner() -> None:
-    """Top-of-page banner shown while a draft job is running."""
+    """Top-of-page banner. Auto-refreshes every 3 s via st.fragment while
+    a draft is running. When the job transitions running -> not-running,
+    triggers a full-page rerun so newly-drafted entries appear."""
     js = job_manager.status(DEVICE)
-    if not js.alive:
+    prev_alive = st.session_state.get("_prev_job_alive", False)
+
+    if js.alive:
+        st.session_state["_prev_job_alive"] = True
+        limit = js.limit or 1
+        frac = min(1.0, js.entries_done / limit) if limit else 0.0
+        st.info(
+            f"⚙️  **Draft running** — {js.entries_done} / {js.limit or '?'} entries · "
+            f"{js.llm_turns} LLM turns · est. cost ${js.cost_usd_est:.4f}   "
+            f"_(auto-refreshing every 3 s)_"
+        )
+        if js.limit:
+            st.progress(frac)
+    elif prev_alive:
+        # Job just finished — full-page rerun so entry cards appear
+        st.session_state["_prev_job_alive"] = False
+        st.success(
+            f"✅  **Draft complete** — {js.entries_done} entries · "
+            f"{js.llm_turns} LLM turns · total cost ${js.cost_usd_est:.4f}"
+        )
+        st.rerun(scope="app")
+
+
+def render_agent_activity_tab() -> None:
+    """Log viewer over <device>_prompts.jsonl — every LLM turn, per-agent,
+    per-entry, with expandable full detail for demonstrating what the
+    agents actually did."""
+    turns = load_prompt_log()
+
+    if not turns:
+        st.info(
+            "No agent activity yet — start a draft (**Analysis Control** in the sidebar) "
+            "to see live LLM turns here."
+        )
         return
-    limit = js.limit or 1
-    frac = min(1.0, js.entries_done / limit) if limit else 0.0
-    st.info(
-        f"⚙️  **Draft running** — {js.entries_done} / {js.limit or '?'} entries · "
-        f"{js.llm_turns} LLM turns · est. cost ${js.cost_usd_est:.4f}   "
-        f"_(click **Refresh status** in the sidebar to update; the page won't auto-refresh)_"
+
+    # -- Summary cards --------------------------------------------------------
+    from collections import Counter
+    by_agent = Counter(t.get("agent", "?") for t in turns)
+    by_model = Counter(t.get("model", "?") for t in turns)
+    total_cost = sum(float(t.get("cost_usd_est", 0.0)) for t in turns)
+    total_in = sum(int(t.get("tokens_in", 0)) for t in turns)
+    total_out = sum(int(t.get("tokens_out", 0)) for t in turns)
+    errors = sum(1 for t in turns if t.get("error"))
+    fallbacks = sum(1 for t in turns if t.get("fallback_used"))
+
+    m1, m2, m3, m4, m5 = st.columns(5)
+    m1.metric("Total LLM turns", len(turns))
+    m2.metric("Tokens in / out", f"{total_in:,} / {total_out:,}")
+    m3.metric("Est. cost", f"${total_cost:.4f}")
+    m4.metric("Errors (retried)", errors)
+    m5.metric("Fallbacks used", fallbacks)
+
+    with st.expander("Breakdown by agent + model", expanded=True):
+        col_a, col_m = st.columns(2)
+        with col_a:
+            st.markdown("**By agent**")
+            for a, n in sorted(by_agent.items(), key=lambda x: -x[1]):
+                st.markdown(f"- `{a}` — {n} turns")
+        with col_m:
+            st.markdown("**By model**")
+            for m, n in sorted(by_model.items(), key=lambda x: -x[1]):
+                cost_m = sum(float(t.get("cost_usd_est", 0.0)) for t in turns if t.get("model") == m)
+                st.markdown(f"- `{m}` — {n} turns  (${cost_m:.4f})")
+
+    # -- Filters --------------------------------------------------------------
+    st.divider()
+    st.markdown("### Turn log")
+
+    f1, f2, f3 = st.columns([2, 2, 1])
+    agents_seen = sorted({t.get("agent", "?") for t in turns})
+    with f1:
+        agent_pick = st.selectbox("Filter by agent", ["All"] + agents_seen, index=0)
+    entries_seen = sorted({t.get("entry_id", "") for t in turns if t.get("entry_id")})
+    with f2:
+        entry_pick = st.selectbox("Filter by threat", ["All"] + entries_seen, index=0)
+    with f3:
+        show_errors = st.checkbox("Errors only", value=False)
+
+    def _keep_turn(t: dict) -> bool:
+        if agent_pick != "All" and t.get("agent") != agent_pick:
+            return False
+        if entry_pick != "All" and t.get("entry_id") != entry_pick:
+            return False
+        if show_errors and not t.get("error"):
+            return False
+        return True
+
+    filtered = [t for t in turns if _keep_turn(t)]
+    st.caption(f"{len(filtered)} of {len(turns)} turns")
+
+    for i, t in enumerate(filtered):
+        _render_turn_card(t, i)
+
+
+def _render_turn_card(t: dict, idx: int) -> None:
+    ok = "❌" if t.get("error") else "✅"
+    fb = " · ⚡fallback" if t.get("fallback_used") else ""
+    header = (
+        f"{ok} **{t.get('agent','?')}**  ·  `{t.get('model','?')}`  "
+        f"·  entry `{t.get('entry_id','?')}`  ·  "
+        f"tokens {t.get('tokens_in',0):,}/{t.get('tokens_out',0):,}  ·  "
+        f"{t.get('latency_ms',0)}ms  ·  ${t.get('cost_usd_est',0):.5f}{fb}"
     )
-    if js.limit:
-        st.progress(frac)
+    with st.expander(header, expanded=False):
+        st.caption(
+            f"timestamp: `{t.get('timestamp_utc','?')}`  ·  "
+            f"prompt_version: `{t.get('prompt_version','?')}`  ·  "
+            f"prompt_hash: `{t.get('prompt_hash','?')}`"
+        )
+        if t.get("error"):
+            st.error(f"**error:** {t['error'][:600]}")
+            if t.get("fallback_used"):
+                st.info(f"Fell back to: `{t['fallback_used']}`")
+        tab_prompt, tab_response, tab_tools = st.tabs(["📤 Prompt", "📥 Response", "🛠 Tool calls"])
+        with tab_prompt:
+            prompt = t.get("prompt", {}) or {}
+            st.markdown("**System prompt**")
+            st.code(prompt.get("system", "")[:8000] if isinstance(prompt, dict) else str(prompt)[:8000],
+                    language="markdown")
+            st.markdown("**User message**")
+            st.code(prompt.get("user", "")[:8000] if isinstance(prompt, dict) else "", language="markdown")
+        with tab_response:
+            response = t.get("response", "")
+            if response:
+                # Try pretty-print if JSON
+                try:
+                    parsed = json.loads(response)
+                    st.json(parsed)
+                except (json.JSONDecodeError, TypeError):
+                    st.code(response[:12000], language="text")
+            else:
+                st.caption("_(empty response)_")
+        with tab_tools:
+            tool_calls = t.get("tool_calls", []) or []
+            if not tool_calls:
+                st.caption("_(no tool calls recorded before this LLM turn)_")
+            else:
+                for j, tc in enumerate(tool_calls):
+                    st.markdown(f"**{j+1}. `{tc.get('tool','?')}`**")
+                    st.json({
+                        "args": tc.get("args", {}),
+                        "result_summary": tc.get("result_summary", ""),
+                        "result_size": tc.get("result_size", 0),
+                    })
+
+
+def _render_entry_agent_trace(entry_id: str) -> None:
+    """Small in-card expander showing the LLM turns that produced this entry."""
+    turns = [t for t in load_prompt_log() if t.get("entry_id") == entry_id]
+    if not turns:
+        st.caption("_(no LLM turns recorded for this entry)_")
+        return
+    st.markdown("**Agent trace for this entry:**")
+    st.markdown(
+        "| # | Agent | Model | Tokens in/out | Latency | Cost | Status |\n"
+        "|---|---|---|---|---|---|---|\n"
+        + "\n".join(
+            f"| {i+1} | `{t.get('agent','?')}` | `{t.get('model','?')}` | "
+            f"{t.get('tokens_in',0)}/{t.get('tokens_out',0)} | "
+            f"{t.get('latency_ms',0)}ms | ${t.get('cost_usd_est',0):.5f} | "
+            f"{'❌ ' + (t.get('error','')[:40]+'…') if t.get('error') else '✅'}"
+            f"{' ⚡fallback' if t.get('fallback_used') else ''} |"
+            for i, t in enumerate(turns)
+        )
+    )
+    total_cost = sum(float(t.get("cost_usd_est", 0)) for t in turns)
+    total_latency = sum(int(t.get("latency_ms", 0)) for t in turns)
+    st.caption(
+        f"**{len(turns)} LLM turns** for `{entry_id}` — "
+        f"total ${total_cost:.5f} · {total_latency}ms wall time"
+    )
 
 
 def _run_export_ui(review_state: dict) -> None:
