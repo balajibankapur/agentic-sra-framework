@@ -49,15 +49,23 @@ def run_threat_control_risk(state: SRAState) -> dict:
         "RETURN c.id AS id, c.description AS description;",
         params={"id": state.current_threat},
     )
-    linked_code = tools.graph_cypher(
+    # DFD elements this threat applies to
+    dfd_rows = tools.graph_cypher(
         "MATCH (t:Threat {id: $id})-[:APPLIES_TO]->(d:DFDElement) "
-        "OPTIONAL MATCH (v:Vulnerability)-[:LOCATED_IN]->(ca:CodeArtifact) "
-        "WHERE v.id CONTAINS d.element_id OR ca.subsystem CONTAINS d.element_id "
-        "RETURN DISTINCT d.id AS dfd_id, ca.id AS code_id, ca.path AS path, ca.function AS function "
-        "LIMIT 30;",
+        "RETURN DISTINCT d.id AS dfd_id, d.element_id AS elem, d.kind AS kind;",
         params={"id": state.current_threat},
     )
-    dfd_ids = list({r["dfd_id"] for r in linked_code if r.get("dfd_id")})
+    dfd_ids = list({r["dfd_id"] for r in dfd_rows if r.get("dfd_id")})
+
+    # Actual firmware CodeArtifact paths grouped by subsystem — the anchor
+    # list TCR MUST reuse instead of inventing paths like firmware/foo.c.
+    # We give it the whole set (Kuzu has ~72 unique paths for PMx-100) so it
+    # can pick the right one; the prompt says "prefer modifying existing".
+    all_paths = tools.graph_cypher(
+        "MATCH (c:CodeArtifact) RETURN DISTINCT c.path AS path, c.subsystem AS subsystem "
+        "ORDER BY subsystem, path;",
+        params={},
+    )
 
     # Rebuild retrieved-chunk context for quote_check (regulatory clause bodies for cited ids)
     cited_clauses = [f.clause_id if hasattr(f, "clause_id") else f.get("clause_id")
@@ -82,7 +90,8 @@ def run_threat_control_risk(state: SRAState) -> dict:
     router = LLMRouter(device=state.device, profile=state.profile,
                        prompt_log_path=state.prompt_log_path)
     user_msg = _build_user_message(threat, linked_controls, dfd_ids,
-                                   state.compliance_findings, state.code_findings)
+                                   state.compliance_findings, state.code_findings,
+                                   firmware_paths=all_paths)
     result = router.call(
         agent_name=AGENT_NAME,
         prompt=prompt,
@@ -163,6 +172,7 @@ def _build_user_message(
     dfd_ids: list[str],
     compliance_findings,
     code_findings,
+    firmware_paths: list[dict] | None = None,
 ) -> str:
     parts: list[str] = []
     parts.append("Threat:")
@@ -177,6 +187,24 @@ def _build_user_message(
 
     if dfd_ids:
         parts.append(f"assets_affected (DFD element ids you may reference): {dfd_ids}\n")
+
+    # Ground TCR in real firmware paths so it stops inventing files.
+    if firmware_paths:
+        by_sub: dict[str, list[str]] = {}
+        for row in firmware_paths:
+            by_sub.setdefault(row.get("subsystem") or "", []).append(row["path"])
+        parts.append(
+            "REAL firmware files that exist in the codebase (use these in "
+            "proposed_code_changes.path — do NOT invent new paths; use "
+            "action=create_file ONLY when no listed file fits the intent):"
+        )
+        parts.append("<CORPUS_UNTRUSTED>")
+        for sub in sorted(by_sub):
+            label = sub or "(root)"
+            parts.append(f"  {label}:")
+            for p in sorted(by_sub[sub]):
+                parts.append(f"    - {p}")
+        parts.append("</CORPUS_UNTRUSTED>\n")
 
     parts.append("Existing legacy controls linked to this threat in the graph:")
     parts.append("<CORPUS_UNTRUSTED>")

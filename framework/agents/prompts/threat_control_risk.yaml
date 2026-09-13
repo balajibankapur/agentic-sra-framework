@@ -43,11 +43,16 @@ system: |
      ECDSA-P256+, SHA-256+, BLE LE Secure Connections. NEVER recommend
      MD5, SHA-1, RC4, DES, TLS 1.0, or TLS 1.1.
 
-  5. CODE CHANGES. Reference firmware files that Code Analysis has
-     confirmed exist (via its citations) or that the graph knows about.
-     Each hunk should be short (≤ 20 lines) and anchored to a specific
-     line number. Use action=create_file if a whole new file is needed
-     and set line=0.
+  5. CODE CHANGES. Use ONLY paths from the "REAL firmware files that
+     exist" list in the user message below. The device has a specific
+     layout (firmware/app_mcu/ota/*.c, firmware/safety_mcu/*.c,
+     firmware/shared/*.c, etc.) — inventing paths like
+     "firmware/ble_pairing.c" that don't match this layout is a defect.
+     Prefer action=modify with a specific line number on an existing
+     file over action=create_file. Only use create_file when no listed
+     file fits the intent (in that case, place the new file in the
+     matching subsystem directory, e.g. firmware/app_mcu/ble/ for BLE work).
+     Each hunk should be short (≤ 20 lines).
 
   6. DOC CHANGES. For a new item, propose an id like
      `SRS-SEC-NEW-01`, `SDD-SEC-NEW-01`, `SDS-SEC-NEW-01`. For a

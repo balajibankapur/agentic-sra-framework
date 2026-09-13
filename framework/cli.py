@@ -335,13 +335,20 @@ def draft(
     category: str | None = typer.Option(None, "--category", help="Filter threats to one category (e.g. OTA)."),
     threat: str | None = typer.Option(None, "--threat", help="Draft a single threat id."),
     limit: int | None = typer.Option(None, "--limit", help="Cap total threats processed."),
+    strategy: str = typer.Option(
+        "priority", "--strategy",
+        help="priority (default) or code-linked (bias toward threats reachable to code artifacts)."),
 ) -> None:
     """Run the LangGraph pipeline over each threat and write output/<device>_sra_draft.{md,json}."""
     from framework.agents.runner import run_draft
     if profile not in {"free", "hybrid", "openai"}:
         console.print(f"[red]--profile must be one of free|hybrid|openai (got {profile!r})[/]")
         raise typer.Exit(code=2)
-    run_draft(device=device, profile=profile, category=category, threat=threat, limit=limit)
+    if strategy not in {"priority", "code-linked"}:
+        console.print(f"[red]--strategy must be one of priority|code-linked (got {strategy!r})[/]")
+        raise typer.Exit(code=2)
+    run_draft(device=device, profile=profile, category=category, threat=threat,
+              limit=limit, strategy=strategy)
 
 
 @app.command()

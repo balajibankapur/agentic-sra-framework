@@ -2,36 +2,36 @@
   "device": "pmx100",
   "total_vulns": 34,
   "total_entries": 25,
-  "entries_with_code_changes": 22,
-  "parse_error_entries": 3,
+  "entries_with_code_changes": 25,
+  "parse_error_entries": 0,
   "warned_entries": 0,
-  "file_recall": 0.058823529411764705,
+  "file_recall": 0.5,
   "symbol_recall": 0.0,
   "recall_by_semgrep": {
     "yes": {
-      "hit": 1,
+      "hit": 8,
       "total": 18
     },
     "partial": {
-      "hit": 0,
+      "hit": 4,
       "total": 8
     },
     "no": {
-      "hit": 1,
+      "hit": 4,
       "total": 7
     }
   },
   "recall_by_severity": {
     "Critical": {
-      "hit": 1,
+      "hit": 6,
       "total": 11
     },
     "High": {
-      "hit": 1,
+      "hit": 10,
       "total": 19
     },
     "Medium": {
-      "hit": 0,
+      "hit": 1,
       "total": 4
     },
     "Low": {
@@ -46,11 +46,11 @@
       "target_symbol": "install_image",
       "severity": "Critical",
       "semgrep": "partial",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "DF-SPIFW-T",
+      "matched_entry_priority": "P0",
+      "matched_entry_cvss": 9.8
     },
     {
       "vuln_id": "VULN-02",
@@ -58,11 +58,11 @@
       "target_symbol": "manifest_parse",
       "severity": "High",
       "semgrep": "no (regulatory-intent reasoning)",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "DF-OTA-I",
+      "matched_entry_priority": "P1",
+      "matched_entry_cvss": 9.1
     },
     {
       "vuln_id": "VULN-03",
@@ -70,11 +70,11 @@
       "target_symbol": "bootloader_load",
       "severity": "High",
       "semgrep": "no",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "DS-BOOT-T",
+      "matched_entry_priority": "P1",
+      "matched_entry_cvss": 7.6
     },
     {
       "vuln_id": "VULN-04",
@@ -94,11 +94,11 @@
       "target_symbol": "tls_config_init",
       "severity": "High",
       "semgrep": "yes",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "DF-EMR-T",
+      "matched_entry_priority": "P0",
+      "matched_entry_cvss": 10.0
     },
     {
       "vuln_id": "VULN-06",
@@ -106,11 +106,11 @@
       "target_symbol": "write_vitals_record",
       "severity": "Critical",
       "semgrep": "partial",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "P-UI-R01",
+      "matched_entry_priority": "P2",
+      "matched_entry_cvss": 5.5
     },
     {
       "vuln_id": "VULN-07",
@@ -118,11 +118,11 @@
       "target_symbol": "write_diag_record",
       "severity": "High",
       "semgrep": "yes",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "P-UI-R01",
+      "matched_entry_priority": "P2",
+      "matched_entry_cvss": 5.5
     },
     {
       "vuln_id": "VULN-08",
@@ -166,11 +166,11 @@
       "target_symbol": "setup_tls_context",
       "severity": "High",
       "semgrep": "partial",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "DF-EMR-T",
+      "matched_entry_priority": "P0",
+      "matched_entry_cvss": 10.0
     },
     {
       "vuln_id": "VULN-12",
@@ -178,11 +178,11 @@
       "target_symbol": "configure_cipher_suites",
       "severity": "High",
       "semgrep": "yes",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "DF-EMR-T",
+      "matched_entry_priority": "P0",
+      "matched_entry_cvss": 10.0
     },
     {
       "vuln_id": "VULN-13",
@@ -190,11 +190,11 @@
       "target_symbol": "emr_client_send",
       "severity": "High",
       "semgrep": "yes",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "P-EMR-I",
+      "matched_entry_priority": "P1",
+      "matched_entry_cvss": 9.1
     },
     {
       "vuln_id": "VULN-14",
@@ -202,11 +202,11 @@
       "target_symbol": "accept_pairing",
       "severity": "High",
       "semgrep": "partial",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "DF-BLEPAIR-I",
+      "matched_entry_priority": "P1",
+      "matched_entry_cvss": 8.1
     },
     {
       "vuln_id": "VULN-15",
@@ -214,11 +214,11 @@
       "target_symbol": "derive_ltk",
       "severity": "High",
       "semgrep": "yes",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "DF-BLEPAIR-I",
+      "matched_entry_priority": "P1",
+      "matched_entry_cvss": 8.1
     },
     {
       "vuln_id": "VULN-16",
@@ -226,11 +226,11 @@
       "target_symbol": "pairing_generate_random",
       "severity": "Medium",
       "semgrep": "yes",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "DF-BLEPAIR-I",
+      "matched_entry_priority": "P1",
+      "matched_entry_cvss": 8.1
     },
     {
       "vuln_id": "VULN-17",
@@ -238,11 +238,11 @@
       "target_symbol": "service_menu_authenticate",
       "severity": "Critical",
       "semgrep": "yes",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "P-UI-E01",
+      "matched_entry_priority": "P1",
+      "matched_entry_cvss": 7.4
     },
     {
       "vuln_id": "VULN-18",
@@ -250,11 +250,11 @@
       "target_symbol": "check_default_credentials",
       "severity": "Critical",
       "semgrep": "yes",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "P-UI-E01",
+      "matched_entry_priority": "P1",
+      "matched_entry_cvss": 7.4
     },
     {
       "vuln_id": "VULN-19",
@@ -262,11 +262,11 @@
       "target_symbol": "service_menu_factory_reset",
       "severity": "High",
       "semgrep": "no",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "P-UI-E01",
+      "matched_entry_priority": "P1",
+      "matched_entry_cvss": 7.4
     },
     {
       "vuln_id": "VULN-20",
@@ -300,9 +300,9 @@
       "semgrep": "no",
       "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "DF-SPIVITALS-T",
-      "matched_entry_priority": "P1",
-      "matched_entry_cvss": 7.6
+      "matched_entry_id": "DF-SPICONFIG-D",
+      "matched_entry_priority": "P0",
+      "matched_entry_cvss": 9.3
     },
     {
       "vuln_id": "VULN-23",
@@ -322,11 +322,11 @@
       "target_symbol": "hl7_build_pid_segment",
       "severity": "High",
       "semgrep": "yes",
-      "file_match": true,
+      "file_match": false,
       "symbol_match": false,
-      "matched_entry_id": "P-LOG-T",
-      "matched_entry_priority": "P1",
-      "matched_entry_cvss": 7.6
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
     },
     {
       "vuln_id": "VULN-25",
@@ -346,11 +346,11 @@
       "target_symbol": "vitals_gatt_notify",
       "severity": "Critical",
       "semgrep": "no",
-      "file_match": false,
+      "file_match": true,
       "symbol_match": false,
-      "matched_entry_id": "",
-      "matched_entry_priority": "",
-      "matched_entry_cvss": 0.0
+      "matched_entry_id": "DF-BLEVITALS-T",
+      "matched_entry_priority": "P0",
+      "matched_entry_cvss": 10.0
     },
     {
       "vuln_id": "VULN-27",
