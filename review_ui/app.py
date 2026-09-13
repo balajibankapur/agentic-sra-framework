@@ -20,13 +20,21 @@ from __future__ import annotations
 import json
 import os
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+# When Streamlit runs this file directly, review_ui isn't on sys.path.
+# Add the repo root so we can import both framework.* and review_ui.*.
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import streamlit as st
 
 from framework.config import KUZU_DIR, OUTPUT_DIR
+from review_ui import job_manager
 
 
 DEVICE = os.environ.get("SRA_DEVICE", "pmx100")
@@ -362,15 +370,20 @@ def main() -> None:
     st.set_page_config(page_title=f"SRA Review — {DEVICE}", layout="wide")
 
     entries = load_draft()
-    if not entries:
-        st.error(
-            f"No draft found at {DRAFT_JSON}.\n\n"
-            f"Run: `sra draft --device {DEVICE}` first."
-        )
-        return
-
     review_state = load_review_state()
 
+    if not entries:
+        st.title(f"SRA Review — {DEVICE}")
+        st.warning(
+            f"**No draft yet.**  Use the *Analysis Control* block in the sidebar "
+            f"to start a draft — or run `sra draft --device {DEVICE}` in a terminal."
+        )
+        _render_progress_banner()
+        _render_job_control_sidebar()
+        _render_reset_sidebar()
+        return
+
+    _render_progress_banner()
     render_header(entries, review_state)
 
     # Sidebar filters
@@ -388,11 +401,13 @@ def main() -> None:
         st.session_state["_filter_key"] = filter_key
         st.session_state["_page"] = 0
 
-    # Sidebar — actions block (export)
+    # Sidebar — job control + actions
+    _render_job_control_sidebar()
     st.sidebar.divider()
     st.sidebar.header("Actions")
     if st.sidebar.button("📤 Export final artifacts", width="stretch"):
         _run_export_ui(review_state)
+    _render_reset_sidebar()
 
     # Apply filters
     def _keep(e: dict) -> bool:
@@ -487,6 +502,111 @@ def main() -> None:
             if st.button("Next ▶", disabled=(current_page >= total_pages - 1), width="stretch"):
                 st.session_state["_page"] = min(total_pages - 1, current_page + 1)
                 st.rerun()
+
+
+def _render_job_control_sidebar() -> None:
+    """Sidebar Analysis Control block — Start / Stop / status of a draft run."""
+    st.sidebar.divider()
+    st.sidebar.header("Analysis Control")
+
+    job_status = job_manager.status(DEVICE)
+
+    if job_status.alive:
+        st.sidebar.info(
+            f"⚙️ **Draft running** (pid {job_status.pid})\n\n"
+            f"profile: `{job_status.profile}`  ·  "
+            f"limit: {job_status.limit or 'all'}\n\n"
+            f"entries: **{job_status.entries_done}** / "
+            f"{job_status.limit or '?'}   ·   "
+            f"turns: {job_status.llm_turns}   ·   "
+            f"est. cost: ${job_status.cost_usd_est:.4f}"
+        )
+        if st.sidebar.button("⏹ Stop draft", width="stretch", type="primary"):
+            job_manager.stop_draft(DEVICE)
+            st.sidebar.warning("SIGTERM sent. Reloading …")
+            st.rerun()
+        if st.sidebar.button("🔄 Refresh status", width="stretch"):
+            st.rerun()
+    else:
+        with st.sidebar.form("start_draft_form", clear_on_submit=False):
+            st.markdown("**Start a new draft**")
+            profile = st.selectbox(
+                "Profile",
+                ["hybrid", "free", "openai"],
+                index=0,
+                help="hybrid = free tier for 4 agents + OpenAI for the TCR agent",
+            )
+            limit_val = st.number_input(
+                "Threat limit (0 = all)",
+                min_value=0, max_value=500, value=10, step=5,
+                help="0 processes every threat in the graph",
+            )
+            category = st.text_input("Category filter (optional)",
+                                      value="",
+                                      help="e.g. OTA, BLE, EMR — leave blank for all")
+            submitted = st.form_submit_button("▶ Start draft", width="stretch",
+                                               type="primary")
+            if submitted:
+                try:
+                    job_manager.start_draft(
+                        DEVICE,
+                        profile=profile,
+                        limit=(int(limit_val) or None),
+                        category=(category.strip() or None),
+                    )
+                    st.sidebar.success("Draft started in background.")
+                    st.rerun()
+                except Exception as e:
+                    st.sidebar.error(f"Start failed: {e}")
+
+
+def _render_reset_sidebar() -> None:
+    """Sidebar Reset block — three levels of scope, confirmation required."""
+    st.sidebar.divider()
+    st.sidebar.header("Reset")
+
+    if job_manager.is_running(DEVICE):
+        st.sidebar.caption("_(disabled while a draft is running)_")
+        return
+
+    scope = st.sidebar.radio(
+        "Scope",
+        ["Draft + review only", "…also indices", "…also cloned corpus"],
+        index=0,
+        help=(
+            "Draft + review only: wipe draft, prompts, review state, final artifacts.\n"
+            "…also indices: additionally drop Chroma + Kuzu + JSON extracts (needs `sra index` after).\n"
+            "…also cloned corpus: additionally drop input/<device>/ (needs `sra init` after)."
+        ),
+    )
+    confirm = st.sidebar.checkbox("I'm sure — delete the listed files")
+    if st.sidebar.button("🗑 Reset", width="stretch", disabled=not confirm):
+        deleted = job_manager.reset(
+            DEVICE,
+            include_indices=(scope == "…also indices" or scope == "…also cloned corpus"),
+            include_corpus=(scope == "…also cloned corpus"),
+        )
+        st.sidebar.success(f"Deleted {len(deleted)} items.")
+        # Reset in-session UI state so a stale page render doesn't linger
+        for k in list(st.session_state.keys()):
+            del st.session_state[k]
+        st.rerun()
+
+
+def _render_progress_banner() -> None:
+    """Top-of-page banner shown while a draft job is running."""
+    js = job_manager.status(DEVICE)
+    if not js.alive:
+        return
+    limit = js.limit or 1
+    frac = min(1.0, js.entries_done / limit) if limit else 0.0
+    st.info(
+        f"⚙️  **Draft running** — {js.entries_done} / {js.limit or '?'} entries · "
+        f"{js.llm_turns} LLM turns · est. cost ${js.cost_usd_est:.4f}   "
+        f"_(click **Refresh status** in the sidebar to update; the page won't auto-refresh)_"
+    )
+    if js.limit:
+        st.progress(frac)
 
 
 def _run_export_ui(review_state: dict) -> None:

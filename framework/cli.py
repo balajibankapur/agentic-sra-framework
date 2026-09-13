@@ -345,6 +345,20 @@ def draft(
 
 
 @app.command()
+def eval(
+    device: str = typer.Option(..., "--device", help="Device to evaluate."),
+) -> None:
+    """Score the current SRA draft against the seeded VULN ground truth."""
+    from framework.eval.vuln_recall import evaluate, print_report, write_report_json
+    from framework.config import OUTPUT_DIR
+    report = evaluate(device)
+    print_report(report)
+    out = OUTPUT_DIR / f"{device}_eval.json"
+    write_report_json(report, out)
+    console.print(f"\nWritten: [green]{out}[/]  ({out.stat().st_size:,} bytes)")
+
+
+@app.command()
 def export(
     device: str = typer.Option(..., "--device", help="Device to export SRA for."),
     profile: str = typer.Option("hybrid", "--profile",

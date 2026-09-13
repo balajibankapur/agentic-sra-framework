@@ -1,0 +1,2037 @@
+[
+  {
+    "threat_id": "DF-BLEPAIR-I",
+    "title": "Unencrypted BLE Pairing Traffic Capture",
+    "stride": "I",
+    "assets_affected": [
+      "DFD:DF-BLEPAIR"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:tls-1-0-for-encrypted-data-in-transit-legacy",
+        "description": "TLS 1.0 for encrypted data-in-transit (legacy)",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.6",
+        "verdict": "missing",
+        "quote": "Bluetooth, Wi-Fi, and other wireless links shall be paired using authenticated, encrypted mechanisms. Just Works or unauthenticated pairing shall not be used for links that carry patient data or control commands. Bluetooth Low Energy shall use LE Secure Connections with numeric comparison or out-of-band authentication.",
+        "reason": "The device uses 'Just Works mode' for BLE pairing with 'no encryption during pairing', directly violating the clause's requirement for authenticated, encrypted mechanisms and LE Secure Connections. No listed control addresses BLE pairing security."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "missing",
+        "quote": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+        "reason": "The provided threat and existing controls do not address physical port or debug interface hardening, leaving this clause unaddressed."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.5",
+        "verdict": "partial",
+        "quote": "Network communications shall use transport-layer encryption (TLS 1.2 or later) with mutual authentication where feasible, and with certificate validation including hostname verification and pinning to trusted certificate authorities appropriate for the deployment context.",
+        "reason": "The device uses TLS 1.0 for encrypted data-in-transit, which is explicitly outdated and insufficient as the clause requires TLS 1.2 or later for transport-layer security."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.3",
+        "verdict": "missing",
+        "quote": "Firmware images and any over-the-air or in-field update artifacts shall be protected with cryptographic authenticity verification using signature schemes based on modern asymmetric cryptography. Integrity-only checks such as CRC or non-cryptographic hashes are insufficient. The device shall refuse to install any firmware or update whose signature cannot be verified against a manufacturer-controlle",
+        "reason": "The provided threat and existing controls do not address cryptographic integrity of firmware or update mechanisms, leaving this clause unaddressed."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.4",
+        "verdict": "partial",
+        "quote": "Patient health information (PHI) and sensitive configuration data shall be protected in confidentiality both at rest on the device and during transmission over any network interface. Encryption shall use current, standards-based algorithms and appropriate key management.",
+        "reason": "The device uses TLS 1.0 for data-in-transit, which is not considered 'current, standards-based' encryption. Additionally, the threat highlights 'no encryption during pairing' for BLE, directly violating confidentiality requirements during transmission."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.8",
+        "verdict": "missing",
+        "quote": "The device shall log security-relevant events including authentication attempts, privileged operations, configuration changes, and update activities. Logs shall carry tamper-evident properties and be exportable in a machine-readable format.",
+        "reason": "The provided threat and existing controls do not address audit logging or event traceability, leaving this clause unaddressed."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+      "base_score": 8.1,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing LE Secure Connections will mitigate the threat, but residual risk remains due to potential implementation flaws.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:ble-le-secure-connections",
+        "description": "Implement BLE LE Secure Connections with numeric comparison or out-of-band authentication for pairing.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-01",
+        "body": "The device shall use BLE LE Secure Connections with numeric comparison or out-of-band authentication for all pairing processes to ensure encrypted and authenticated communication."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/ble_pairing.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "#include <ble_secure_connections.h>\n\nvoid setup_ble_pairing() {\n    ble_secure_connections_enable();\n    ble_set_authentication_method(NUMERIC_COMPARISON);\n}\n"
+      }
+    ],
+    "priority": "P1",
+    "effort_engineer_weeks": 1.5,
+    "narrative": "The threat of unencrypted BLE pairing traffic capture is critical due to the use of 'Just Works' mode without encryption, allowing adversaries to intercept keys. Implementing BLE LE Secure Connections with numeric comparison will address this vulnerability, enhancing security during pairing.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "DF-BLEVITALS-T",
+    "title": "BLE Vitals Spoofing via MITM",
+    "stride": "T",
+    "assets_affected": [
+      "DFD:DF-BLEVITALS"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:no-cryptographic-signatures-or-crc-validation-for-ble-notifications-relies-on-ju",
+        "description": "No cryptographic signatures or CRC validation for BLE notifications; relies on 'Just Works' BLE trust model",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      "base_score": 8.8,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing BLE LE Secure Connections reduces spoofing risk but does not eliminate it entirely.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:ble-le-secure-connections",
+        "description": "Implement BLE LE Secure Connections with cryptographic signatures for message authentication.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Implement BLE LE Secure Connections to ensure cryptographic signatures and message authentication for BLE notifications."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/ble_security.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement BLE LE Secure Connections\nvoid setup_ble_security() {\n    // Code to initialize BLE LE Secure Connections\n}\n"
+      }
+    ],
+    "priority": "P1",
+    "effort_engineer_weeks": 1.5,
+    "narrative": "The BLE Vitals Spoofing threat allows attackers to alter vital signs data by exploiting the lack of cryptographic protection. Implementing BLE LE Secure Connections will provide cryptographic signatures and message authentication, reducing the risk of spoofing.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "DF-EMR-T",
+    "title": "Man-in-the-middle HL7/FHIR replay",
+    "stride": "T",
+    "assets_affected": [
+      "DFD:DF-EMR"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:tls-1-0-with-system-ca-bundle-for-cert-validation",
+        "description": "TLS 1.0 with system CA bundle for cert validation",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:N",
+      "base_score": 10.0,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "Critical"
+    },
+    "residual_risk": "Low",
+    "residual_risk_reason": "Implementing TLS 1.2+ with certificate pinning and SHA-256 integrity checks reduces risk significantly.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:tls-1-2-with-cert-pinning",
+        "description": "Upgrade to TLS 1.2+ with certificate pinning for secure communication.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:sha-256-integrity-check",
+        "description": "Implement SHA-256 integrity checks for HL7/FHIR data in transit.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Implement TLS 1.2+ with certificate pinning for all HL7/FHIR communications to prevent man-in-the-middle attacks."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-02",
+        "body": "Use SHA-256 for integrity checks on HL7/FHIR data to ensure data integrity during transit."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/network_security.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "#include <openssl/ssl.h>\n#include <openssl/err.h>\n\nvoid setup_secure_connection() {\n    SSL_CTX *ctx = SSL_CTX_new(TLS_method());\n    SSL_CTX_set_min_proto_version(ctx, TLS1_2_VERSION);\n    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);\n    // Load pinned certificates\n    // Additional setup code\n}\n"
+      },
+      {
+        "path": "firmware/data_integrity.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "#include <openssl/sha.h>\n\nvoid check_data_integrity(const unsigned char *data, size_t len) {\n    unsigned char hash[SHA256_DIGEST_LENGTH];\n    SHA256(data, len, hash);\n    // Compare hash with expected value\n}\n"
+      }
+    ],
+    "priority": "P0",
+    "effort_engineer_weeks": 2.0,
+    "narrative": "The current use of TLS 1.0 with weak cipher suites exposes HL7/FHIR data to man-in-the-middle attacks. By upgrading to TLS 1.2+ with certificate pinning and implementing SHA-256 integrity checks, we can significantly enhance the security of data in transit, mitigating the threat effectively.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "DF-SPICONFIG-D",
+    "title": "SPI bus starvation attack",
+    "stride": "D",
+    "assets_affected": [
+      "DFD:DF-SPICONFIG"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:lightweight-range-check-at-safety-mcu",
+        "description": "Lightweight range check at Safety MCU",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "missing",
+        "quote": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+        "reason": "The existing control 'Lightweight range check at Safety MCU' addresses input validation for the SPI bus, not the hardening of debug interfaces or service ports with strong authentication and auditability as required by this clause."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.7",
+        "verdict": "missing",
+        "quote": "The device shall implement a secure boot chain such that only cryptographically verified firmware may execute after power-on. Runtime integrity monitoring of critical safety code shall detect and respond to unauthorized modification.",
+        "reason": "The existing control is a lightweight runtime check on SPI data, not a secure boot chain with cryptographic verification of firmware or runtime integrity monitoring of critical safety code against unauthorized modification."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.3",
+        "verdict": "missing",
+        "quote": "Firmware images and any over-the-air or in-field update artifacts shall be protected with cryptographic authenticity verification using signature schemes based on modern asymmetric cryptography. Integrity-only checks such as CRC or non-cryptographic hashes are insufficient. The device shall refuse to install any firmware or update whose signature cannot be verified against a manufacturer-controlle",
+        "reason": "The existing control is a lightweight range check for SPI data, not cryptographic authenticity verification for firmware images or update artifacts. The clause explicitly states that CRC (mentioned in the threat) is insufficient for firmware integrity."
+      },
+      {
+        "clause_id": "FDA-2023-V.A.1",
+        "verdict": "missing",
+        "quote": "The device manufacturer shall document a Secure Product Development Framework (SPDF) integrating cybersecurity considerations throughout the product lifecycle. The SPDF shall address threat modeling, secure design, secure implementation, and security testing, with evidence of execution captured in the design history file.",
+        "reason": "This clause requires documentation of a Secure Product Development Framework (SPDF). The existing control is a technical mitigation, not evidence of an SPDF or its execution."
+      },
+      {
+        "clause_id": "NIST-800-193-5.2",
+        "verdict": "partial",
+        "quote": "The platform shall detect corruption of firmware code, firmware data, and critical platform configuration. Detection may occur at boot time, at runtime, or through periodic integrity verification, and shall be reported to a management interface.",
+        "reason": "The 'Lightweight range check at Safety MCU' control performs a basic runtime integrity check on incoming SPI data, which can detect some forms of 'corruption' (invalid inputs) that could affect platform operation. However, it is 'lightweight' and not comprehensive for detecting corruption of firmwar"
+      },
+      {
+        "clause_id": "AAMI-TIR57-6.3.2",
+        "verdict": "present",
+        "quote": "For each security risk that exceeds the acceptable level, the manufacturer shall specify and implement risk-control measures. Where cybersecurity controls also affect safety, they shall be reviewed under the ISO 14971 safety risk management process.",
+        "reason": "The 'Lightweight range check at Safety MCU' control is an implemented risk-control measure directly addressing the 'SPI bus starvation attack' threat, which has safety implications ('Safety MCU', 'safety-critical updates'). This demonstrates that a control has been specified and implemented for a se"
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:N/I:H/A:H",
+      "base_score": 10.0,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "Critical"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Proposed controls will mitigate the attack but not eliminate all risks due to potential new attack vectors.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:secure-boot",
+        "description": "Implement secure boot with cryptographic verification of firmware.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:spi-authentication",
+        "description": "Add strong authentication for SPI commands to prevent unauthorized access.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Implement secure boot with cryptographic verification to ensure only authorized firmware executes."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/spi_handler.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement strong authentication for SPI commands\nvoid authenticate_spi_command() {\n    // Authentication logic here\n}"
+      }
+    ],
+    "priority": "P0",
+    "effort_engineer_weeks": 2.0,
+    "narrative": "The SPI bus starvation attack poses a critical risk by potentially crashing the Safety MCU. Existing controls are insufficient, as they lack secure boot and strong authentication. Proposed changes include implementing secure boot and adding authentication for SPI commands to mitigate this threat.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "DF-SPIFW-T",
+    "title": "Spoofed SPI firmware chunk injection",
+    "stride": "T",
+    "assets_affected": [
+      "DFD:DF-SPIFW"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:crc-16-ccitt-checksum-on-each-chunk",
+        "description": "CRC-16-CCITT checksum on each chunk",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      "base_score": 9.8,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "Critical"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing cryptographic signatures will significantly reduce the risk of spoofing.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:cryptographic-signatures",
+        "description": "Implement cryptographic signatures for firmware chunks using Ed25519.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Introduce cryptographic signatures for firmware chunks using Ed25519 to ensure integrity and authenticity."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/ota_update.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement cryptographic signature verification for OTA updates\n#include <ed25519.h>\n\nvoid verify_firmware_chunk_signature(const uint8_t *chunk, size_t chunk_size) {\n    // Verify the signature of the chunk\n    // ... (implementation details)\n}\n"
+      }
+    ],
+    "priority": "P0",
+    "effort_engineer_weeks": 2.0,
+    "narrative": "The threat of spoofed SPI firmware chunk injection is critical due to the lack of cryptographic integrity checks. Implementing Ed25519-based cryptographic signatures will ensure that only authentic firmware chunks are accepted, mitigating the risk of malicious code injection.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "DF-SPIVITALS-T",
+    "title": "Spoofed Vital Sign Frames via SPI",
+    "stride": "T",
+    "assets_affected": [
+      "DFD:DF-SPIVITALS"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:crc-16-ccitt-checksum-validation-on-each-frame",
+        "description": "CRC-16-CCITT checksum validation on each frame",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.3",
+        "verdict": "missing",
+        "quote": "Firmware images and any over-the-air or in-field update artifacts shall be protected with cryptographic authenticity verification using signature schemes based on modern asymmetric cryptography. Integrity-only checks such as CRC or non-cryptographic hashes are insufficient. The device shall refuse to install any firmware or update whose signature cannot be verified against a manufacturer-controlle",
+        "reason": "This clause specifically addresses cryptographic integrity for firmware and update mechanisms. The threat and existing control relate to runtime data integrity of SPI frames, not firmware. Therefore, no existing control addresses this clause's intent."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.7",
+        "verdict": "missing",
+        "quote": "The device shall implement a secure boot chain such that only cryptographically verified firmware may execute after power-on. Runtime integrity monitoring of critical safety code shall detect and respond to unauthorized modification.",
+        "reason": "This clause requires secure boot and runtime integrity monitoring of critical safety code. The existing control only addresses integrity of SPI data frames during runtime, not the integrity of the executing code itself or the boot process."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.6",
+        "verdict": "missing",
+        "quote": "Bluetooth, Wi-Fi, and other wireless links shall be paired using authenticated, encrypted mechanisms. Just Works or unauthenticated pairing shall not be used for links that carry patient data or control commands. Bluetooth Low Energy shall use LE Secure Connections with numeric comparison or out-of-band authentication.",
+        "reason": "This clause pertains to wireless pairing and link security. The threat under analysis and the associated control are specific to SPI (Serial Peripheral Interface) communication, which is a wired internal bus, not a wireless link."
+      },
+      {
+        "clause_id": "NIST-800-193-5.2",
+        "verdict": "partial",
+        "quote": "The platform shall detect corruption of firmware code, firmware data, and critical platform configuration. Detection may occur at boot time, at runtime, or through periodic integrity verification, and shall be reported to a management interface.",
+        "reason": "The existing CRC-16-CCITT checksum validation detects corruption of SPI data frames at runtime, which partially addresses the clause's requirement for detecting corruption of 'firmware data'. However, CRC is considered a legacy integrity check and not sufficient for modern security standards, especi"
+      },
+      {
+        "clause_id": "FDA-2023-V.A.1",
+        "verdict": "missing",
+        "quote": "The device manufacturer shall document a Secure Product Development Framework (SPDF) integrating cybersecurity considerations throughout the product lifecycle. The SPDF shall address threat modeling, secure design, secure implementation, and security testing, with evidence of execution captured in the design history file.",
+        "reason": "This clause requires a documented Secure Product Development Framework (SPDF). The threat and existing control are technical details about SPI data integrity, not evidence of an overarching development process framework."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "missing",
+        "quote": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+        "reason": "This clause focuses on securing physical ports and debug interfaces. The threat and existing control are concerned with the integrity of SPI data frames during internal communication, which is unrelated to physical port hardening."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+      "base_score": 7.6,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing cryptographic validation will significantly reduce the risk of spoofed SPI frames.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:spi-crypto-validation",
+        "description": "Implement cryptographic validation of SPI frames using HMAC-SHA-256.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Introduce HMAC-SHA-256 for cryptographic validation of SPI frames to ensure data integrity and authenticity."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/safety_mcu/spi_slave.c",
+        "line": 84,
+        "action": "modify",
+        "hunk": "uint8_t hmac_sha256_key[] = { /* key bytes */ };\nuint8_t hmac_sha256_result[32];\n// Compute HMAC-SHA-256 on received frame\ndigest_hmac_sha256(received_frame, frame_length, hmac_sha256_key, sizeof(hmac_sha256_key), hmac_sha256_result);\n// Validate HMAC-SHA-256 result"
+      }
+    ],
+    "priority": "P1",
+    "effort_engineer_weeks": 2.0,
+    "narrative": "The threat of spoofed SPI frames can lead to false alarms or incorrect patient readings. Current CRC-16-CCITT checks are insufficient for modern security standards. Implementing HMAC-SHA-256 for cryptographic validation will enhance data integrity and authenticity, reducing the risk of spoofed frames.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "DF-USBIN-T",
+    "title": "Malicious Firmware Overwrite via USB",
+    "stride": "T",
+    "assets_affected": [
+      "DFD:DF-USBIN"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:crc-32-checksum-verification-on-firmware-file",
+        "description": "CRC-32 checksum verification on firmware file",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      "base_score": 6.8,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "Medium"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Without cryptographic signatures, firmware integrity is not fully assured.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:firmware-signature-verification",
+        "description": "Implement cryptographic signature verification for firmware updates using Ed25519.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-01",
+        "body": "The system shall verify firmware updates using cryptographic signatures (Ed25519) to ensure authenticity and integrity."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/update_handler.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "#include <ed25519.h>\n\nvoid verify_firmware_signature(const char *firmware_path) {\n    // Implementation of signature verification using Ed25519\n}\n"
+      }
+    ],
+    "priority": "P2",
+    "effort_engineer_weeks": 1.0,
+    "narrative": "The threat of malicious firmware overwrite via USB is currently not mitigated. The existing CRC-32 checksum verification is insufficient as it does not prevent unauthorized firmware modifications. Implementing cryptographic signature verification using Ed25519 will ensure firmware authenticity and integrity, reducing the risk of malicious overwrites.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "DF-USBOUT-I",
+    "title": "USB Drive Patient Data Leak",
+    "stride": "I",
+    "assets_affected": [],
+    "existing_controls": [],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N",
+      "base_score": 0.0,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "None"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "TCR parse_error — reviewer must inspect raw LLM response.",
+    "proposed_controls": [],
+    "proposed_doc_changes": [],
+    "proposed_code_changes": [],
+    "priority": "P2",
+    "effort_engineer_weeks": 0.0,
+    "narrative": "TCR agent could not produce a valid entry: [citation_verify] proposed_code_changes.path: 'firmware/logging.c' (action=modify) not present as CodeArtifact in graph; [citation_verify] proposed_code_changes.path: 'firmware/usb_export.c' (action=m",
+    "warnings": [],
+    "parse_error": true,
+    "raw_llm_response": "{\n  \"threat_id\": \"DF-USBOUT-I\",\n  \"title\": \"USB Drive Patient Data Leak\",\n  \"stride\": \"I\",\n  \"assets_affected\": [\n    \"DFD:DF-USBOUT\"\n  ],\n  \"existing_controls\": [\n    {\n      \"id\": \"CTRL:plaintext-log-storage-no-encryption-at-rest\",\n      \"description\": \"Plaintext log storage (no encryption at rest)\",\n      \"kind\": \"legacy\"\n    }\n  ],\n  \"gap_analysis\": [\n    {\n      \"clause_id\": \"FDA-2023-V.B.4\",\n      \"verdict\": \"missing\",\n      \"quote\": \"Patient health information (PHI) and sensitive configuration data shall be protected in confidentiality both at rest on the device and during transmission over any network interface. Encryption shall use current, standards-based algorithms and appropriate key management.\",\n      \"reason\": \"The threat explicitly states patient data is leaked from plaintext logs via USB without encryption. The existing control confirms 'Plaintext log storage (no encryption at rest)', directly contradicting the clause's requirement for confidentiality and encryption of data at rest.\"\n    },\n    {\n      \"clause_id\": \"FDA-2023-V.B.8\",\n      \"verdict\": \"missing\",\n      \"quote\": \"The device shall log security-relevant events including authentication attempts, privileged operations, configuration changes, and update activities. Logs shall carry tamper-evident properties and be exportable in a machine-readable format.\",\n      \"reason\": \"The existing control only states that logs are stored in plaintext without encryption. It provides no information about whether security-relevant events are logged, if logs are tamper-evident, or their export format, which are all requirements of this clause.\"\n    },\n    {\n      \"clause_id\": \"FDA-2023-V.B.6\",\n      \"verdict\": \"missing\",\n      \"quote\": \"Bluetooth, Wi-Fi, and other wireless links shall be paired using authenticated, encrypted mechanisms. Just Works or unauthenticated pairing shall not be used for links that carry patient data or control commands. Bluetooth Low Energy shall use LE Secure Connections with numeric comparison or out-of-band authentication.\",\n      \"reason\": \"This clause pertains to wireless communication security. The threat and the existing control describe issues related to wired USB data export and plaintext log storage, which are unrelated to wireless pairing or link security.\"\n    },\n    {\n      \"clause_id\": \"FDA-2023-V.B.2\",\n      \"verdict\": \"missing\",\n      \"quote\": \"The device shall implement role-based authorization such that users and services are granted only the minimum privileges required for their function (principle of least privilege). Administrative functions shall be separated from clinical use.\",\n      \"reason\": \"The clause requires role-based authorization and least privilege. The existing control only describes plaintext log storage and does not provide any information about authorization mechanisms or access controls for device functions or data export.\"\n    },\n    {\n      \"clause_id\": \"FDA-2023-V.B.9\",\n      \"verdict\": \"missing\",\n      \"quote\": \"Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.\",\n      \"reason\": \"The threat involves a USB port used for data export without authentication. The clause requires service ports to be protected against unauthorized access and gated by strong authentication. The existing control only addresses log storage, not the security of the USB port or the export feature itself\"\n    },\n    {\n      \"clause_id\": \"AAMI-TIR57-7.1\",\n      \"verdict\": \"missing\",\n      \"quote\": \"The manufacturer shall establish a post-market process to monitor emerging vulnerabilities that may affect the device, to assess their applicability, and to communicate mitigations to users and, when appropriate, regulators.\",\n      \"reason\": \"This clause requires the establishment of post-market security surveillance processes. The existing control describes a technical detail about log storage and does not provide any information about organizational processes for vulnerability monitoring or communication.\"\n    }\n  ],\n  \"cvss_v31\": {\n    \"vector\": \"CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N\",\n    \"base_score\": 6.4,\n    \"severity\": \"Medium\"\n  },\n  \"residual_risk\": \"Medium\",\n  \"residual_risk_reason\": \"Encryption and authentication will mitigate data leaks, but residual risk remains due to potential implementation flaws.\",\n  \"proposed_controls\": [\n    {\n      \"id\": \"CTRL:PROPOSED:encrypt-logs\",\n      \"description\": \"Implement AES-256 encryption for log files at rest.\",\n      \"kind\": \"proposed\"\n    },\n    {\n      \"id\": \"CTRL:PROPOSED:usb-authentication\",\n      \"description\": \"Require authentication before allowing USB data export.\",\n      \"kind\": \"proposed\"\n    }\n  ],\n  \"proposed_doc_changes\": [\n    {\n      \"doc\": \"SRS.md\",\n      \"action\": \"add\",\n      \"item_id\": \"SRS-SEC-NEW-01\",\n      \"body\": \"The system shall encrypt all log files using AES-256 to ensure confidentiality of patient data at rest.\"\n    },\n    {\n      \"doc\": \"SRS.md\",\n      \"action\": \"add\",\n      \"item_id\": \"SRS-SEC-NEW-02\",\n      \"body\": \"The system shall require user authentication before allowing any data export via USB.\"\n    }\n  ],\n  \"proposed_code_changes\": [\n    {\n      \"path\": \"firmware/logging.c\",\n      \"line\": 100,\n      \"action\": \"modify\",\n      \"hunk\": \"encrypt_log_file(log_file, AES_256);\"\n    },\n    {\n      \"path\": \"firmware/usb_export.c\",\n      \"line\": 50,\n      \"action\": \"modify\",\n      \"hunk\": \"if (!authenticate_user()) { return ACCESS_DENIED; }\"\n    }\n  ],\n  \"priority\": \"P2\",\n  \"effort_engineer_weeks\": 2.0,\n  \"narrative\": \"The USB Drive Patient Data Leak threat involves unauthorized access to sensitive patient data via USB due to plaintext log storage. Proposed controls include encrypting logs with AES-256 and requiring authentication for USB data export. These measures aim to protect patient data confidentiality and integrity.\"\n}"
+  },
+  {
+    "threat_id": "DS-BLEKEY-T",
+    "title": "eMMC BLE key tampering via JTAG",
+    "stride": "T",
+    "assets_affected": [
+      "DFD:DS-BLEKEY"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:physical-access-controls-lockable-enclosure",
+        "description": "Physical access controls (lockable enclosure)",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      "base_score": 6.8,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "Medium"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Physical access controls reduce risk, but JTAG access still allows tampering.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:integrity-checks",
+        "description": "Implement cryptographic integrity checks for BLE keys stored on eMMC.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:jtag-disable",
+        "description": "Disable JTAG interface in production firmware.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Implement cryptographic integrity checks for BLE keys stored on eMMC to prevent unauthorized modifications."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/jtag.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Disable JTAG interface in production builds\nvoid disable_jtag() {\n    // Platform-specific code to disable JTAG\n}\n"
+      },
+      {
+        "path": "firmware/ble_key_storage.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement integrity checks for BLE keys\nvoid check_ble_key_integrity() {\n    // Code to verify cryptographic integrity of BLE keys\n}\n"
+      }
+    ],
+    "priority": "P2",
+    "effort_engineer_weeks": 1.5,
+    "narrative": "The threat involves tampering with BLE keys via JTAG access to the eMMC. Existing physical access controls are insufficient. Proposed controls include disabling JTAG in production and adding cryptographic integrity checks for BLE keys.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "DS-BOOT-T",
+    "title": "Bootloader partition hijack via eMMC write",
+    "stride": "T",
+    "assets_affected": [],
+    "existing_controls": [],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N",
+      "base_score": 0.0,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "None"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "TCR parse_error — reviewer must inspect raw LLM response.",
+    "proposed_controls": [],
+    "proposed_doc_changes": [],
+    "proposed_code_changes": [],
+    "priority": "P2",
+    "effort_engineer_weeks": 0.0,
+    "narrative": "TCR agent could not produce a valid entry: [citation_verify] proposed_code_changes.path: 'firmware/bootloader.c' (action=add) not present as CodeArtifact in graph; [citation_verify] proposed_code_changes.path: 'firmware/integrity_monitor.c' (a",
+    "warnings": [],
+    "parse_error": true,
+    "raw_llm_response": "{\n  \"threat_id\": \"DS-BOOT-T\",\n  \"title\": \"Bootloader partition hijack via eMMC write\",\n  \"stride\": \"T\",\n  \"assets_affected\": [\"DFD:DS-BOOT\"],\n  \"existing_controls\": [\n    {\n      \"id\": \"CTRL:physical-access-controls-and-jtag-disablement-when-not-in-use\",\n      \"description\": \"Physical access controls and JTAG disablement (when not in use)\",\n      \"kind\": \"legacy\"\n    }\n  ],\n  \"gap_analysis\": [\n    {\n      \"clause_id\": \"FDA-2023-V.B.7\",\n      \"verdict\": \"missing\",\n      \"quote\": \"The device shall implement a secure boot chain such that only cryptographically verified firmware may execute after power-on. Runtime integrity monitoring of critical safety code shall detect and respond to unauthorized modification.\",\n      \"reason\": \"The existing control addresses physical access to JTAG, but does not implement a secure boot chain with cryptographic verification of firmware or runtime integrity monitoring as required by the clause. The threat explicitly states firmware integrity checks can be bypassed.\"\n    },\n    {\n      \"clause_id\": \"FDA-2023-V.B.9\",\n      \"verdict\": \"present\",\n      \"quote\": \"Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.\",\n      \"reason\": \"The existing control explicitly states 'JTAG disablement (when not in use)' and 'Physical access controls,' directly addressing the clause's requirement for protecting debug interfaces against unauthorized access.\"\n    },\n    {\n      \"clause_id\": \"NIST-800-193-5.2\",\n      \"verdict\": \"missing\",\n      \"quote\": \"The platform shall detect corruption of firmware code, firmware data, and critical platform configuration. Detection may occur at boot time, at runtime, or through periodic integrity verification, and shall be reported to a management interface.\",\n      \"reason\": \"The threat description indicates that firmware integrity checks can be bypassed, implying a lack of robust detection mechanisms. The existing control only addresses physical access to JTAG, not the detection of firmware corruption.\"\n    },\n    {\n      \"clause_id\": \"NIST-800-193-4.2\",\n      \"verdict\": \"missing\",\n      \"quote\": \"All firmware updates shall be authenticated by verifying a digital signature over the update image using a public key rooted in a trusted key store. Authentication shall occur before the update is applied. Rollback protection shall prevent installation of older, vulnerable versions unless explicitly authorized.\",\n      \"reason\": \"The existing control addresses physical access to JTAG, not the cryptographic authentication of firmware updates, digital signatures, or rollback protection as required by this clause. The threat implies a vulnerability in the boot process that could involve unauthenticated updates.\"\n    },\n    {\n      \"clause_id\": \"NIST-800-193-4.3\",\n      \"verdict\": \"missing\",\n      \"quote\": \"The platform shall include a Root of Trust for Update (RTU) — immutable or protected code and data that authenticate firmware updates. The RTU shall be protected against unauthorized modification for the life of the platform.\",\n      \"reason\": \"The existing control addresses physical access to JTAG, not the establishment or protection of an immutable or protected Root of Trust for Update (RTU) as required by the clause. The threat suggests a lack of such a trust anchor.\"\n    },\n    {\n      \"clause_id\": \"FDA-2023-V.B.3\",\n      \"verdict\": \"missing\",\n      \"quote\": \"Firmware images and any over-the-air or in-field update artifacts shall be protected with cryptographic authenticity verification using signature schemes based on modern asymmetric cryptography. Integrity-only checks such as CRC or non-cryptographic hashes are insufficient. The device shall refuse to install any firmware or update whose signature cannot be verified against a manufacturer-controlle\",\n      \"reason\": \"The threat explicitly states 'bypassing firmware integrity checks,' indicating a lack of robust cryptographic authenticity verification. The existing control addresses physical access to JTAG, not cryptographic protection of firmware images or update mechanisms.\"\n    }\n  ],\n  \"cvss_v31\": {\n    \"vector\": \"CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H\",\n    \"base_score\": 7.9,\n    \"severity\": \"High\"\n  },\n  \"residual_risk\": \"Medium\",\n  \"residual_risk_reason\": \"Implementing secure boot and cryptographic verification reduces risk of unauthorized bootloader modification.\",\n  \"proposed_controls\": [\n    {\n      \"id\": \"CTRL:PROPOSED:secure-boot-implementation\",\n      \"description\": \"Implement a secure boot chain with cryptographic verification of firmware.\",\n      \"kind\": \"proposed\"\n    },\n    {\n      \"id\": \"CTRL:PROPOSED:runtime-integrity-monitoring\",\n      \"description\": \"Implement runtime integrity monitoring for critical safety code.\",\n      \"kind\": \"proposed\"\n    },\n    {\n      \"id\": \"CTRL:PROPOSED:firmware-update-authentication\",\n      \"description\": \"Authenticate firmware updates using digital signatures verified against a trusted key store.\",\n      \"kind\": \"proposed\"\n    },\n    {\n      \"id\": \"CTRL:PROPOSED:root-of-trust-for-update\",\n      \"description\": \"Establish a Root of Trust for Update to authenticate firmware updates.\",\n      \"kind\": \"proposed\"\n    }\n  ],\n  \"proposed_doc_changes\": [\n    {\n      \"doc\": \"SRS.md\",\n      \"action\": \"add\",\n      \"item_id\": \"SRS-SEC-NEW-01\",\n      \"body\": \"The device shall implement a secure boot chain with cryptographic verification of firmware to ensure only authorized firmware executes.\"\n    },\n    {\n      \"doc\": \"SDS.md\",\n      \"action\": \"add\",\n      \"item_id\": \"SDS-SEC-NEW-01\",\n      \"body\": \"Implement runtime integrity monitoring to detect and respond to unauthorized modifications of critical safety code.\"\n    }\n  ],\n  \"proposed_code_changes\": [\n    {\n      \"path\": \"firmware/bootloader.c\",\n      \"line\": 100,\n      \"action\": \"add\",\n      \"hunk\": \"void verify_firmware_signature() {\\n    // Implement cryptographic verification of firmware signature\\n}\"\n    },\n    {\n      \"path\": \"firmware/integrity_monitor.c\",\n      \"line\": 50,\n      \"action\": \"add\",\n      \"hunk\": \"void monitor_runtime_integrity() {\\n    // Implement runtime integrity checks\\n}\"\n    }\n  ],\n  \"priority\": \"P1\",\n  \"effort_engineer_weeks\": 3.0,\n  \"narrative\": \"The bootloader partition hijack threat allows attackers to bypass firmware integrity checks by rewriting the active partition. Implementing secure boot with cryptographic verification and runtime integrity monitoring will mitigate this risk. Additional controls include authenticating firmware updates and establishing a Root of Trust for Update.\"\n}"
+  },
+  {
+    "threat_id": "DS-FWB-T",
+    "title": "eMMC firmware slot B overwrite",
+    "stride": "T",
+    "assets_affected": [],
+    "existing_controls": [],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N",
+      "base_score": 0.0,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "None"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "TCR parse_error — reviewer must inspect raw LLM response.",
+    "proposed_controls": [],
+    "proposed_doc_changes": [],
+    "proposed_code_changes": [],
+    "priority": "P2",
+    "effort_engineer_weeks": 0.0,
+    "narrative": "TCR agent could not produce a valid entry: [citation_verify] proposed_code_changes.path: 'firmware/emmc_write.c' (action=modify) not present as CodeArtifact in graph",
+    "warnings": [],
+    "parse_error": true,
+    "raw_llm_response": "{\n  \"threat_id\": \"DS-FWB-T\",\n  \"title\": \"eMMC firmware slot B overwrite\",\n  \"stride\": \"T\",\n  \"assets_affected\": [\"DFD:DS-FWB\"],\n  \"existing_controls\": [\n    {\n      \"id\": \"CTRL:physical-access-control-lockable-enclosure\",\n      \"description\": \"Physical access control (lockable enclosure)\",\n      \"kind\": \"legacy\"\n    }\n  ],\n  \"gap_analysis\": [],\n  \"cvss_v31\": {\n    \"vector\": \"CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\",\n    \"base_score\": 6.8,\n    \"severity\": \"Medium\"\n  },\n  \"residual_risk\": \"Medium\",\n  \"residual_risk_reason\": \"Physical access control reduces risk, but firmware integrity checks need enhancement.\",\n  \"proposed_controls\": [\n    {\n      \"id\": \"CTRL:PROPOSED:firmware-integrity-check\",\n      \"description\": \"Implement cryptographic integrity checks (e.g., SHA-256) during firmware write operations.\",\n      \"kind\": \"proposed\"\n    }\n  ],\n  \"proposed_doc_changes\": [\n    {\n      \"doc\": \"SDS.md\",\n      \"action\": \"add\",\n      \"item_id\": \"SDS-SEC-NEW-01\",\n      \"body\": \"Implement cryptographic integrity checks using SHA-256 during firmware write operations to ensure firmware integrity.\"\n    }\n  ],\n  \"proposed_code_changes\": [\n    {\n      \"path\": \"firmware/emmc_write.c\",\n      \"line\": 100,\n      \"action\": \"modify\",\n      \"hunk\": \"if (verify_sha256(firmware_data)) { write_to_emmc(firmware_data); } else { return ERROR_INTEGRITY_CHECK_FAILED; }\"\n    }\n  ],\n  \"priority\": \"P2\",\n  \"effort_engineer_weeks\": 1.0,\n  \"narrative\": \"The threat of eMMC firmware slot B overwrite can be mitigated by implementing cryptographic integrity checks during firmware write operations. This will ensure that any unauthorized modifications are detected and prevented, reducing the risk of malicious code execution.\"\n}"
+  },
+  {
+    "threat_id": "DS-SDLOG-T",
+    "title": "SD card log overwrite",
+    "stride": "T",
+    "assets_affected": [
+      "DFD:DS-SDLOG"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:physical-access-control-via-rubber-cover-slot",
+        "description": "Physical access control via rubber-cover slot",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.8",
+        "verdict": "missing",
+        "quote": "The device shall log security-relevant events including authentication attempts, privileged operations, configuration changes, and update activities. Logs shall carry tamper-evident properties and be exportable in a machine-readable format.",
+        "reason": "The existing physical access control via a rubber cover does not provide tamper-evident properties for the logs themselves, which is a core requirement of this clause. The threat explicitly describes overwriting logs, indicating a lack of such properties."
+      },
+      {
+        "clause_id": "NIST-800-193-5.2",
+        "verdict": "missing",
+        "quote": "The platform shall detect corruption of firmware code, firmware data, and critical platform configuration. Detection may occur at boot time, at runtime, or through periodic integrity verification, and shall be reported to a management interface.",
+        "reason": "The existing control only addresses physical access to the SD card slot and does not provide any mechanism for detecting corruption of firmware, firmware data, or critical platform configuration as required by this clause."
+      },
+      {
+        "clause_id": "NIST-800-193-4.2",
+        "verdict": "missing",
+        "quote": "All firmware updates shall be authenticated by verifying a digital signature over the update image using a public key rooted in a trusted key store. Authentication shall occur before the update is applied. Rollback protection shall prevent installation of older, vulnerable versions unless explicitly authorized.",
+        "reason": "The existing control addresses physical access to the SD card slot and provides no mechanism for authenticating firmware updates or preventing rollbacks, which are the core requirements of this clause."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.3",
+        "verdict": "missing",
+        "quote": "Firmware images and any over-the-air or in-field update artifacts shall be protected with cryptographic authenticity verification using signature schemes based on modern asymmetric cryptography. Integrity-only checks such as CRC or non-cryptographic hashes are insufficient. The device shall refuse to install any firmware or update whose signature cannot be verified against a manufacturer-controlle",
+        "reason": "The existing control only addresses physical access to the SD card slot and does not provide cryptographic integrity verification for firmware or update artifacts as required by this clause."
+      },
+      {
+        "clause_id": "FDA-2023-V.A.1",
+        "verdict": "missing",
+        "quote": "The device manufacturer shall document a Secure Product Development Framework (SPDF) integrating cybersecurity considerations throughout the product lifecycle. The SPDF shall address threat modeling, secure design, secure implementation, and security testing, with evidence of execution captured in the design history file.",
+        "reason": "This clause requires documentation of a Secure Product Development Framework (SPDF). The existing control is a physical device feature and does not provide evidence of an SPDF or its execution."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.7",
+        "verdict": "missing",
+        "quote": "The device shall implement a secure boot chain such that only cryptographically verified firmware may execute after power-on. Runtime integrity monitoring of critical safety code shall detect and respond to unauthorized modification.",
+        "reason": "The existing control only addresses physical access to the SD card slot and does not implement a secure boot chain or runtime integrity monitoring as required by this clause."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+      "base_score": 7.6,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing proposed controls will reduce the risk of log tampering but not eliminate physical access threats entirely.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:tamper-evident-logging",
+        "description": "Implement tamper-evident logging with cryptographic signatures for log files.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:secure-boot",
+        "description": "Implement secure boot to ensure only verified firmware executes.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:firmware-integrity-check",
+        "description": "Add runtime integrity checks for firmware and critical configurations.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Introduce tamper-evident logging mechanisms using cryptographic signatures to ensure log integrity and traceability."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-02",
+        "body": "Implement secure boot to ensure only cryptographically verified firmware is executed."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-03",
+        "body": "Add runtime integrity checks for firmware and critical configurations to detect unauthorized modifications."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/logging.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement tamper-evident logging\n#include <crypto.h>\nvoid log_event(const char* event) {\n    // Log event with cryptographic signature\n}"
+      },
+      {
+        "path": "firmware/boot.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement secure boot\n#include <secure_boot.h>\nvoid boot_sequence() {\n    // Verify firmware signature before execution\n}"
+      },
+      {
+        "path": "firmware/integrity_check.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement runtime integrity checks\n#include <integrity.h>\nvoid check_integrity() {\n    // Perform integrity checks on firmware and configurations\n}"
+      }
+    ],
+    "priority": "P1",
+    "effort_engineer_weeks": 3.0,
+    "narrative": "The threat of SD card log overwrite is critical due to the potential for tampering with patient logs. Existing controls are insufficient as they only address physical access. Proposed controls include implementing tamper-evident logging, secure boot, and runtime integrity checks to mitigate this threat.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "DS-STAGING-T",
+    "title": "Corrupt OTA staging firmware",
+    "stride": "T",
+    "assets_affected": [
+      "DFD:DS-STAGING"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:crc-16-32-checksums-on-firmware-files",
+        "description": "CRC-16/32 checksums on firmware files",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+      "base_score": 7.6,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing cryptographic signatures will significantly reduce the risk of firmware corruption.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:cryptographic-signatures",
+        "description": "Implement cryptographic signatures for firmware images to ensure authenticity and integrity.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "All firmware images must be signed using Ed25519 to ensure authenticity and integrity during OTA updates."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/ota_update.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement cryptographic signature verification using Ed25519 for OTA updates\n#include <ed25519.h>\n\nvoid verify_firmware_signature(const char *firmware_path) {\n    // Load firmware and signature\n    // Verify signature\n    // Proceed with update if valid\n}"
+      }
+    ],
+    "priority": "P1",
+    "effort_engineer_weeks": 1.5,
+    "narrative": "The threat of corrupt OTA staging firmware can lead to crashes or silent corruption. Current CRC checks are insufficient. Implementing cryptographic signatures will ensure firmware authenticity and integrity, reducing the risk of exploitation.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "DS-VITALS-T",
+    "title": "eMMC vitals log corruption via JTAG",
+    "stride": "T",
+    "assets_affected": [
+      "DFD:DS-VITALS"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:physical-access-control-with-tamper-evident-seals",
+        "description": "Physical access control with tamper-evident seals",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+      "base_score": 7.6,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Proposed controls will reduce risk of unauthorized eMMC access but not eliminate it entirely.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:secure-boot",
+        "description": "Implement secure boot to verify firmware integrity and authenticity.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:jtag-lockdown",
+        "description": "Disable JTAG interface in production firmware to prevent unauthorized access.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Implement secure boot to ensure only authenticated firmware is executed, preventing unauthorized modifications."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-02",
+        "body": "Disable JTAG interface in production to prevent unauthorized access to eMMC."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/bootloader.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement secure boot verification\nvoid secure_boot_check() {\n    // Code to verify firmware signature\n}\n"
+      },
+      {
+        "path": "firmware/jtag.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Disable JTAG interface\nvoid disable_jtag() {\n    // Code to disable JTAG\n}\n"
+      }
+    ],
+    "priority": "P2",
+    "effort_engineer_weeks": 2.0,
+    "narrative": "The threat involves potential corruption of the eMMC vitals log via the JTAG interface. Existing physical controls are insufficient. Proposed controls include implementing secure boot and disabling JTAG in production to mitigate this risk.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "E-BIOMED-S",
+    "title": "USB Service Port Credential Spoofing",
+    "stride": "S",
+    "assets_affected": [
+      "DFD:E-BIOMED"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:physical-access-control-with-locked-cabinet",
+        "description": "Physical access control with locked cabinet",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "partial",
+        "quote": "Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+        "reason": "The physical access control (locked cabinet) provides some protection, but the device uses default `service/service` credentials for the USB service port, failing the 'strong authentication' requirement."
+      },
+      {
+        "clause_id": "NIST-800-193-4.2",
+        "verdict": "missing",
+        "quote": "All firmware updates shall be authenticated by verifying a digital signature over the update image using a public key rooted in a trusted key store. Authentication shall occur before the update is applied.",
+        "reason": "There are no listed controls for authenticating firmware updates via digital signatures or preventing rollback, which are explicit requirements of this clause. The threat indicates firmware can be modified without detection."
+      },
+      {
+        "clause_id": "NIST-800-193-5.2",
+        "verdict": "missing",
+        "quote": "The platform shall detect corruption of firmware code, firmware data, and critical platform configuration. Detection may occur at boot time, at runtime, or through periodic integrity verification, and shall be reported to a management interface.",
+        "reason": "The threat explicitly states firmware/configuration modification can occur 'without detection,' indicating a lack of controls for platform integrity detection as required by this clause."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.1",
+        "verdict": "partial",
+        "quote": "The device shall enforce identity authentication for all human users and for services interacting with the device. Default or shared credentials shall not be permitted for production deployment.",
+        "reason": "The device uses default `service/service` credentials for the USB service port, which directly violates the clause's requirement that 'Default or shared credentials shall not be permitted for production deployment.'"
+      },
+      {
+        "clause_id": "FDA-2023-V.B.3",
+        "verdict": "missing",
+        "quote": "Firmware images and any over-the-air or in-field update artifacts shall be protected with cryptographic authenticity verification using signature schemes based on modern asymmetric cryptography. Integrity-only checks such as CRC or non-cryptographic hashes are insufficient.",
+        "reason": "There are no listed controls for cryptographic authenticity verification of firmware images or update artifacts, and the threat indicates modifications can occur without detection."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.8",
+        "verdict": "missing",
+        "quote": "The device shall log security-relevant events including authentication attempts, privileged operations, configuration changes, and update activities. Logs shall carry tamper-evident properties and be exportable in a machine-readable format.",
+        "reason": "The threat describes configuration and firmware modification occurring 'without detection,' indicating a lack of security-relevant event logging, tamper-evident properties, or exportability."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+      "base_score": 7.6,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing strong authentication and integrity checks will significantly reduce the risk of unauthorized access and undetected modifications.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:strong-authentication",
+        "description": "Implement strong authentication mechanisms for USB service port access, replacing default credentials with unique, non-default credentials.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:firmware-signature-verification",
+        "description": "Implement digital signature verification for firmware updates using a public key rooted in a trusted key store.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:integrity-detection",
+        "description": "Implement platform integrity detection mechanisms to identify unauthorized firmware or configuration changes.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:audit-logging",
+        "description": "Implement audit logging for security-relevant events, ensuring logs are tamper-evident and exportable.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-01",
+        "body": "The device shall enforce strong authentication for all service port access, replacing default credentials with unique, non-default credentials."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "The system shall verify digital signatures on firmware updates using a public key rooted in a trusted key store before applying updates."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-02",
+        "body": "The system shall implement integrity detection mechanisms to identify unauthorized changes to firmware or configuration."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-03",
+        "body": "The system shall log security-relevant events, ensuring logs are tamper-evident and exportable in a machine-readable format."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/authentication.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement strong authentication for USB service port\nvoid authenticate_service_port() {\n    // Replace default credentials with unique, non-default credentials\n    // Implement authentication logic here\n}"
+      },
+      {
+        "path": "firmware/firmware_update.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement digital signature verification for firmware updates\nvoid verify_firmware_signature() {\n    // Verify digital signature using public key\n    // Implement verification logic here\n}"
+      },
+      {
+        "path": "firmware/integrity_check.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement integrity detection mechanisms\nvoid check_integrity() {\n    // Detect unauthorized changes to firmware or configuration\n    // Implement detection logic here\n}"
+      },
+      {
+        "path": "firmware/audit_logging.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement audit logging for security-relevant events\nvoid log_security_event() {\n    // Ensure logs are tamper-evident and exportable\n    // Implement logging logic here\n}"
+      }
+    ],
+    "priority": "P0",
+    "effort_engineer_weeks": 4.0,
+    "narrative": "The USB service port is vulnerable due to default credentials, allowing unauthorized access and undetected modifications. Proposed controls include implementing strong authentication, digital signature verification for firmware updates, integrity detection mechanisms, and comprehensive audit logging to mitigate these risks.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "E-PATIENT-S",
+    "title": "Patient-sensor data injection via spoofed probes",
+    "stride": "S",
+    "assets_affected": [
+      "DFD:E-PATIENT"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:physical-probe-authentication-via-visual-inspection-only-no-cryptographic-signat",
+        "description": "Physical probe authentication via visual inspection only (no cryptographic signatures or device binding)",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.6",
+        "verdict": "missing",
+        "quote": "Bluetooth, Wi-Fi, and other wireless links shall be paired using authenticated, encrypted mechanisms. Just Works or unauthenticated pairing shall not be used for links that carry patient data or control commands. Bluetooth Low Energy shall use LE Secure Connections with numeric comparison or out-of-band authentication.",
+        "reason": "The threat explicitly mentions a 'BLE-spoofing cuff' and the device's lack of cryptographic validation for sensor inputs. The clause requires authenticated, encrypted wireless pairing, specifically LE Secure Connections for BLE. The existing control is for physical probe visual inspection, not wirel"
+      },
+      {
+        "clause_id": "FDA-2023-V.B.4",
+        "verdict": "missing",
+        "quote": "Patient health information (PHI) and sensitive configuration data shall be protected in confidentiality both at rest on the device and during transmission over any network interface. Encryption shall use current, standards-based algorithms and appropriate key management.",
+        "reason": "The threat 'Patient-sensor data injection via spoofed probes' primarily concerns data integrity and authenticity, not confidentiality. The existing control addresses physical authentication, not encryption for data confidentiality at rest or in transit."
+      },
+      {
+        "clause_id": "NIST-800-193-5.2",
+        "verdict": "missing",
+        "quote": "The platform shall detect corruption of firmware code, firmware data, and critical platform configuration. Detection may occur at boot time, at runtime, or through periodic integrity verification, and shall be reported to a management interface.",
+        "reason": "The clause requires detection of corruption in firmware code, data, and platform configuration. The threat, however, is focused on the integrity of sensor inputs via spoofed probes, which is a different domain of integrity. No existing control addresses platform integrity detection."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "missing",
+        "quote": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+        "reason": "The clause addresses the security of debug interfaces and service ports. The threat under analysis, 'Patient-sensor data injection via spoofed probes,' and the existing control are unrelated to these specific hardware interfaces."
+      },
+      {
+        "clause_id": "AAMI-TIR57-7.1",
+        "verdict": "missing",
+        "quote": "The manufacturer shall establish a post-market process to monitor emerging vulnerabilities that may affect the device, to assess their applicability, and to communicate mitigations to users and, when appropriate, regulators.",
+        "reason": "This clause requires a post-market security surveillance process. The provided threat and existing control describe a technical vulnerability and a specific technical (or lack thereof) mitigation, not an organizational post-market process."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.7",
+        "verdict": "missing",
+        "quote": "The device shall implement a secure boot chain such that only cryptographically verified firmware may execute after power-on. Runtime integrity monitoring of critical safety code shall detect and respond to unauthorized modification.",
+        "reason": "The clause mandates secure boot and runtime integrity monitoring for firmware and critical safety code. The threat, 'Patient-sensor data injection via spoofed probes,' concerns the integrity of sensor inputs, which is a distinct issue from the device's boot process or internal code integrity."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:N/I:H/A:N",
+      "base_score": 5.3,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "Medium"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "After implementing cryptographic validation, the risk of spoofed probes is reduced but not eliminated due to potential new attack vectors.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:ble-secure-connections",
+        "description": "Implement BLE LE Secure Connections with numeric comparison or out-of-band authentication for all sensor inputs.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:crypto-validation-sensors",
+        "description": "Add cryptographic validation for all sensor inputs to ensure authenticity and integrity.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-01",
+        "body": "All sensor inputs must be authenticated and encrypted using BLE LE Secure Connections with numeric comparison or out-of-band authentication."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/sensor_auth.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement BLE LE Secure Connections for sensor authentication\n#include <ble_secure.h>\n\nvoid authenticate_sensor_input() {\n    // Code to initiate BLE LE Secure Connections\n    // with numeric comparison or out-of-band authentication\n}\n"
+      }
+    ],
+    "priority": "P1",
+    "effort_engineer_weeks": 2.0,
+    "narrative": "The threat of patient-sensor data injection via spoofed probes is critical due to the lack of cryptographic validation. Proposed controls include implementing BLE LE Secure Connections and cryptographic validation for sensor inputs to ensure authenticity and integrity. These measures will significantly reduce the risk of data injection attacks.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "P-EMR-E",
+    "title": "EMR Client Privilege Escalation via JTAG",
+    "stride": "E",
+    "assets_affected": [
+      "DFD:P-EMR"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:jtag-enabled-with-default-credentials",
+        "description": "JTAG enabled with default credentials",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "partial",
+        "quote": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+        "reason": "The JTAG interface, a debug interface, is enabled and protected only by default credentials. This does not constitute 'strong authentication' or adequate protection against unauthorized access as required by the clause."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.2",
+        "verdict": "missing",
+        "quote": "The device shall implement role-based authorization such that users and services are granted only the minimum privileges required for their function (principle of least privilege). Administrative functions shall be separated from clinical use.",
+        "reason": "No existing control addresses the implementation of role-based authorization, principle of least privilege, or separation of administrative and clinical functions for users and services as required by this clause."
+      },
+      {
+        "clause_id": "NIST-800-193-4.2",
+        "verdict": "missing",
+        "quote": "All firmware updates shall be authenticated by verifying a digital signature over the update image using a public key rooted in a trusted key store. Authentication shall occur before the update is applied. Rollback protection shall prevent installation of older, vulnerable versions unless explicitly authorized.",
+        "reason": "No existing control describes cryptographic signature verification for firmware updates, a trusted key store, or rollback protection, which are all explicit requirements of this clause."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.7",
+        "verdict": "missing",
+        "quote": "The device shall implement a secure boot chain such that only cryptographically verified firmware may execute after power-on. Runtime integrity monitoring of critical safety code shall detect and respond to unauthorized modification.",
+        "reason": "No existing control implements a secure boot chain with cryptographically verified firmware or runtime integrity monitoring, which are core requirements of this clause."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.6",
+        "verdict": "missing",
+        "quote": "Bluetooth, Wi-Fi, and other wireless links shall be paired using authenticated, encrypted mechanisms. Just Works or unauthenticated pairing shall not be used for links that carry patient data or control commands. Bluetooth Low Energy shall use LE Secure Connections with numeric comparison or out-of-band authentication.",
+        "reason": "The existing control addresses JTAG access, which is unrelated to wireless pairing and link security requirements specified in this clause."
+      },
+      {
+        "clause_id": "NIST-800-193-4.3",
+        "verdict": "missing",
+        "quote": "The platform shall include a Root of Trust for Update (RTU) — immutable or protected code and data that authenticate firmware updates. The RTU shall be protected against unauthorized modification for the life of the platform.",
+        "reason": "No existing control describes a Root of Trust for Update (RTU) or its protection against unauthorized modification, which are explicit requirements of this clause."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+      "base_score": 7.6,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing secure boot and strong authentication for JTAG reduces risk but physical access remains a concern.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:secure-jtag-authentication",
+        "description": "Implement strong authentication for JTAG access using unique credentials per device.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:secure-boot",
+        "description": "Implement a secure boot chain to ensure only verified firmware executes.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:firmware-signature-verification",
+        "description": "Implement cryptographic signature verification for firmware updates.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "The system shall implement strong authentication for JTAG access, ensuring unique credentials per device to prevent unauthorized access."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-02",
+        "body": "The system shall implement a secure boot chain to ensure only cryptographically verified firmware is executed."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-03",
+        "body": "The system shall verify the cryptographic signature of firmware updates before application to ensure authenticity and integrity."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/jtag_auth.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement strong authentication for JTAG\nvoid authenticate_jtag() {\n    // Code for unique credential verification\n}\n"
+      },
+      {
+        "path": "firmware/secure_boot.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement secure boot chain\nvoid secure_boot() {\n    // Code for verifying firmware integrity\n}\n"
+      },
+      {
+        "path": "firmware/firmware_update.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement firmware signature verification\nvoid verify_firmware_signature() {\n    // Code for signature verification\n}\n"
+      }
+    ],
+    "priority": "P1",
+    "effort_engineer_weeks": 3.0,
+    "narrative": "The threat of privilege escalation via JTAG is partially mitigated by existing controls, but lacks strong authentication and secure boot. Proposed controls include implementing strong authentication for JTAG, a secure boot chain, and cryptographic signature verification for firmware updates to enhance security.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "P-EMR-I",
+    "title": "EMR Credential Exposure via Plaintext",
+    "stride": "I",
+    "assets_affected": [
+      "DFD:P-EMR"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:physical-protection-only-no-network-encryption-for-credentials",
+        "description": "Physical protection only (no network encryption for credentials)",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.6",
+        "verdict": "missing",
+        "quote": "Bluetooth, Wi-Fi, and other wireless links shall be paired using authenticated, encrypted mechanisms. Just Works or unauthenticated pairing shall not be used for links that carry patient data or control commands. Bluetooth Low Energy shall use LE Secure Connections with numeric comparison or out-of-band authentication.",
+        "reason": "The threat describes plaintext credential transmission over BLE, implying a lack of authenticated, encrypted pairing or link security. The existing control explicitly states 'no network encryption for credentials' and does not address wireless pairing mechanisms."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.4",
+        "verdict": "missing",
+        "quote": "Patient health information (PHI) and sensitive configuration data shall be protected in confidentiality both at rest on the device and during transmission over any network interface. Encryption shall use current, standards-based algorithms and appropriate key management.",
+        "reason": "The threat explicitly states that credentials are transmitted in plaintext over TCP or BLE, directly violating the requirement for confidentiality during transmission. The existing control confirms 'no network encryption for credentials'."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.2",
+        "verdict": "missing",
+        "quote": "The device shall implement role-based authorization such that users and services are granted only the minimum privileges required for their function (principle of least privilege). Administrative functions shall be separated from clinical use.",
+        "reason": "Neither the threat description nor the existing control provides any information regarding the implementation of role-based authorization, principle of least privilege, or separation of administrative functions."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "missing",
+        "quote": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+        "reason": "The threat focuses on network transmission, and the existing control, while mentioning 'physical protection only', explicitly clarifies 'no network encryption for credentials', which does not address the hardening of physical ports or debug interfaces."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.1",
+        "verdict": "missing",
+        "quote": "The device shall enforce identity authentication for all human users and for services interacting with the device. Default or shared credentials shall not be permitted for production deployment. Password complexity and rotation policies shall be enforced.",
+        "reason": "The threat explicitly states the use of 'Default \"service/service\" credentials', which is directly prohibited by this clause. The existing control does not address authentication mechanisms or credential policies."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.5",
+        "verdict": "missing",
+        "quote": "Network communications shall use transport-layer encryption (TLS 1.2 or later) with mutual authentication where feasible, and with certificate validation including hostname verification and pinning to trusted certificate authorities appropriate for the deployment context.",
+        "reason": "The threat describes plaintext transmission of credentials over TCP and BLE. The existing control explicitly states 'no network encryption for credentials', indicating a complete absence of transport-layer encryption like TLS 1.2+."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+      "base_score": 9.1,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "Critical"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing encryption and authentication reduces risk, but residual risk remains due to potential implementation flaws.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:tls-encryption",
+        "description": "Implement TLS 1.2+ for all network communications to ensure encryption of credentials.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:ble-secure-connections",
+        "description": "Use BLE LE Secure Connections with numeric comparison or out-of-band authentication for pairing.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:remove-default-credentials",
+        "description": "Remove default 'service/service' credentials and enforce strong, unique credentials.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-01",
+        "body": "All network communications must use TLS 1.2 or later with mutual authentication and certificate pinning."
+      },
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-02",
+        "body": "Bluetooth Low Energy connections must use LE Secure Connections with numeric comparison or out-of-band authentication."
+      },
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-03",
+        "body": "Default credentials must be removed and replaced with strong, unique credentials for each deployment."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/network_security.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "void setup_tls() {\n    // Implement TLS 1.2+ setup here\n}\n"
+      },
+      {
+        "path": "firmware/ble_security.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "void setup_ble_secure_connections() {\n    // Implement BLE LE Secure Connections setup here\n}\n"
+      },
+      {
+        "path": "firmware/credentials.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "void remove_default_credentials() {\n    // Remove default 'service/service' credentials\n}\n"
+      }
+    ],
+    "priority": "P0",
+    "effort_engineer_weeks": 2.0,
+    "narrative": "The threat of credential exposure via plaintext transmission is critical, as it allows for easy interception and misuse. Implementing TLS 1.2+ for network communications and BLE LE Secure Connections will encrypt credentials, significantly reducing the risk. Removing default credentials further strengthens security.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "P-LOG-T",
+    "title": "Log Buffer Corruption",
+    "stride": "T",
+    "assets_affected": [
+      "DFD:P-LOG"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:crc-32-checksum-on-log-sectors",
+        "description": "CRC-32 checksum on log sectors",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "missing",
+        "quote": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+        "reason": "The threat explicitly states JTAG could be exploited, indicating debug interfaces are not disabled or protected. No existing control addresses the hardening of physical ports or debug interfaces as required by this clause."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.8",
+        "verdict": "partial",
+        "quote": "The device shall log security-relevant events including authentication attempts, privileged operations, configuration changes, and update activities. Logs shall carry tamper-evident properties and be exportable in a machine-readable format.",
+        "reason": "The 'CRC-32 checksum on log sectors' (CTRL:crc-32-checksum-on-log-sectors) provides some tamper-evidence for logs. However, CRC-32 is not considered a strong cryptographic integrity check and does not meet the modern bar for 'tamper-evident properties' against a determined attacker exploiting JTAG."
+      },
+      {
+        "clause_id": "NIST-800-193-5.2",
+        "verdict": "partial",
+        "quote": "The platform shall detect corruption of firmware code, firmware data, and critical platform configuration. Detection may occur at boot time, at runtime, or through periodic integrity verification, and shall be reported to a management interface.",
+        "reason": "The 'CRC-32 checksum on log sectors' (CTRL:crc-32-checksum-on-log-sectors) detects corruption of log data. While this addresses integrity detection for critical platform data, CRC-32 is not a robust cryptographic integrity mechanism and is insufficient against a JTAG-enabled attacker."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.7",
+        "verdict": "missing",
+        "quote": "The device shall implement a secure boot chain such that only cryptographically verified firmware may execute after power-on. Runtime integrity monitoring of critical safety code shall detect and respond to unauthorized modification.",
+        "reason": "No existing control addresses the implementation of a secure boot chain or runtime integrity monitoring of critical safety code. The listed control only pertains to log data integrity."
+      },
+      {
+        "clause_id": "NIST-800-193-4.3",
+        "verdict": "missing",
+        "quote": "The platform shall include a Root of Trust for Update (RTU) — immutable or protected code and data that authenticate firmware updates. The RTU shall be protected against unauthorized modification for the life of the platform.",
+        "reason": "No existing control describes a Root of Trust for Update (RTU) or mechanisms to protect it. The listed control is for log data integrity, not firmware update authentication components."
+      },
+      {
+        "clause_id": "NIST-800-193-4.2",
+        "verdict": "missing",
+        "quote": "All firmware updates shall be authenticated by verifying a digital signature over the update image using a public key rooted in a trusted key store. Authentication shall occur before the update is applied. Rollback protection shall prevent installation of older, vulnerable versions unless explicitly authorized.",
+        "reason": "No existing control addresses the authentication of firmware updates using digital signatures or rollback protection. The listed control is for log data integrity, not firmware update mechanisms."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+      "base_score": 7.6,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing secure boot and JTAG protection reduces risk, but residual risk remains due to potential new attack vectors.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:secure-boot",
+        "description": "Implement secure boot to ensure only cryptographically verified firmware executes.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:jtag-protection",
+        "description": "Disable JTAG in production or protect it with strong authentication and audit logging.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:strong-log-integrity",
+        "description": "Use SHA-256 for log integrity checks to replace CRC-32.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Implement secure boot to ensure only cryptographically verified firmware executes after power-on."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-02",
+        "body": "Disable JTAG in production or protect it with strong authentication and audit logging."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-03",
+        "body": "Use SHA-256 for log integrity checks to replace CRC-32."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/app_mcu/emr/hl7_formatter.c",
+        "line": 102,
+        "action": "modify",
+        "hunk": "// Replace CRC-32 with SHA-256 for log integrity\n#include <sha256.h>\n// Existing code...\nsha256(log_data, log_size, log_hash);"
+      }
+    ],
+    "priority": "P1",
+    "effort_engineer_weeks": 2.0,
+    "narrative": "The threat of log buffer corruption via JTAG exploitation is critical. Existing CRC-32 checks are insufficient. Proposed controls include implementing secure boot, disabling or securing JTAG, and upgrading log integrity checks to SHA-256.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "P-NET-D",
+    "title": "Wi-Fi/Ethernet Flooding via Unfiltered Sockets",
+    "stride": "D",
+    "assets_affected": [
+      "DFD:P-NET"
+    ],
+    "existing_controls": [],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "missing",
+        "quote": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+        "reason": "No controls are listed that address the hardening or protection of physical ports and debug interfaces as required by this clause. The threat is network-based, not related to physical access."
+      },
+      {
+        "clause_id": "NIST-800-193-5.2",
+        "verdict": "missing",
+        "quote": "The platform shall detect corruption of firmware code, firmware data, and critical platform configuration. Detection may occur at boot time, at runtime, or through periodic integrity verification, and shall be reported to a management interface.",
+        "reason": "No controls are listed that implement detection mechanisms for firmware code, firmware data, or critical platform configuration corruption. The threat is a network-based DoS, not directly related to platform integrity detection."
+      },
+      {
+        "clause_id": "AAMI-TIR57-7.1",
+        "verdict": "missing",
+        "quote": "The manufacturer shall establish a post-market process to monitor emerging vulnerabilities that may affect the device, to assess their applicability, and to communicate mitigations to users and, when appropriate, regulators.",
+        "reason": "No post-market process is described or linked to the device that monitors emerging vulnerabilities, assesses applicability, or communicates mitigations as required by this clause."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.3",
+        "verdict": "missing",
+        "quote": "Firmware images and any over-the-air or in-field update artifacts shall be protected with cryptographic authenticity verification using signature schemes based on modern asymmetric cryptography. Integrity-only checks such as CRC or non-cryptographic hashes are insufficient. The device shall refuse to install any firmware or update whose signature cannot be verified against a manufacturer-controlle",
+        "reason": "No controls are listed that implement cryptographic authenticity verification for firmware images or update artifacts using modern asymmetric cryptography, as required by this clause."
+      },
+      {
+        "clause_id": "FDA-2023-V.A.1",
+        "verdict": "missing",
+        "quote": "The device manufacturer shall document a Secure Product Development Framework (SPDF) integrating cybersecurity considerations throughout the product lifecycle. The SPDF shall address threat modeling, secure design, secure implementation, and security testing, with evidence of execution captured in the design history file.",
+        "reason": "No Secure Product Development Framework (SPDF) is documented or evidenced to integrate cybersecurity considerations throughout the product lifecycle, including threat modeling and secure design, as required."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.5",
+        "verdict": "missing",
+        "quote": "Network communications shall use transport-layer encryption (TLS 1.2 or later) with mutual authentication where feasible, and with certificate validation including hostname verification and pinning to trusted certificate authorities appropriate for the deployment context.",
+        "reason": "No controls are listed that implement transport-layer encryption (TLS 1.2 or later) with mutual authentication, certificate validation, or hostname verification for network communications."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+      "base_score": 7.5,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing rate limiting and firewall rules will reduce the risk of network flooding attacks.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:rate-limiting",
+        "description": "Implement rate limiting on incoming ICMP, UDP, and TCP packets to prevent network flooding.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:firewall",
+        "description": "Deploy a firewall to filter and block unauthorized network traffic.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Introduce rate limiting and firewall configurations to mitigate network flooding threats."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/network_security.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement rate limiting and firewall rules\nvoid configure_network_security() {\n    // Rate limiting logic\n    // Firewall rule setup\n}\n"
+      }
+    ],
+    "priority": "P1",
+    "effort_engineer_weeks": 2.0,
+    "narrative": "The PMx-100 is vulnerable to network flooding attacks due to the lack of rate limiting and firewall protections. Implementing these controls will mitigate the risk of denial-of-service attacks, enhancing the device's network resilience.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "P-NET-E",
+    "title": "Local Privilege Escalation via JTAG",
+    "stride": "E",
+    "assets_affected": [
+      "DFD:P-NET"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:physical-access-control-lockable-enclosure",
+        "description": "Physical access control (lockable enclosure)",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+      "base_score": 7.6,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "JTAG interface remains a potential attack vector despite physical controls.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:jtag-disable",
+        "description": "Disable JTAG interface in production firmware.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Ensure JTAG interface is disabled in production firmware to prevent unauthorized access."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/jtag_control.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Disable JTAG interface in production\nvoid disable_jtag() {\n    // Implementation to disable JTAG\n}\n"
+      }
+    ],
+    "priority": "P1",
+    "effort_engineer_weeks": 1.0,
+    "narrative": "The JTAG interface poses a significant security risk as it allows attackers with physical access to bypass network security controls. Disabling the JTAG interface in production firmware will mitigate this risk.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "P-NET-S",
+    "title": "Wi-Fi/Ethernet MAC Address Spoofing",
+    "stride": "S",
+    "assets_affected": [
+      "DFD:P-NET"
+    ],
+    "existing_controls": [],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "missing",
+        "quote": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations.",
+        "reason": "No existing controls address the requirement for hardening debug interfaces against unauthorized access."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.6",
+        "verdict": "missing",
+        "quote": "Bluetooth, Wi-Fi, and other wireless links shall be paired using authenticated, encrypted mechanisms.",
+        "reason": "No existing controls ensure that wireless links are secured with authenticated and encrypted mechanisms."
+      },
+      {
+        "clause_id": "NIST-800-193-5.2",
+        "verdict": "missing",
+        "quote": "The platform shall detect corruption of firmware code, firmware data, and critical platform configuration.",
+        "reason": "No existing controls provide mechanisms for detecting firmware corruption or integrity verification."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.8",
+        "verdict": "missing",
+        "quote": "The device shall log security-relevant events including authentication attempts, privileged operations, configuration changes, and update activities.",
+        "reason": "No existing controls address the logging of security-relevant events or their tamper-evident properties."
+      },
+      {
+        "clause_id": "FDA-2023-V.A.1",
+        "verdict": "missing",
+        "quote": "The device manufacturer shall document a Secure Product Development Framework (SPDF) integrating cybersecurity considerations throughout the product lifecycle.",
+        "reason": "No existing controls indicate the presence of a documented Secure Product Development Framework."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.3",
+        "verdict": "missing",
+        "quote": "Firmware images and any over-the-air or in-field update artifacts shall be protected with cryptographic authenticity verification using signature schemes based on modern asymmetric cryptography.",
+        "reason": "No existing controls provide cryptographic authenticity verification for firmware or update mechanisms."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+      "base_score": 8.1,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing MAC address binding and encrypted wireless links reduces spoofing risk.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:mac_binding",
+        "description": "Implement MAC address binding in WPA2-Enterprise to prevent spoofing.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:encrypted_links",
+        "description": "Ensure all wireless links use WPA2-Enterprise with AES-256 encryption.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Implement MAC address binding and enforce WPA2-Enterprise with AES-256 encryption for all wireless communications."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/network_security.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement MAC address binding and WPA2-Enterprise with AES-256 encryption\nvoid configure_network_security() {\n    // Code to bind MAC address\n    // Code to enforce WPA2-Enterprise\n}"
+      }
+    ],
+    "priority": "P1",
+    "effort_engineer_weeks": 2.0,
+    "narrative": "The PMx-100 is vulnerable to MAC address spoofing, allowing attackers to impersonate the device. Implementing MAC address binding and securing wireless links with WPA2-Enterprise will mitigate this risk.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "P-SVC-E",
+    "title": "Default Credential Exploitation",
+    "stride": "E",
+    "assets_affected": [
+      "DFD:P-SVC"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:default-credentials-stored-in-plaintext-json",
+        "description": "Default credentials stored in plaintext JSON",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      "base_score": 9.8,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "Critical"
+    },
+    "residual_risk": "Low",
+    "residual_risk_reason": "Implementing unique credentials per device will mitigate the risk of default credential exploitation.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:unique-device-credentials",
+        "description": "Implement unique credentials for each device to replace default credentials.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-01",
+        "body": "Each device must be provisioned with unique credentials to prevent unauthorized access through default credentials."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/authentication.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement unique credential generation and storage\nvoid generate_unique_credentials() {\n    // Code to generate and securely store unique credentials\n}\n"
+      }
+    ],
+    "priority": "P0",
+    "effort_engineer_weeks": 1.0,
+    "narrative": "The threat of default credential exploitation is critical due to the use of hardcoded credentials that allow full access to the service menu. To mitigate this, we propose implementing unique credentials for each device, which will significantly reduce the risk of unauthorized access.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "P-WDT-E",
+    "title": "Exploit Watchdog to Bypass Safety Checks",
+    "stride": "E",
+    "assets_affected": [
+      "DFD:P-WDT"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:physical-protection-only-no-cryptographic-signatures",
+        "description": "Physical protection only (no cryptographic signatures)",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.7",
+        "verdict": "missing",
+        "quote": "The device shall implement a secure boot chain such that only cryptographically verified firmware may execute after power-on. Runtime integrity monitoring of critical safety code shall detect and respond to unauthorized modification.",
+        "reason": "No existing control addresses secure boot or cryptographic verification of firmware."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "missing",
+        "quote": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+        "reason": "No existing control addresses the protection of debug interfaces or service ports."
+      },
+      {
+        "clause_id": "NIST-800-193-5.2",
+        "verdict": "missing",
+        "quote": "The platform shall detect corruption of firmware code, firmware data, and critical platform configuration. Detection may occur at boot time, at runtime, or through periodic integrity verification, and shall be reported to a management interface.",
+        "reason": "No existing control provides for detection of firmware corruption or integrity verification."
+      },
+      {
+        "clause_id": "NIST-800-193-4.2",
+        "verdict": "missing",
+        "quote": "All firmware updates shall be authenticated by verifying a digital signature over the update image using a public key rooted in a trusted key store. Authentication shall occur before the update is applied. Rollback protection shall prevent installation of older, vulnerable versions unless explicitly authorized.",
+        "reason": "No existing control addresses firmware update authentication or digital signature verification."
+      },
+      {
+        "clause_id": "NIST-800-193-4.3",
+        "verdict": "missing",
+        "quote": "The platform shall include a Root of Trust for Update (RTU) — immutable or protected code and data that authenticate firmware updates. The RTU shall be protected against unauthorized modification for the life of the platform.",
+        "reason": "No existing control provides for a Root of Trust for firmware updates."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.3",
+        "verdict": "missing",
+        "quote": "Firmware images and any over-the-air or in-field update artifacts shall be protected with cryptographic authenticity verification using signature schemes based on modern asymmetric cryptography. Integrity-only checks such as CRC or non-cryptographic hashes are insufficient. The device shall refuse to install any firmware or update whose signature cannot be verified against a manufacturer-controlle",
+        "reason": "Existing control does not provide cryptographic integrity verification for firmware updates."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+      "base_score": 7.6,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Implementing secure boot and cryptographic verification reduces risk but does not eliminate physical tampering threats.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:secure-boot",
+        "description": "Implement secure boot to ensure only cryptographically verified firmware executes.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:firmware-integrity-monitoring",
+        "description": "Add runtime integrity monitoring to detect unauthorized firmware modifications.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:debug-interface-hardening",
+        "description": "Disable or protect debug interfaces and service ports with strong authentication.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:firmware-update-authentication",
+        "description": "Authenticate firmware updates using digital signatures verified against a trusted key store.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:root-of-trust",
+        "description": "Establish a Root of Trust for Update to authenticate firmware updates.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-01",
+        "body": "The system shall implement a secure boot process ensuring only cryptographically verified firmware is executed."
+      },
+      {
+        "doc": "SDS.md",
+        "action": "add",
+        "item_id": "SDS-SEC-NEW-01",
+        "body": "Runtime integrity monitoring shall be implemented to detect and respond to unauthorized firmware modifications."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/bootloader.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement secure boot process\nvoid secure_boot() {\n    // Verify firmware signature\n    // Load verified firmware\n}"
+      },
+      {
+        "path": "firmware/integrity_monitor.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement runtime integrity monitoring\nvoid monitor_firmware_integrity() {\n    // Periodically check firmware integrity\n    // Report any unauthorized modifications\n}"
+      }
+    ],
+    "priority": "P0",
+    "effort_engineer_weeks": 4.0,
+    "narrative": "The threat of exploiting the watchdog to bypass safety checks is critical due to missing secure boot and integrity verification controls. Implementing secure boot, runtime integrity monitoring, and hardening debug interfaces will significantly reduce the risk of unauthorized firmware execution.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  },
+  {
+    "threat_id": "P-WDT-T",
+    "title": "Safety MCU Watchdog Bypass",
+    "stride": "T",
+    "assets_affected": [
+      "DFD:P-WDT"
+    ],
+    "existing_controls": [
+      {
+        "id": "CTRL:physical-protection-via-tamper-evident-seals",
+        "description": "Physical protection via tamper-evident seals",
+        "kind": "legacy"
+      }
+    ],
+    "gap_analysis": [
+      {
+        "clause_id": "FDA-2023-V.B.9",
+        "verdict": "missing",
+        "quote": "Debug interfaces (JTAG, UART, SWD) and service ports shall be disabled or protected against unauthorized access in production configurations. Where a service port is required, access shall be gated by strong authentication and shall be auditable.",
+        "reason": "No existing control addresses the requirement for disabling or protecting debug interfaces against unauthorized access."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.7",
+        "verdict": "missing",
+        "quote": "The device shall implement a secure boot chain such that only cryptographically verified firmware may execute after power-on. Runtime integrity monitoring of critical safety code shall detect and respond to unauthorized modification.",
+        "reason": "No existing control addresses the need for a secure boot chain or runtime integrity monitoring."
+      },
+      {
+        "clause_id": "NIST-800-193-5.2",
+        "verdict": "missing",
+        "quote": "The platform shall detect corruption of firmware code, firmware data, and critical platform configuration. Detection may occur at boot time, at runtime, or through periodic integrity verification, and shall be reported to a management interface.",
+        "reason": "No existing control addresses the requirement for detecting corruption of firmware or platform configuration."
+      },
+      {
+        "clause_id": "NIST-800-193-4.3",
+        "verdict": "missing",
+        "quote": "The platform shall include a Root of Trust for Update (RTU) — immutable or protected code and data that authenticate firmware updates. The RTU shall be protected against unauthorized modification for the life of the platform.",
+        "reason": "No existing control addresses the need for a Root of Trust for Update."
+      },
+      {
+        "clause_id": "NIST-800-193-4.2",
+        "verdict": "missing",
+        "quote": "All firmware updates shall be authenticated by verifying a digital signature over the update image using a public key rooted in a trusted key store. Authentication shall occur before the update is applied. Rollback protection shall prevent installation of older, vulnerable versions unless explicitly authorized.",
+        "reason": "No existing control addresses the requirement for authenticating firmware updates with a digital signature."
+      },
+      {
+        "clause_id": "FDA-2023-V.B.3",
+        "verdict": "missing",
+        "quote": "Firmware images and any over-the-air or in-field update artifacts shall be protected with cryptographic authenticity verification using signature schemes based on modern asymmetric cryptography. Integrity-only checks such as CRC or non-cryptographic hashes are insufficient. The device shall refuse to install any firmware or update whose signature cannot be verified against a manufacturer-controlle",
+        "reason": "No existing control addresses the requirement for cryptographic authenticity verification of firmware and updates."
+      }
+    ],
+    "cvss_v31": {
+      "vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:C/C:N/I:H/A:H",
+      "base_score": 7.3,
+      "temporal_score": null,
+      "environmental_score": null,
+      "severity": "High"
+    },
+    "residual_risk": "Medium",
+    "residual_risk_reason": "Physical tampering risk reduced but not eliminated with proposed controls.",
+    "proposed_controls": [
+      {
+        "id": "CTRL:PROPOSED:secure-boot",
+        "description": "Implement secure boot to ensure only verified firmware executes.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:runtime-integrity",
+        "description": "Add runtime integrity monitoring for critical safety code.",
+        "kind": "proposed"
+      },
+      {
+        "id": "CTRL:PROPOSED:firmware-authentication",
+        "description": "Authenticate firmware updates using digital signatures.",
+        "kind": "proposed"
+      }
+    ],
+    "proposed_doc_changes": [
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-01",
+        "body": "The device shall implement a secure boot chain to ensure only cryptographically verified firmware may execute after power-on."
+      },
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-02",
+        "body": "The device shall include runtime integrity monitoring to detect and respond to unauthorized modification of critical safety code."
+      },
+      {
+        "doc": "SRS.md",
+        "action": "add",
+        "item_id": "SRS-SEC-NEW-03",
+        "body": "All firmware updates shall be authenticated by verifying a digital signature over the update image using a public key rooted in a trusted key store."
+      }
+    ],
+    "proposed_code_changes": [
+      {
+        "path": "firmware/bootloader.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement secure boot logic\nvoid secure_boot() {\n    // Verify firmware signature\n    // Boot verified firmware\n}"
+      },
+      {
+        "path": "firmware/integrity_monitor.c",
+        "line": 0,
+        "action": "create_file",
+        "hunk": "// Implement runtime integrity monitoring\nvoid monitor_integrity() {\n    // Check integrity of critical safety code\n    // Alert on unauthorized modifications\n}"
+      }
+    ],
+    "priority": "P2",
+    "effort_engineer_weeks": 2.0,
+    "narrative": "The Safety MCU watchdog can be bypassed through physical tampering, allowing the App MCU to run unchecked. To mitigate this, we propose implementing secure boot, runtime integrity monitoring, and firmware update authentication. These measures will significantly reduce the risk of unauthorized firmware execution and modification.",
+    "warnings": [],
+    "parse_error": false,
+    "raw_llm_response": null
+  }
+]

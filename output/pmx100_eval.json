@@ -1,0 +1,452 @@
+{
+  "device": "pmx100",
+  "total_vulns": 34,
+  "total_entries": 25,
+  "entries_with_code_changes": 22,
+  "parse_error_entries": 3,
+  "warned_entries": 0,
+  "file_recall": 0.058823529411764705,
+  "symbol_recall": 0.0,
+  "recall_by_semgrep": {
+    "yes": {
+      "hit": 1,
+      "total": 18
+    },
+    "partial": {
+      "hit": 0,
+      "total": 8
+    },
+    "no": {
+      "hit": 1,
+      "total": 7
+    }
+  },
+  "recall_by_severity": {
+    "Critical": {
+      "hit": 1,
+      "total": 11
+    },
+    "High": {
+      "hit": 1,
+      "total": 19
+    },
+    "Medium": {
+      "hit": 0,
+      "total": 4
+    },
+    "Low": {
+      "hit": 0,
+      "total": 0
+    }
+  },
+  "hits": [
+    {
+      "vuln_id": "VULN-01",
+      "target_file": "firmware/app_mcu/ota/install_handler.c",
+      "target_symbol": "install_image",
+      "severity": "Critical",
+      "semgrep": "partial",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-02",
+      "target_file": "firmware/app_mcu/ota/manifest_parser.c",
+      "target_symbol": "manifest_parse",
+      "severity": "High",
+      "semgrep": "no (regulatory-intent reasoning)",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-03",
+      "target_file": "firmware/app_mcu/boot/loader.c",
+      "target_symbol": "bootloader_load",
+      "severity": "High",
+      "semgrep": "no",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-04",
+      "target_file": "firmware/app_mcu/ota/update_client.c",
+      "target_symbol": "update_client_download_image",
+      "severity": "High",
+      "semgrep": "partial",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-05",
+      "target_file": "firmware/app_mcu/network/tls_config.c",
+      "target_symbol": "tls_config_init",
+      "severity": "High",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-06",
+      "target_file": "firmware/app_mcu/storage/log_writer.c",
+      "target_symbol": "write_vitals_record",
+      "severity": "Critical",
+      "semgrep": "partial",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-07",
+      "target_file": "firmware/app_mcu/storage/log_writer.c",
+      "target_symbol": "write_diag_record",
+      "severity": "High",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-08",
+      "target_file": "firmware/app_mcu/storage/sd_writer.c",
+      "target_symbol": "sd_nightly_backup",
+      "severity": "Critical",
+      "semgrep": "partial",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-09",
+      "target_file": "firmware/app_mcu/storage/config_store.c",
+      "target_symbol": "config_store_save",
+      "severity": "Critical",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-10",
+      "target_file": "firmware/app_mcu/storage/config_store.c",
+      "target_symbol": "config_store_export_to_usb",
+      "severity": "High",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-11",
+      "target_file": "firmware/app_mcu/network/tls_config.c",
+      "target_symbol": "setup_tls_context",
+      "severity": "High",
+      "semgrep": "partial",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-12",
+      "target_file": "firmware/app_mcu/network/tls_config.c",
+      "target_symbol": "configure_cipher_suites",
+      "severity": "High",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-13",
+      "target_file": "firmware/app_mcu/emr/emr_client.c",
+      "target_symbol": "emr_client_send",
+      "severity": "High",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-14",
+      "target_file": "firmware/app_mcu/ble/ble_pairing.c",
+      "target_symbol": "accept_pairing",
+      "severity": "High",
+      "semgrep": "partial",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-15",
+      "target_file": "firmware/app_mcu/ble/ble_pairing.c",
+      "target_symbol": "derive_ltk",
+      "severity": "High",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-16",
+      "target_file": "firmware/app_mcu/ble/ble_pairing.c",
+      "target_symbol": "pairing_generate_random",
+      "severity": "Medium",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-17",
+      "target_file": "firmware/app_mcu/service/service_menu.c",
+      "target_symbol": "service_menu_authenticate",
+      "severity": "Critical",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-18",
+      "target_file": "firmware/app_mcu/service/service_menu.c",
+      "target_symbol": "check_default_credentials",
+      "severity": "Critical",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-19",
+      "target_file": "firmware/app_mcu/service/service_menu.c",
+      "target_symbol": "service_menu_factory_reset",
+      "severity": "High",
+      "semgrep": "no",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-20",
+      "target_file": "firmware/app_mcu/service/usb_handler.c",
+      "target_symbol": "parse_pmx_update_json",
+      "severity": "High",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-21",
+      "target_file": "firmware/app_mcu/spi/spi_link.c",
+      "target_symbol": "spi_link_send_command",
+      "severity": "Critical",
+      "semgrep": "no",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-22",
+      "target_file": "firmware/safety_mcu/spi_slave.c",
+      "target_symbol": "handle_set_alarm_limits",
+      "severity": "Critical",
+      "semgrep": "no",
+      "file_match": true,
+      "symbol_match": false,
+      "matched_entry_id": "DF-SPIVITALS-T",
+      "matched_entry_priority": "P1",
+      "matched_entry_cvss": 7.6
+    },
+    {
+      "vuln_id": "VULN-23",
+      "target_file": "firmware/app_mcu/ota/inter_mcu_updater.c",
+      "target_symbol": "send_safety_firmware",
+      "severity": "Critical",
+      "semgrep": "no",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-24",
+      "target_file": "firmware/app_mcu/emr/hl7_formatter.c",
+      "target_symbol": "hl7_build_pid_segment",
+      "severity": "High",
+      "semgrep": "yes",
+      "file_match": true,
+      "symbol_match": false,
+      "matched_entry_id": "P-LOG-T",
+      "matched_entry_priority": "P1",
+      "matched_entry_cvss": 7.6
+    },
+    {
+      "vuln_id": "VULN-25",
+      "target_file": "firmware/app_mcu/network/wifi_config.c",
+      "target_symbol": "wifi_config_apply",
+      "severity": "High",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-26",
+      "target_file": "firmware/app_mcu/ble/vitals_gatt.c",
+      "target_symbol": "vitals_gatt_notify",
+      "severity": "Critical",
+      "semgrep": "no",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-27",
+      "target_file": "firmware/app_mcu/ui/alarm_overlay.c",
+      "target_symbol": "alarm_overlay_silence",
+      "severity": "High",
+      "semgrep": "no",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-28",
+      "target_file": "firmware/app_mcu/service/log_exporter.c",
+      "target_symbol": "log_exporter_export_vitals",
+      "severity": "Critical",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-29",
+      "target_file": "firmware/app_mcu/boot/hw_check.c",
+      "target_symbol": "hw_check_jtag_fuse",
+      "severity": "High",
+      "semgrep": "partial",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-30",
+      "target_file": "firmware/app_mcu/network/wifi_config.c",
+      "target_symbol": "wifi_config_associate",
+      "severity": "Medium",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-31",
+      "target_file": "firmware/app_mcu/service/factory_reset.c",
+      "target_symbol": "factory_reset_execute",
+      "severity": "High",
+      "semgrep": "partial",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-32",
+      "target_file": "firmware/safety_mcu/sensor_ident.c",
+      "target_symbol": "sensor_ident_read",
+      "severity": "Medium",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-33",
+      "target_file": "firmware/app_mcu/ui/dashboard.c",
+      "target_symbol": "dashboard_render_header",
+      "severity": "Medium",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    },
+    {
+      "vuln_id": "VULN-34",
+      "target_file": "firmware/app_mcu/service/diagnostic_tests.c",
+      "target_symbol": "diag_log_result",
+      "severity": "High",
+      "semgrep": "yes",
+      "file_match": false,
+      "symbol_match": false,
+      "matched_entry_id": "",
+      "matched_entry_priority": "",
+      "matched_entry_cvss": 0.0
+    }
+  ]
+}
