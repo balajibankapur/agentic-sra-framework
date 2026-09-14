@@ -52,6 +52,23 @@ AGENT_ORDER = [
     "report_generator",
 ]
 
+# Tool name -> (which MCP server it's wrapped by, which backend it actually hits)
+TOOL_BACKEND: dict[str, tuple[str, str]] = {
+    "vector.search":     ("corpus-vector",   "Chroma vector DB (device_docs / device_code / regulatory collections)"),
+    "vector.get_chunk":  ("corpus-vector",   "Chroma vector DB"),
+    "graph.cypher":      ("corpus-graph",    "Kuzu property graph (2181 nodes / 1636 edges)"),
+    "graph.neighbors":   ("corpus-graph",    "Kuzu property graph"),
+    "graph.path":        ("corpus-graph",    "Kuzu property graph"),
+    "files.read":        ("corpus-files",    "Filesystem — input/<device>/ (140 files, 9.7 MB)"),
+    "files.grep":        ("corpus-files",    "Filesystem — regex over firmware/**/*.[ch]"),
+    "files.list_dir":    ("corpus-files",    "Filesystem"),
+}
+
+
+def _tool_backend(tool_name: str) -> tuple[str, str]:
+    """Return (mcp_server_name, backend_description) for a tool."""
+    return TOOL_BACKEND.get(tool_name, ("(unknown)", "(unknown backend)"))
+
 
 def load_prompt_log() -> list[dict]:
     """Read every LLM turn from <device>_prompts.jsonl."""
@@ -753,6 +770,8 @@ def render_agent_activity_tab() -> None:
     """Log viewer over <device>_prompts.jsonl — every LLM turn, per-agent,
     per-entry, with expandable full detail for demonstrating what the
     agents actually did."""
+    _render_pipeline_overview()
+
     turns = load_prompt_log()
 
     if not turns:
@@ -828,6 +847,74 @@ def render_agent_activity_tab() -> None:
         _render_turn_card(t, i)
 
 
+def _render_pipeline_overview() -> None:
+    """Static top-of-tab explainer: what each agent does, which tools it
+    calls, which backend those tools hit. Answers 'how did the agents
+    actually get the answer?'"""
+    with st.expander("📐 Pipeline overview — what each agent does and which databases it hits",
+                     expanded=False):
+        st.markdown("""
+The pipeline runs as a **LangGraph state machine** — one LangGraph node per agent,
+threats fed through in a loop:
+
+```
+Kuzu graph                      START → ingestion → dequeue ─┐
+   ▲                                                         ▼
+   │ Cypher                                          compliance_mapper
+   │                                                         ▼
+   ├──────────────────── graph.cypher ───────────      code_analysis
+   │                                                     :planner
+   │                                                         ▼
+   │                                                     grep firmware
+   │                                                         ▼
+   │                                                    code_analysis
+   │                                                     :interpreter
+   │                                                         ▼
+   │                                              threat_control_risk ⭐
+   │                                                         ▼
+   │                                                 report_generator
+Chroma vector DB                                             ▼
+   ▲                                                      dequeue ────┐
+   │ semantic search                                         ▼        │
+   ├── vector.search ───── (device_docs, device_code,     empty? END  │
+   │                        regulatory collections)          │        │
+Filesystem                                              loop back ────┘
+   ▲
+   │ read + grep
+   └── files.read / files.grep ──── firmware/**/*.[ch] + docs
+```
+
+**Every store access goes through an MCP tool**, so the agent code is backend-agnostic
+(you could swap Kuzu → Neo4j or Chroma → Qdrant without touching agents).
+""")
+
+        st.markdown("**Which agent hits which database:**")
+        st.markdown(
+            "| Agent | LLM? | MCP tools it calls | Backend that answers |\n"
+            "|---|---|---|---|\n"
+            "| `ingestion` | ❌ no | (direct Cypher; MCP-equivalent: `graph.cypher`) | **Kuzu** — one query enumerating all threats, ordered per `--strategy` |\n"
+            "| `compliance_mapper` | ✅ yes | `graph.cypher` × 2, then `vector.search` | **Kuzu** for threat + linked controls; **Chroma `regulatory` collection** for FDA/IEC/AAMI/NIST clauses |\n"
+            "| `code_analysis:planner` | ✅ yes | *(none — reads compliance findings)* | *(none)* |\n"
+            "| Python (between planner + interpreter) | — | `files.grep` × N | **Filesystem** — regex over `firmware/**/*.[ch]` |\n"
+            "| `code_analysis:interpreter` | ✅ yes | *(reads grep results from state)* | *(none)* |\n"
+            "| `threat_control_risk` ⭐ | ✅ yes (`gpt-4o`) | `graph.cypher` × 4-5, `vector.get_chunk` × N | **Kuzu** for threat/controls/CodeArtifacts/known IDs; **Chroma** for clause-body substring verify |\n"
+            "| `report_generator` | ❌ no | *(direct file writes)* | **Local disk** — upserts `output/<device>_sra_draft.{md,json}` |"
+        )
+
+        st.markdown("**MCP servers ↔ backends:**")
+        st.markdown(
+            "| MCP server | Wraps | Tools exposed | Guardrails at this layer |\n"
+            "|---|---|---|---|\n"
+            "| `corpus-vector` | Chroma persistent client at `stores/chroma/` | `search`, `get_chunk`, `list_collections` | — |\n"
+            "| `corpus-graph` | Kuzu embedded DB at `stores/kuzu/<device>.kuzu` | `cypher`, `neighbors`, `path`, `list_schema` | **Read-only** — refuses CREATE/MERGE/DELETE/SET/DROP/ALTER/COPY/INSERT/REMOVE/LOAD |\n"
+            "| `corpus-files` | Local filesystem rooted at `input/<device>/` | `read`, `list_dir`, `grep` | **Path-traversal safe** — refuses paths that escape the device root; read cap 200 KB per call |"
+        )
+        st.caption(
+            "_The MCP servers are also runnable standalone (`sra mcp {vector\\|graph\\|files}`) "
+            "so Claude Code, Cursor, or any MCP client can query the corpus with the same tool contract._"
+        )
+
+
 def _render_turn_card(t: dict, idx: int) -> None:
     ok = "❌" if t.get("error") else "✅"
     fb = " · ⚡fallback" if t.get("fallback_used") else ""
@@ -869,15 +956,53 @@ def _render_turn_card(t: dict, idx: int) -> None:
         with tab_tools:
             tool_calls = t.get("tool_calls", []) or []
             if not tool_calls:
-                st.caption("_(no tool calls recorded before this LLM turn)_")
+                st.caption(
+                    "_(no tool calls recorded before this LLM turn — some agents "
+                    "read only from state populated by an earlier agent)_"
+                )
             else:
+                st.caption(
+                    f"**{len(tool_calls)} MCP tool call(s) made before this LLM "
+                    f"turn.** Each call goes through an MCP tool wrapper (same "
+                    f"contract external clients like Claude Code would use)."
+                )
                 for j, tc in enumerate(tool_calls):
-                    st.markdown(f"**{j+1}. `{tc.get('tool','?')}`**")
-                    st.json({
-                        "args": tc.get("args", {}),
-                        "result_summary": tc.get("result_summary", ""),
-                        "result_size": tc.get("result_size", 0),
-                    })
+                    tool = tc.get("tool", "?")
+                    mcp_server, backend = _tool_backend(tool)
+                    args = tc.get("args", {}) or {}
+
+                    st.markdown(
+                        f"### Tool call {j+1} — `{tool}`\n"
+                        f"**MCP server:** `{mcp_server}`   ·   "
+                        f"**Backend:** {backend}   ·   "
+                        f"**Result:** `{tc.get('result_summary', '?')}` "
+                        f"({tc.get('result_size', 0)} rows/chars)"
+                    )
+
+                    # Show the "query" in the best format per tool
+                    if tool.startswith("graph."):
+                        query = args.get("query") or args.get("node_id", "")
+                        if query:
+                            st.markdown("**Cypher / node query:**")
+                            st.code(query, language="cypher")
+                        params = args.get("params") or args.get("edge_type") or ""
+                        if params:
+                            st.markdown(f"**Params:** `{params}`")
+                    elif tool.startswith("vector."):
+                        q = args.get("query") or args.get("chunk_id", "")
+                        collection = args.get("collection", "device_docs")
+                        st.markdown(
+                            f"**Search query** _(against `{collection}` collection, "
+                            f"k={args.get('k', 6)})_:"
+                        )
+                        st.code(q, language="text")
+                        if args.get("filters"):
+                            st.markdown(f"**Filters:** `{args['filters']}`")
+                    elif tool.startswith("files."):
+                        st.markdown("**Args:**")
+                        st.json(args)
+
+                    st.divider()
 
 
 def _render_entry_agent_trace(entry_id: str) -> None:
