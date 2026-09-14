@@ -58,21 +58,52 @@ class JobStatus:
 
 
 def is_running(device: str) -> bool:
-    """Cheap check: control file exists AND its PID is a live process."""
+    """Cheap check: control file exists AND its PID is a live, non-zombie process.
+
+    A subprocess that has exited but not been waited on stays in the process
+    table as a zombie until the parent reaps it. `kill(pid, 0)` says such a
+    process still exists — which would make our completion-detection banner
+    hang forever. We use waitpid(WNOHANG) to reap the zombie ourselves when
+    we can, and fall back to `ps -o state=` (macOS/Linux) to detect zombies
+    whose parent isn't us.
+    """
     cp = control_path(device)
     if not cp.exists():
         return False
     try:
-        pid = json.loads(cp.read_text()).get("pid")
-    except (json.JSONDecodeError, OSError):
+        pid = int(json.loads(cp.read_text()).get("pid", 0))
+    except (json.JSONDecodeError, OSError, TypeError, ValueError):
         return False
     if not pid:
         return False
+
+    # Reap our own child if it has exited (turns zombie -> gone)
     try:
-        os.kill(int(pid), 0)  # signal 0 = existence check
-        return True
+        reaped_pid, _ = os.waitpid(pid, os.WNOHANG)
+        if reaped_pid == pid:
+            return False
+    except (ChildProcessError, OSError):
+        pass  # not our direct child, or already reaped
+
+    # Does the PID exist at all?
+    try:
+        os.kill(pid, 0)
     except (OSError, ProcessLookupError, ValueError):
         return False
+
+    # Exists, but is it a zombie owned by init? Ask the OS process table.
+    try:
+        result = subprocess.run(
+            ["ps", "-p", str(pid), "-o", "state="],
+            capture_output=True, text=True, timeout=1,
+        )
+        state = (result.stdout or "").strip()
+        if state.startswith("Z"):
+            return False
+    except (subprocess.SubprocessError, OSError):
+        pass  # if ps isn't available, fall through — best effort
+
+    return True
 
 
 def start_draft(

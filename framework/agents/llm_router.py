@@ -24,7 +24,9 @@ from litellm import completion
 from litellm.exceptions import (
     APIConnectionError,
     APIError,
+    InternalServerError,
     RateLimitError,
+    ServiceUnavailableError,
     Timeout,
 )
 
@@ -127,7 +129,8 @@ class LLMRouter:
                     self.fallbacks[agent_name] = result.fallback_used
                 return result
 
-            except (RateLimitError, Timeout, APIConnectionError, APIError) as e:
+            except (RateLimitError, Timeout, APIConnectionError,
+                    APIError, InternalServerError, ServiceUnavailableError) as e:
                 latency = int((time.perf_counter() - t0) * 1000)
                 error_msg = f"{type(e).__name__}: {e}"
                 # Log the failed attempt

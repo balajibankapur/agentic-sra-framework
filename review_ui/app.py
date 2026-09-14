@@ -605,15 +605,12 @@ def _render_review_body(
                 st.rerun()
 
 
-def _render_job_control_sidebar() -> None:
-    """Sidebar Analysis Control block — Start / Stop / status of a draft run."""
-    st.sidebar.divider()
-    st.sidebar.header("Analysis Control")
-
+@st.fragment(run_every=3)
+def _render_job_status_sidebar_fragment() -> None:
+    """Auto-refreshing sidebar status panel while a draft is running."""
     job_status = job_manager.status(DEVICE)
-
     if job_status.alive:
-        st.sidebar.info(
+        st.info(
             f"⚙️ **Draft running** (pid {job_status.pid})\n\n"
             f"profile: `{job_status.profile}`  ·  "
             f"limit: {job_status.limit or 'all'}\n\n"
@@ -622,12 +619,22 @@ def _render_job_control_sidebar() -> None:
             f"turns: {job_status.llm_turns}   ·   "
             f"est. cost: ${job_status.cost_usd_est:.4f}"
         )
-        if st.sidebar.button("⏹ Stop draft", width="stretch", type="primary"):
+        if st.button("⏹ Stop draft", width="stretch", type="primary",
+                      key="stop_draft_frag"):
             job_manager.stop_draft(DEVICE)
-            st.sidebar.warning("SIGTERM sent. Reloading …")
-            st.rerun()
-        if st.sidebar.button("🔄 Refresh status", width="stretch"):
-            st.rerun()
+            st.rerun(scope="app")
+
+
+def _render_job_control_sidebar() -> None:
+    """Sidebar Analysis Control block — Start / Stop / status of a draft run."""
+    st.sidebar.divider()
+    st.sidebar.header("Analysis Control")
+
+    job_status = job_manager.status(DEVICE)
+
+    if job_status.alive:
+        with st.sidebar:
+            _render_job_status_sidebar_fragment()
     else:
         with st.sidebar.form("start_draft_form", clear_on_submit=False):
             st.markdown("**Start a new draft**")
