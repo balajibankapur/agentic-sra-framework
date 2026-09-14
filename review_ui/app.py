@@ -357,6 +357,12 @@ def _render_entry_body(entry: dict, review_state: dict, decision: dict) -> None:
             index=0,
             key=f"rerun_profile_{tid}",
         )
+        st.caption(
+            "_On `free` or `hybrid`, Gemini/Groq handle most agents. If those "
+            "rate-limit or 503, the LLM Router automatically falls back to "
+            "OpenAI `gpt-4o-mini` (recorded in the provenance file). The star "
+            "agent (Threat/Control/Risk) always uses `gpt-4o` on hybrid+openai._"
+        )
         c1, c2 = st.columns(2)
         if c1.button("▶ Start rerun", key=f"rerun_go_{tid}", type="primary"):
             if not extra.strip():
@@ -652,6 +658,18 @@ def _render_job_control_sidebar() -> None:
             category = st.text_input("Category filter (optional)",
                                       value="",
                                       help="e.g. OTA, BLE, EMR — leave blank for all")
+            strategy = st.selectbox(
+                "Ingestion strategy",
+                ["priority", "code-linked"],
+                index=0,
+                help=(
+                    "priority (default): order threats by priority band, "
+                    "then id. Best for full 225-threat runs.\n\n"
+                    "code-linked: round-robin across the subsystems where "
+                    "seeded VULNs live (ble/ota/emr/spi/…). Best for a small "
+                    "pilot (limit 25–50) where you want to exercise VULN recall."
+                ),
+            )
             submitted = st.form_submit_button("▶ Start draft", width="stretch",
                                                type="primary")
             if submitted:
@@ -661,6 +679,7 @@ def _render_job_control_sidebar() -> None:
                         profile=profile,
                         limit=(int(limit_val) or None),
                         category=(category.strip() or None),
+                        strategy=strategy,
                     )
                     st.sidebar.success("Draft started in background.")
                     st.rerun()
@@ -771,6 +790,13 @@ def render_agent_activity_tab() -> None:
             for m, n in sorted(by_model.items(), key=lambda x: -x[1]):
                 cost_m = sum(float(t.get("cost_usd_est", 0.0)) for t in turns if t.get("model") == m)
                 st.markdown(f"- `{m}` — {n} turns  (${cost_m:.4f})")
+    st.caption(
+        "_Only agents that call an LLM appear above. `ingestion` runs a "
+        "deterministic Cypher query and `report_generator` writes files "
+        "deterministically — neither produces LLM turns. That's a Phase 4 "
+        "design decision to keep the free-profile cost at $0 and drafting "
+        "deterministic where reasoning isn't needed._"
+    )
 
     # -- Filters --------------------------------------------------------------
     st.divider()
