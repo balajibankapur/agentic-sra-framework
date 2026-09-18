@@ -1,258 +1,158 @@
 <mxfile host="app.diagrams.net" agent="hand-authored" version="24.7.0">
   <diagram name="Architecture" id="arch">
-    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <!-- ============================================================
-             STYLES (reference — actual style is embedded per-cell)
-             Navy   #1E2761   (primary)
-             Ice    #CADCFC   (index cards)
-             Gold   #FFAD1F   (star / accent)
-             White  #FFFFFF
-             Dark   #333333
-             Muted  #666666
-             ============================================================ -->
-
         <!-- ================= HEADER ================= -->
-        <mxCell id="title" value="Agentic SRA Framework — Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1;fontColor=#1E2761;" vertex="1" parent="1">
-          <mxGeometry x="200" y="20" width="1200" height="40" as="geometry" />
+        <mxCell id="title" value="Agentic SRA Framework" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=22;fontStyle=1;fontColor=#1E2761;" vertex="1" parent="1">
+          <mxGeometry x="200" y="20" width="1000" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="subtitle" value="Legacy corpus → indexed → agents through MCP → reviewer UI → signed-off SRA" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="200" y="60" width="1200" height="24" as="geometry" />
+        <mxCell id="subtitle" value="Vector DB + Graph DB accessed via MCP · 5 agents in LangGraph · human-in-the-loop review" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="200" y="52" width="1000" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ================= ROW 1: INPUT (y=110) ================= -->
+        <mxCell id="row1-label" value="INPUT" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=1;fontColor=#1E2761;letterSpacing=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="110" width="80" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="in-corpus" value="&lt;b&gt;Legacy corpus (GitHub)&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;docs · firmware · threat model&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="135" width="380" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="in-llm" value="&lt;b&gt;LLM providers (via LiteLLM)&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;OpenAI · Groq · Gemini&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="135" width="380" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="in-reviewer" value="&lt;b&gt;Cybersecurity engineer&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;human-in-the-loop reviewer&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="135" width="380" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ================= ROW 2: INDICES (y=250) ================= -->
+        <mxCell id="row2-label" value="INDICES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=1;fontColor=#1E2761;letterSpacing=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="80" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="idx-chroma" value="&lt;b&gt;Chroma&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;vector DB&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#1E2761&quot;&gt;2555 chunks&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="275" width="380" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="idx-kuzu" value="&lt;b&gt;Kuzu&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;graph DB (Cypher)&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#1E2761&quot;&gt;2181 nodes · 1636 edges&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="275" width="380" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="idx-fs" value="&lt;b&gt;Filesystem&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;read + grep&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#1E2761&quot;&gt;firmware/**/*.c,*.h&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="275" width="380" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ================= ROW 3: AGENTS (y=430) ================= -->
+        <mxCell id="row3-label" value="AGENTS (LangGraph)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=1;fontColor=#1E2761;letterSpacing=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="430" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="row3-hint" value="agents access indices through 3 MCP servers (corpus-vector · corpus-graph · corpus-files) — read-only, path-safe" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;fontSize=10;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="500" y="430" width="780" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- 5 agents evenly spaced across 1240px, each 240w × 90h -->
+        <mxCell id="agent-ingestion" value="&lt;b&gt;1. Ingestion&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#CADCFC&quot;&gt;pull threat queue&lt;br/&gt;(Cypher, no LLM)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;fontColor=#FFFFFF;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="455" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-compliance" value="&lt;b&gt;2. Compliance Mapper&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#CADCFC&quot;&gt;per-clause verdict&lt;br/&gt;Gemini 2.5 Flash&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;fontColor=#FFFFFF;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="300" y="455" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-code" value="&lt;b&gt;3. Code Analysis&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#CADCFC&quot;&gt;grep-verify controls&lt;br/&gt;Groq gpt-oss (×2)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;fontColor=#FFFFFF;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="560" y="455" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-tcr" value="&lt;b&gt;⭐ 4. Threat / Control / Risk&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#1E2761&quot;&gt;12-field SRA entry&lt;br/&gt;&lt;b&gt;OpenAI gpt-4o&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFAD1F;strokeColor=#1E2761;strokeWidth=3;fontColor=#1E2761;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="820" y="455" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="agent-report" value="&lt;b&gt;5. Report Generator&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#CADCFC&quot;&gt;upsert draft.{md,json}&lt;br/&gt;(no LLM)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;fontColor=#FFFFFF;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="455" width="240" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Guardrails small note directly under TCR -->
+        <mxCell id="guardrails" value="&lt;b&gt;10 guardrails on TCR output&lt;/b&gt; · 4 hard-fail (schema · cvss · citation · quote)  ·  6 soft-warn (banned_crypto · scope · legacy · …)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#FFAD1F;strokeWidth=1;fontColor=#1E2761;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="580" width="1280" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Loop-back note under agents -->
+        <mxCell id="loop-label" value="↺ loop over each threat" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="500" y="555" width="360" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ================= ROW 4: OUTPUT (y=670) ================= -->
+        <mxCell id="row4-label" value="OUTPUT" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=1;fontColor=#1E2761;letterSpacing=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="670" width="80" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="out-draft" value="&lt;b&gt;Draft SRA&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;output/&amp;lt;device&amp;gt;_sra_draft.{md,json}&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="695" width="380" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="out-review" value="&lt;b&gt;Streamlit Review UI&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;approve · edit · reject · rerun&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="695" width="380" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="out-final" value="&lt;b&gt;Final SRA + provenance&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;.md · .pdf · .docx · .json · provenance.json&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="695" width="380" height="60" as="geometry" />
         </mxCell>
 
         <!-- ============================================================
-             TIER 1 — INPUT (y = 130)
-             ============================================================ -->
-        <mxCell id="t1-label" value="INPUT" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#1E2761;letterSpacing=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="130" width="120" height="24" as="geometry" />
-        </mxCell>
-        <mxCell id="t1-divider" value="" style="line;strokeColor=#1E2761;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="154" width="120" height="1" as="geometry" />
-        </mxCell>
-
-        <!-- Input boxes — 5 across at y=170, height=100, width=280, gap=20 -->
-        <mxCell id="input-corpus" value="&lt;b&gt;Legacy Device Corpus&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;GitHub repo cloned once&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;color=&quot;#666666&quot;&gt;SAD · SRS · SDD · SDS · threat model&lt;br/&gt;firmware C/H · vuln plan · manuals&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="170" width="280" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="input-regulatory" value="&lt;b&gt;Regulatory Corpus&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;24 clauses hand-authored&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;color=&quot;#666666&quot;&gt;FDA 2023 · IEC 62443-4-2&lt;br/&gt;AAMI TIR57 · NIST 800-193&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="340" y="170" width="280" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="input-llm" value="&lt;b&gt;LLM Providers&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;via LiteLLM router&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;color=&quot;#666666&quot;&gt;OpenAI (paid, TCR agent)&lt;br/&gt;Groq · Gemini (free tier, others)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="640" y="170" width="280" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="input-reviewer" value="&lt;b&gt;Cybersecurity Engineer&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;reviewer (human-in-the-loop)&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;color=&quot;#666666&quot;&gt;approve · edit · reject · defer&lt;br/&gt;rerun with extra context&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="940" y="170" width="280" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="input-auditor" value="&lt;b&gt;Auditor / Regulator&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;reads provenance&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;color=&quot;#666666&quot;&gt;commit SHA · model IDs&lt;br/&gt;prompts.jsonl · review log&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="1240" y="170" width="280" height="110" as="geometry" />
-        </mxCell>
-
-        <!-- ============================================================
-             TIER 2 — INDICES (y = 340)
-             ============================================================ -->
-        <mxCell id="t2-label" value="INDICES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#1E2761;letterSpacing=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="340" width="120" height="24" as="geometry" />
-        </mxCell>
-        <mxCell id="t2-divider" value="" style="line;strokeColor=#1E2761;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="364" width="120" height="1" as="geometry" />
-        </mxCell>
-
-        <!-- 3 indices at y=380, width=480, height=140, gap=20 -->
-        <mxCell id="idx-chroma" value="&lt;b style=&quot;font-size:16px&quot;&gt;Chroma vector DB&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px&quot;&gt;semantic search over text&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;&lt;div align=&quot;left&quot; style=&quot;font-size:10px;color:#666666&quot;&gt;• device_docs — 2155 chunks (items + narrative)&lt;br/&gt;• device_code — 403 firmware functions (tree-sitter)&lt;br/&gt;• regulatory — 24 clause bodies (FDA/IEC/AAMI/NIST)&lt;br/&gt;embeddings: OpenAI text-embedding-3-large, 3072d&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=top;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="380" width="480" height="150" as="geometry" />
-        </mxCell>
-        <mxCell id="idx-kuzu" value="&lt;b style=&quot;font-size:16px&quot;&gt;Kuzu graph DB&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px&quot;&gt;typed relationships between entities&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;&lt;div align=&quot;left&quot; style=&quot;font-size:10px;color:#666666&quot;&gt;• 2181 nodes · 11 tables (Threat, Vulnerability,&lt;br/&gt;   CodeArtifact, Control, Requirement, DFDElement …)&lt;br/&gt;• 1636 edges · 8 rel types (APPLIES_TO, LOCATED_IN,&lt;br/&gt;   MITIGATES, TRACES_TO, REALIZES, IMPLEMENTS …)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=top;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="540" y="380" width="480" height="150" as="geometry" />
-        </mxCell>
-        <mxCell id="idx-fs" value="&lt;b style=&quot;font-size:16px&quot;&gt;Filesystem (input/&amp;lt;device&amp;gt;/)&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px&quot;&gt;read-only cloned corpus&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;&lt;div align=&quot;left&quot; style=&quot;font-size:10px;color:#666666&quot;&gt;• 140 files · 9.7 MB · commit SHA pinned&lt;br/&gt;• firmware/**/*.c,*.h — 72 files&lt;br/&gt;• corpus/&amp;lt;device&amp;gt;/*.md — SRS/SDD/SDS/SAD/…&lt;br/&gt;used for grep + full-file reads by Code Analysis&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=top;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="1040" y="380" width="480" height="150" as="geometry" />
-        </mxCell>
-
-        <!-- ============================================================
-             TIER 3 — MCP LAYER (y = 590)
-             ============================================================ -->
-        <mxCell id="t3-label" value="MCP LAYER" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#1E2761;letterSpacing=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="590" width="140" height="24" as="geometry" />
-        </mxCell>
-        <mxCell id="t3-divider" value="" style="line;strokeColor=#1E2761;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="614" width="140" height="1" as="geometry" />
-        </mxCell>
-
-        <!-- 3 MCP servers at y=630, width=480, height=100, gap=20 -->
-        <mxCell id="mcp-vector" value="&lt;b style=&quot;font-size:16px&quot;&gt;corpus-vector MCP&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px&quot;&gt;search · get_chunk · list_collections&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666666&quot;&gt;stdio transport — MCP 2.x contract&lt;br/&gt;also callable from Claude Code / Cursor&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="630" width="480" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="mcp-graph" value="&lt;b style=&quot;font-size:16px&quot;&gt;corpus-graph MCP&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px&quot;&gt;cypher · neighbors · path · list_schema&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666666&quot;&gt;&lt;b&gt;Read-only&lt;/b&gt; — refuses CREATE / MERGE / DELETE&lt;br/&gt;enforced at MCP boundary via regex block&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="540" y="630" width="480" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="mcp-files" value="&lt;b style=&quot;font-size:16px&quot;&gt;corpus-files MCP&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px&quot;&gt;read · list_dir · grep&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666666&quot;&gt;&lt;b&gt;Path-traversal safe&lt;/b&gt; — refuses paths escaping&lt;br/&gt;device root · 200 KB read cap&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="1040" y="630" width="480" height="110" as="geometry" />
-        </mxCell>
-
-        <!-- ============================================================
-             TIER 4 — AGENTS (y = 800)
-             ============================================================ -->
-        <mxCell id="t4-label" value="AGENTS (LangGraph)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#1E2761;letterSpacing=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="800" width="220" height="24" as="geometry" />
-        </mxCell>
-        <mxCell id="t4-divider" value="" style="line;strokeColor=#1E2761;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="824" width="220" height="1" as="geometry" />
-        </mxCell>
-
-        <!-- 5 agents at y=840, width=240, height=110, gap=20 (5×240 + 4×20 = 1280) -->
-        <mxCell id="agent-ingestion" value="&lt;b&gt;1. Ingestion&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#CADCFC&quot;&gt;deterministic Cypher&lt;br/&gt;no LLM&lt;br/&gt;→ threat queue&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;strokeWidth=1;fontColor=#FFFFFF;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="40" y="840" width="240" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="agent-compliance" value="&lt;b&gt;2. Compliance Mapper&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#CADCFC&quot;&gt;Gemini 2.5 Flash&lt;br/&gt;graph.cypher + vector.search&lt;br/&gt;→ clause verdicts&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;strokeWidth=1;fontColor=#FFFFFF;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="300" y="840" width="240" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="agent-code" value="&lt;b&gt;3. Code Analysis&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#CADCFC&quot;&gt;Groq gpt-oss-120b (×2)&lt;br/&gt;planner → grep → interpreter&lt;br/&gt;→ code findings&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;strokeWidth=1;fontColor=#FFFFFF;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="560" y="840" width="240" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="agent-tcr" value="&lt;b&gt;⭐ 4. Threat / Control / Risk&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;OpenAI gpt-4o (paid)&lt;br/&gt;the only agent producing SRA content&lt;br/&gt;12-field entry: CVSS · gap analysis&lt;br/&gt;proposed doc + code changes&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFAD1F;strokeColor=#1E2761;strokeWidth=3;fontColor=#1E2761;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="820" y="840" width="240" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="agent-report" value="&lt;b&gt;5. Report Generator&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#CADCFC&quot;&gt;deterministic&lt;br/&gt;upsert by threat_id&lt;br/&gt;→ draft.md + draft.json&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;strokeWidth=1;fontColor=#FFFFFF;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="1080" y="840" width="240" height="110" as="geometry" />
-        </mxCell>
-
-        <!-- Guardrail callout — right of the agent row -->
-        <mxCell id="guardrails" value="&lt;b&gt;Guardrail Layer&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#666666&quot;&gt;10 checks over LLM output&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;&lt;div align=&quot;left&quot; style=&quot;font-size:10px&quot;&gt;&lt;b&gt;Hard-fail (4):&lt;/b&gt;&lt;br/&gt;   schema · cvss · citation · quote&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Soft-warn (6):&lt;/b&gt;&lt;br/&gt;   banned_crypto · legacy_taxonomy&lt;br/&gt;   scope · citation_verify_file&lt;br/&gt;   prompt-injection delimit · token cap&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=1;dashed=1;dashPattern=6 3;fontColor=#1E2761;fontSize=13;verticalAlign=top;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="1340" y="840" width="240" height="170" as="geometry" />
-        </mxCell>
-
-        <!-- Loop-back annotation (below agent row) -->
-        <mxCell id="loop-label" value="loop over the threat queue until empty" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="500" y="1010" width="360" height="20" as="geometry" />
-        </mxCell>
-
-        <!-- ============================================================
-             TIER 5 — OUTPUT (y = 1060)
-             ============================================================ -->
-        <mxCell id="t5-label" value="OUTPUT" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#1E2761;letterSpacing=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1060" width="120" height="24" as="geometry" />
-        </mxCell>
-        <mxCell id="t5-divider" value="" style="line;strokeColor=#1E2761;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1084" width="120" height="1" as="geometry" />
-        </mxCell>
-
-        <!-- 4 output boxes at y=1100, height=90.  4×360 + 3×20 = 1500 -->
-        <mxCell id="out-draft" value="&lt;b&gt;Draft SRA&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;output/&amp;lt;device&amp;gt;_sra_draft.{md,json}&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666666&quot;&gt;written incrementally · crash-safe&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1100" width="360" height="100" as="geometry" />
-        </mxCell>
-        <mxCell id="out-review" value="&lt;b&gt;Streamlit Review UI&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;approve · edit · reject · defer · rerun&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666666&quot;&gt;localhost:8501 · auto-refresh&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="420" y="1100" width="360" height="100" as="geometry" />
-        </mxCell>
-        <mxCell id="out-final" value="&lt;b&gt;Final SRA (sra export)&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;.md · .pdf · .docx · .json&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666666&quot;&gt;pandoc + Chrome headless render&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="800" y="1100" width="360" height="100" as="geometry" />
-        </mxCell>
-        <mxCell id="out-provenance" value="&lt;b&gt;Provenance + Prompts Log&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;provenance.json + prompts.jsonl&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666666&quot;&gt;FDA-ready reproducibility trail&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CADCFC;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="1180" y="1100" width="360" height="100" as="geometry" />
-        </mxCell>
-
-        <!-- ============================================================
-             ARROWS  (edges — source, target, edgeStyle=orthogonalEdgeStyle where useful)
+             ARROWS
              ============================================================ -->
 
-        <!-- INPUT → INDICES  (corpus & regulatory both feed the indexer) -->
-        <mxCell id="e-corpus-chroma" value="sra init + sra index" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="input-corpus" target="idx-chroma">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-regulatory-chroma" value="sra index --regulatory" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="input-regulatory" target="idx-chroma">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-corpus-kuzu" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;" edge="1" parent="1" source="input-corpus" target="idx-kuzu">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-corpus-fs" value="git clone" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="input-corpus" target="idx-fs">
+        <!-- Input → Indices -->
+        <mxCell id="e-corpus-idx" value="sra init + sra index" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;fontSize=10;fontColor=#666;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="in-corpus" target="idx-kuzu">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- INDICES → MCP -->
-        <mxCell id="e-chroma-mcpv" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;" edge="1" parent="1" source="idx-chroma" target="mcp-vector">
+        <!-- Indices → Agents (single vertical, then agents access all 3) -->
+        <mxCell id="e-idx-agents" value="agents call MCP tools" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;fontSize=10;fontColor=#666;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="idx-kuzu" target="agent-compliance">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-kuzu-mcpg" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;" edge="1" parent="1" source="idx-kuzu" target="mcp-graph">
+        <mxCell id="e-idx-agents2" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=1.5;dashed=1;dashPattern=4 3;" edge="1" parent="1" source="idx-chroma" target="agent-code">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-fs-mcpf" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;" edge="1" parent="1" source="idx-fs" target="mcp-files">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- MCP → AGENTS  (bracket-style: all three MCPs feed the middle agent area) -->
-        <mxCell id="e-mcpv-agents" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="mcp-vector" target="agent-compliance">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-mcpg-agents" value="agents call MCP tools" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="mcp-graph" target="agent-code">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-mcpf-agents" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="mcp-files" target="agent-tcr">
+        <mxCell id="e-idx-agents3" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=1.5;dashed=1;dashPattern=4 3;" edge="1" parent="1" source="idx-fs" target="agent-tcr">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- Agent-to-agent pipeline -->
-        <mxCell id="e-a1-a2" value="" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="agent-ingestion" target="agent-compliance">
+        <!-- Agent pipeline -->
+        <mxCell id="e-a1-a2" value="" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="agent-ingestion" target="agent-compliance">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-a2-a3" value="" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="agent-compliance" target="agent-code">
+        <mxCell id="e-a2-a3" value="" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="agent-compliance" target="agent-code">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-a3-a4" value="" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="agent-code" target="agent-tcr">
+        <mxCell id="e-a3-a4" value="" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="agent-code" target="agent-tcr">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-a4-a5" value="" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="agent-tcr" target="agent-report">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- Loop back: report_generator (bottom) → ingestion (bottom) -->
-        <mxCell id="e-loop" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#666666;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="agent-report" target="agent-ingestion">
+        <mxCell id="e-a4-a5" value="" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="agent-tcr" target="agent-report">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- TCR → Guardrails (dashed sideways link) -->
-        <mxCell id="e-tcr-guard" value="" style="edgeStyle=none;html=1;endArrow=none;strokeColor=#1E2761;strokeWidth=1;dashed=1;dashPattern=4 3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="agent-report" target="guardrails">
+        <!-- Loop back (report → ingestion) -->
+        <mxCell id="e-loop" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#666666;strokeWidth=1.5;dashed=1;dashPattern=6 4;exitX=0.5;exitY=1;entryX=0.5;entryY=1;" edge="1" parent="1" source="agent-report" target="agent-ingestion">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- Agents → OUTPUT -->
-        <mxCell id="e-report-draft" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;" edge="1" parent="1" source="agent-report" target="out-draft">
+        <!-- Report → Draft SRA -->
+        <mxCell id="e-report-draft" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;" edge="1" parent="1" source="agent-report" target="out-draft">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- OUTPUT chain -->
-        <mxCell id="e-draft-review" value="sra review" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="out-draft" target="out-review">
+        <!-- Output chain -->
+        <mxCell id="e-draft-review" value="sra review" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;fontSize=10;fontColor=#666;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="out-draft" target="out-review">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-review-final" value="sra export" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="out-review" target="out-final">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-final-provenance" value="" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="out-final" target="out-provenance">
+        <mxCell id="e-review-final" value="sra export" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;fontSize=10;fontColor=#666;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="out-review" target="out-final">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- Reviewer → Review UI (from top-tier user to output-tier UI) -->
-        <mxCell id="e-reviewer-ui" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#666666;strokeWidth=1;dashed=1;dashPattern=4 3;" edge="1" parent="1" source="input-reviewer" target="out-review">
+        <!-- Reviewer → Review UI -->
+        <mxCell id="e-reviewer-ui" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#666666;strokeWidth=1;dashed=1;dashPattern=4 3;" edge="1" parent="1" source="in-reviewer" target="out-review">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- Auditor → Provenance -->
-        <mxCell id="e-auditor-prov" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#666666;strokeWidth=1;dashed=1;dashPattern=4 3;" edge="1" parent="1" source="input-auditor" target="out-provenance">
+        <!-- LLM → TCR -->
+        <mxCell id="e-llm-tcr" value="LLM calls" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#666666;strokeWidth=1;dashed=1;dashPattern=4 3;fontSize=10;fontColor=#666;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="in-llm" target="agent-tcr">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- LLM Providers → Agents (dashed cross-tier) -->
-        <mxCell id="e-llm-agents" value="LLM calls via LiteLLM" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;endArrow=classic;endFill=1;strokeColor=#666666;strokeWidth=1;dashed=1;dashPattern=4 3;fontSize=10;fontColor=#666666;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="input-llm" target="agent-tcr">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- ============================================================
-             FOOTER
-             ============================================================ -->
-        <mxCell id="footer" value="Vector search (Chroma)  ·  Structured queries (Kuzu)  ·  Read-only tool boundary (MCP)  ·  Multi-agent orchestration (LangGraph)  ·  Human-in-the-loop (Streamlit)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1230" width="1520" height="24" as="geometry" />
         </mxCell>
 
       </root>
