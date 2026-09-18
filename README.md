@@ -10,7 +10,7 @@ Reference device: **[PMx-100 Connected Patient Monitor](https://github.com/balaj
 
 - **[Slide deck (.pptx)](output/capstone_deck.pptx)** — 14 slides · full narrative from problem to results
 - **[Demo script](docs/demo_script.md)** — 10-min live walkthrough with timestamps + fallbacks
-- **[Architecture diagram](docs/architecture_diagram.svg)** — one-page five-tier view
+- **[Architecture diagram — SVG](docs/architecture_diagram.svg)** · **[editable drawio source](docs/architecture_diagram.drawio)** — one-page five-tier view (open the `.drawio` file at [app.diagrams.net](https://app.diagrams.net) to edit)
 
 ## Empirical result headline
 
@@ -62,7 +62,7 @@ OUTPUT      Draft SRA (MD + JSON) → Streamlit review UI → Final SRA (MD + PD
                                                                           + provenance.json
 ```
 
-Full one-page SVG: **[docs/architecture_diagram.svg](docs/architecture_diagram.svg)**
+Full one-page SVG: **[docs/architecture_diagram.svg](docs/architecture_diagram.svg)** · editable **[drawio source](docs/architecture_diagram.drawio)**
 
 ## The five agents
 
