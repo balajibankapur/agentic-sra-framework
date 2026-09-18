@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1000" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+
+  <!-- Palette: navy #1E2761, ice #CADCFC, white, dark gray #333, muted #666, accent #FFAD1F -->
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#1E2761"/>
+    </marker>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#888"/>
+    </marker>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .title { font-size: 32px; font-weight: 700; fill: #1E2761; }
+      .subtitle { font-size: 15px; fill: #666; }
+      .tierLabel { font-size: 13px; font-weight: 700; fill: #1E2761; letter-spacing: 1.5px; }
+      .boxTitle { font-size: 15px; font-weight: 700; fill: #1E2761; }
+      .boxText { font-size: 12px; fill: #333; }
+      .boxTextMuted { font-size: 11px; fill: #666; }
+      .flowLabel { font-size: 11px; fill: #666; font-style: italic; }
+      .agentTitle { font-size: 14px; font-weight: 700; fill: #FFFFFF; }
+      .agentSub { font-size: 11px; fill: #CADCFC; }
+      .starAgent { font-size: 14px; font-weight: 700; fill: #1E2761; }
+      .starAgentSub { font-size: 11px; fill: #1E2761; }
+    </style>
+  </defs>
+
+  <!-- Header -->
+  <text x="700" y="45" text-anchor="middle" class="title">Agentic SRA Framework — Architecture</text>
+  <text x="700" y="70" text-anchor="middle" class="subtitle">Legacy corpus → indexed → agents through MCP → reviewer UI → signed-off SRA</text>
+
+  <!-- ══════════════════════════════════════════════════ TIER 1: INPUT ══════════════════════════════════════════════════ -->
+  <text x="30" y="115" class="tierLabel">INPUT</text>
+  <line x1="30" y1="120" x2="140" y2="120" stroke="#1E2761" stroke-width="2"/>
+
+  <g filter="url(#softShadow)">
+    <!-- Corpus repo -->
+    <rect x="80" y="135" width="230" height="90" rx="8" fill="#FFFFFF" stroke="#CADCFC" stroke-width="2"/>
+    <text x="195" y="160" text-anchor="middle" class="boxTitle">Legacy Device Corpus</text>
+    <text x="195" y="180" text-anchor="middle" class="boxText">GitHub repo cloned once</text>
+    <text x="195" y="196" text-anchor="middle" class="boxTextMuted">SAD · SRS · SDD · SDS · threat model</text>
+    <text x="195" y="211" text-anchor="middle" class="boxTextMuted">firmware C/H · vuln plan · manuals</text>
+
+    <!-- Regulatory -->
+    <rect x="340" y="135" width="230" height="90" rx="8" fill="#FFFFFF" stroke="#CADCFC" stroke-width="2"/>
+    <text x="455" y="160" text-anchor="middle" class="boxTitle">Regulatory Corpus</text>
+    <text x="455" y="180" text-anchor="middle" class="boxText">24 clauses, hand-authored</text>
+    <text x="455" y="196" text-anchor="middle" class="boxTextMuted">FDA 2023 · IEC 62443-4-2</text>
+    <text x="455" y="211" text-anchor="middle" class="boxTextMuted">AAMI TIR57 · NIST 800-193</text>
+
+    <!-- LLM providers -->
+    <rect x="600" y="135" width="230" height="90" rx="8" fill="#FFFFFF" stroke="#CADCFC" stroke-width="2"/>
+    <text x="715" y="160" text-anchor="middle" class="boxTitle">LLM Providers</text>
+    <text x="715" y="180" text-anchor="middle" class="boxText">via LiteLLM router</text>
+    <text x="715" y="196" text-anchor="middle" class="boxTextMuted">OpenAI (paid, TCR agent)</text>
+    <text x="715" y="211" text-anchor="middle" class="boxTextMuted">Groq · Gemini (free tier, others)</text>
+
+    <!-- Human reviewer -->
+    <rect x="860" y="135" width="230" height="90" rx="8" fill="#FFFFFF" stroke="#CADCFC" stroke-width="2"/>
+    <text x="975" y="160" text-anchor="middle" class="boxTitle">Cybersecurity Engineer</text>
+    <text x="975" y="180" text-anchor="middle" class="boxText">reviewer (human-in-the-loop)</text>
+    <text x="975" y="196" text-anchor="middle" class="boxTextMuted">approve · edit · reject · defer</text>
+    <text x="975" y="211" text-anchor="middle" class="boxTextMuted">rerun with extra context</text>
+
+    <!-- Provenance/audit -->
+    <rect x="1120" y="135" width="230" height="90" rx="8" fill="#FFFFFF" stroke="#CADCFC" stroke-width="2"/>
+    <text x="1235" y="160" text-anchor="middle" class="boxTitle">Auditor / Regulator</text>
+    <text x="1235" y="180" text-anchor="middle" class="boxText">reads provenance</text>
+    <text x="1235" y="196" text-anchor="middle" class="boxTextMuted">commit SHA · model IDs</text>
+    <text x="1235" y="211" text-anchor="middle" class="boxTextMuted">prompts.jsonl · review log</text>
+  </g>
+
+  <!-- Arrow to Indices -->
+  <line x1="195" y1="225" x2="195" y2="270" stroke="#1E2761" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="220" y="253" class="flowLabel">sra init + sra index</text>
+  <line x1="455" y1="225" x2="455" y2="270" stroke="#1E2761" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="480" y="253" class="flowLabel">sra index --regulatory</text>
+
+  <!-- ══════════════════════════════════════════════════ TIER 2: INDICES ══════════════════════════════════════════════════ -->
+  <text x="30" y="300" class="tierLabel">INDICES</text>
+  <line x1="30" y1="305" x2="140" y2="305" stroke="#1E2761" stroke-width="2"/>
+
+  <g filter="url(#softShadow)">
+    <!-- Chroma -->
+    <rect x="80" y="315" width="320" height="130" rx="8" fill="#CADCFC" stroke="#1E2761" stroke-width="1.5"/>
+    <text x="240" y="342" text-anchor="middle" class="boxTitle">Chroma vector DB</text>
+    <text x="240" y="360" text-anchor="middle" class="boxText">semantic search over text</text>
+    <text x="100" y="385" class="boxTextMuted">• device_docs — 2155 chunks (items + narrative)</text>
+    <text x="100" y="402" class="boxTextMuted">• device_code — 403 firmware functions (tree-sitter)</text>
+    <text x="100" y="419" class="boxTextMuted">• regulatory — 24 clause bodies (FDA/IEC/AAMI/NIST)</text>
+    <text x="100" y="436" class="boxTextMuted">embeddings: OpenAI text-embedding-3-large, 3072d</text>
+
+    <!-- Kuzu -->
+    <rect x="430" y="315" width="320" height="130" rx="8" fill="#CADCFC" stroke="#1E2761" stroke-width="1.5"/>
+    <text x="590" y="342" text-anchor="middle" class="boxTitle">Kuzu graph DB</text>
+    <text x="590" y="360" text-anchor="middle" class="boxText">typed relationships between entities</text>
+    <text x="450" y="385" class="boxTextMuted">• 2181 nodes · 11 tables (Threat, Vulnerability,</text>
+    <text x="450" y="402" class="boxTextMuted">   CodeArtifact, Control, Requirement, DFDElement …)</text>
+    <text x="450" y="419" class="boxTextMuted">• 1636 edges · 8 rel types (APPLIES_TO, LOCATED_IN,</text>
+    <text x="450" y="436" class="boxTextMuted">   MITIGATES, TRACES_TO, REALIZES, IMPLEMENTS …)</text>
+
+    <!-- Filesystem -->
+    <rect x="780" y="315" width="320" height="130" rx="8" fill="#CADCFC" stroke="#1E2761" stroke-width="1.5"/>
+    <text x="940" y="342" text-anchor="middle" class="boxTitle">Filesystem (input/&lt;device&gt;/)</text>
+    <text x="940" y="360" text-anchor="middle" class="boxText">read-only cloned corpus</text>
+    <text x="800" y="385" class="boxTextMuted">• 140 files · 9.7 MB · commit SHA pinned</text>
+    <text x="800" y="402" class="boxTextMuted">• firmware/**/*.c,*.h — 72 files</text>
+    <text x="800" y="419" class="boxTextMuted">• corpus/&lt;device&gt;/*.md — SRS/SDD/SDS/SAD/…</text>
+    <text x="800" y="436" class="boxTextMuted">used for grep + full-file reads by Code Analysis</text>
+  </g>
+
+  <!-- Arrows to MCP -->
+  <line x1="240" y1="445" x2="240" y2="495" stroke="#1E2761" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="590" y1="445" x2="590" y2="495" stroke="#1E2761" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="940" y1="445" x2="940" y2="495" stroke="#1E2761" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ══════════════════════════════════════════════════ TIER 3: MCP ══════════════════════════════════════════════════ -->
+  <text x="30" y="518" class="tierLabel">MCP LAYER</text>
+  <line x1="30" y1="523" x2="140" y2="523" stroke="#1E2761" stroke-width="2"/>
+
+  <g filter="url(#softShadow)">
+    <!-- corpus-vector -->
+    <rect x="80" y="500" width="320" height="90" rx="8" fill="#FFFFFF" stroke="#1E2761" stroke-width="2"/>
+    <text x="240" y="524" text-anchor="middle" class="boxTitle">corpus-vector MCP</text>
+    <text x="240" y="544" text-anchor="middle" class="boxText">search · get_chunk · list_collections</text>
+    <text x="240" y="564" text-anchor="middle" class="boxTextMuted">stdio transport — MCP 2.x contract</text>
+    <text x="240" y="580" text-anchor="middle" class="boxTextMuted">also callable from Claude Code / Cursor</text>
+
+    <!-- corpus-graph -->
+    <rect x="430" y="500" width="320" height="90" rx="8" fill="#FFFFFF" stroke="#1E2761" stroke-width="2"/>
+    <text x="590" y="524" text-anchor="middle" class="boxTitle">corpus-graph MCP</text>
+    <text x="590" y="544" text-anchor="middle" class="boxText">cypher · neighbors · path · list_schema</text>
+    <text x="590" y="564" text-anchor="middle" class="boxTextMuted">Read-only — refuses CREATE/MERGE/DELETE/…</text>
+    <text x="590" y="580" text-anchor="middle" class="boxTextMuted">enforced at MCP boundary via regex block</text>
+
+    <!-- corpus-files -->
+    <rect x="780" y="500" width="320" height="90" rx="8" fill="#FFFFFF" stroke="#1E2761" stroke-width="2"/>
+    <text x="940" y="524" text-anchor="middle" class="boxTitle">corpus-files MCP</text>
+    <text x="940" y="544" text-anchor="middle" class="boxText">read · list_dir · grep</text>
+    <text x="940" y="564" text-anchor="middle" class="boxTextMuted">Path-traversal safe — refuses paths escaping</text>
+    <text x="940" y="580" text-anchor="middle" class="boxTextMuted">device root · 200 KB read cap</text>
+  </g>
+
+  <!-- Arrow down to agents -->
+  <line x1="590" y1="590" x2="590" y2="620" stroke="#1E2761" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="610" y="612" class="flowLabel">agents call MCP tools during draft</text>
+
+  <!-- ══════════════════════════════════════════════════ TIER 4: AGENTS ══════════════════════════════════════════════════ -->
+  <text x="30" y="655" class="tierLabel">AGENTS (LangGraph)</text>
+  <line x1="30" y1="660" x2="190" y2="660" stroke="#1E2761" stroke-width="2"/>
+
+  <!-- Agent pipeline (horizontal flow) -->
+  <g>
+    <!-- Ingestion -->
+    <rect x="80" y="650" width="160" height="80" rx="6" fill="#1E2761"/>
+    <text x="160" y="675" text-anchor="middle" class="agentTitle">1. Ingestion</text>
+    <text x="160" y="694" text-anchor="middle" class="agentSub">deterministic Cypher</text>
+    <text x="160" y="708" text-anchor="middle" class="agentSub">no LLM</text>
+    <text x="160" y="722" text-anchor="middle" class="agentSub">→ threat queue</text>
+
+    <!-- Compliance Mapper -->
+    <rect x="260" y="650" width="160" height="80" rx="6" fill="#1E2761"/>
+    <text x="340" y="675" text-anchor="middle" class="agentTitle">2. Compliance Mapper</text>
+    <text x="340" y="694" text-anchor="middle" class="agentSub">Gemini 2.5 Flash</text>
+    <text x="340" y="708" text-anchor="middle" class="agentSub">graph.cypher + vector.search</text>
+    <text x="340" y="722" text-anchor="middle" class="agentSub">→ clause verdicts</text>
+
+    <!-- Code Analysis -->
+    <rect x="440" y="650" width="180" height="80" rx="6" fill="#1E2761"/>
+    <text x="530" y="672" text-anchor="middle" class="agentTitle">3. Code Analysis</text>
+    <text x="530" y="689" text-anchor="middle" class="agentSub">Groq gpt-oss-120b (×2)</text>
+    <text x="530" y="703" text-anchor="middle" class="agentSub">planner → grep → interpreter</text>
+    <text x="530" y="720" text-anchor="middle" class="agentSub">→ code findings</text>
+
+    <!-- TCR (star, highlighted) -->
+    <rect x="640" y="640" width="200" height="100" rx="6" fill="#FFAD1F" stroke="#1E2761" stroke-width="3"/>
+    <text x="740" y="666" text-anchor="middle" class="starAgent">⭐ 4. Threat / Control / Risk</text>
+    <text x="740" y="685" text-anchor="middle" class="starAgentSub">OpenAI gpt-4o (paid)</text>
+    <text x="740" y="700" text-anchor="middle" class="starAgentSub">the only agent producing SRA content</text>
+    <text x="740" y="716" text-anchor="middle" class="starAgentSub">12-field entry: CVSS, gap analysis,</text>
+    <text x="740" y="730" text-anchor="middle" class="starAgentSub">proposed doc + code changes</text>
+
+    <!-- Report Generator -->
+    <rect x="860" y="650" width="160" height="80" rx="6" fill="#1E2761"/>
+    <text x="940" y="675" text-anchor="middle" class="agentTitle">5. Report Generator</text>
+    <text x="940" y="694" text-anchor="middle" class="agentSub">deterministic</text>
+    <text x="940" y="708" text-anchor="middle" class="agentSub">upsert by threat_id</text>
+    <text x="940" y="722" text-anchor="middle" class="agentSub">→ draft.md + draft.json</text>
+
+    <!-- Arrows between agents -->
+    <line x1="240" y1="690" x2="256" y2="690" stroke="#1E2761" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="420" y1="690" x2="436" y2="690" stroke="#1E2761" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="620" y1="690" x2="636" y2="690" stroke="#1E2761" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="840" y1="690" x2="856" y2="690" stroke="#1E2761" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Loop arrow -->
+    <path d="M 940 730 L 940 760 L 160 760 L 160 730" fill="none" stroke="#888" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowGray)"/>
+    <text x="550" y="777" text-anchor="middle" class="flowLabel">loop over the threat queue until empty</text>
+
+    <!-- Guardrails badge (on side of TCR) -->
+    <rect x="1050" y="640" width="290" height="100" rx="6" fill="#FFFFFF" stroke="#1E2761" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="1195" y="662" text-anchor="middle" class="boxTitle">Guardrail Layer</text>
+    <text x="1195" y="680" text-anchor="middle" class="boxTextMuted">10 checks over LLM output</text>
+    <text x="1063" y="698" class="boxTextMuted">Hard-fail (4):</text>
+    <text x="1063" y="713" class="boxTextMuted">   schema · cvss · citation · quote</text>
+    <text x="1063" y="728" class="boxTextMuted">Soft-warn (6):  banned_crypto · scope · …</text>
+
+    <line x1="1050" y1="690" x2="840" y2="690" stroke="#1E2761" stroke-width="1" stroke-dasharray="3,3"/>
+  </g>
+
+  <!-- Arrow down to output -->
+  <line x1="940" y1="785" x2="940" y2="815" stroke="#1E2761" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ══════════════════════════════════════════════════ TIER 5: OUTPUT ══════════════════════════════════════════════════ -->
+  <text x="30" y="850" class="tierLabel">OUTPUT</text>
+  <line x1="30" y1="855" x2="140" y2="855" stroke="#1E2761" stroke-width="2"/>
+
+  <g filter="url(#softShadow)">
+    <!-- Draft -->
+    <rect x="80" y="830" width="260" height="80" rx="8" fill="#FFFFFF" stroke="#CADCFC" stroke-width="2"/>
+    <text x="210" y="854" text-anchor="middle" class="boxTitle">Draft SRA</text>
+    <text x="210" y="874" text-anchor="middle" class="boxText">output/&lt;device&gt;_sra_draft.{md,json}</text>
+    <text x="210" y="892" text-anchor="middle" class="boxTextMuted">written incrementally · crash-safe</text>
+
+    <!-- Review UI -->
+    <rect x="370" y="830" width="260" height="80" rx="8" fill="#FFFFFF" stroke="#CADCFC" stroke-width="2"/>
+    <text x="500" y="854" text-anchor="middle" class="boxTitle">Streamlit Review UI</text>
+    <text x="500" y="874" text-anchor="middle" class="boxText">approve · edit · reject · defer · rerun</text>
+    <text x="500" y="892" text-anchor="middle" class="boxTextMuted">localhost:8501 · auto-refresh</text>
+
+    <!-- Final artifacts -->
+    <rect x="660" y="830" width="360" height="80" rx="8" fill="#FFFFFF" stroke="#CADCFC" stroke-width="2"/>
+    <text x="840" y="854" text-anchor="middle" class="boxTitle">Final SRA (sra export)</text>
+    <text x="840" y="874" text-anchor="middle" class="boxText">.md · .pdf · .docx · .json</text>
+    <text x="840" y="892" text-anchor="middle" class="boxTextMuted">pandoc + Chrome headless render</text>
+
+    <!-- Provenance -->
+    <rect x="1050" y="830" width="290" height="80" rx="8" fill="#FFFFFF" stroke="#CADCFC" stroke-width="2"/>
+    <text x="1195" y="854" text-anchor="middle" class="boxTitle">Provenance + Prompts Log</text>
+    <text x="1195" y="874" text-anchor="middle" class="boxText">provenance.json + prompts.jsonl</text>
+    <text x="1195" y="892" text-anchor="middle" class="boxTextMuted">FDA-ready reproducibility trail</text>
+  </g>
+
+  <!-- Legend / footer -->
+  <text x="700" y="950" text-anchor="middle" class="subtitle">
+    Vector search (Chroma) · Structured queries (Kuzu) · Read-only tool boundary (MCP) · Multi-agent orchestration (LangGraph) · Human-in-the-loop (Streamlit)
+  </text>
+  <text x="700" y="975" text-anchor="middle" style="font-size:12px;fill:#888">
+    docs/architecture_diagram.svg · agentic-sra-framework · reference device: PMx-100 Connected Patient Monitor
+  </text>
+</svg>
