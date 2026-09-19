@@ -10,7 +10,13 @@ Reference device: **[PMx-100 Connected Patient Monitor](https://github.com/balaj
 
 - **[Slide deck (.pptx)](output/capstone_deck.pptx)** — 14 slides · full narrative from problem to results
 - **[Demo script](docs/demo_script.md)** — 10-min live walkthrough with timestamps + fallbacks
-- **[Architecture diagram — SVG](docs/architecture_diagram.svg)** · **[editable drawio source](docs/architecture_diagram.drawio)** — one-page five-tier view (open the `.drawio` file at [app.diagrams.net](https://app.diagrams.net) to edit)
+- **Architecture** — [one-page overview (drawio)](docs/architecture_diagram.drawio) · [SVG version](docs/architecture_diagram.svg)
+- **Agent flow diagrams (drawio)** — how the agents actually work:
+  1. **[Pipeline flow](docs/flow_1_pipeline.drawio)** — LangGraph state machine with all transitions
+  2. **[Per-threat data flow](docs/flow_2_data.drawio)** — one threat (T-OTA-P01-T) walking through the pipeline
+  3. **[Backend access pattern](docs/flow_3_backends.drawio)** — which agent hits which database via which MCP tool
+
+  Open any `.drawio` file at [app.diagrams.net](https://app.diagrams.net) to edit.
 
 ## Empirical result headline
 
