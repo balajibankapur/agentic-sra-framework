@@ -1,108 +1,82 @@
 <mxfile host="app.diagrams.net" agent="hand-authored" version="24.7.0">
-  <diagram name="Pipeline flow" id="pipeline">
-    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="900" math="0" shadow="0">
+  <diagram name="Pipeline" id="pipe">
+    <mxGraphModel dx="700" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="700" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <!-- HEADER -->
-        <mxCell id="title" value="Agent Orchestration — the LangGraph state machine" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#1E2761;" vertex="1" parent="1">
-          <mxGeometry x="100" y="20" width="800" height="30" as="geometry" />
+        <mxCell id="title" value="Agent Pipeline" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#1E2761;" vertex="1" parent="1">
+          <mxGeometry x="50" y="24" width="600" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="subtitle" value="One draft run — threats loop through 5 nodes until the queue is empty" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="100" y="52" width="800" height="20" as="geometry" />
-        </mxCell>
-
-        <!-- START (top center) -->
-        <mxCell id="start" value="START" style="ellipse;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="440" y="100" width="120" height="50" as="geometry" />
+        <mxCell id="sub" value="5 agents run in order, once per threat  ·  loop until queue is empty" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontColor=#666;" vertex="1" parent="1">
+          <mxGeometry x="50" y="58" width="600" height="20" as="geometry" />
         </mxCell>
 
-        <!-- INGESTION (below start) -->
-        <mxCell id="ingestion" value="&lt;b&gt;1. Ingestion&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;runs once at the top of the pipeline&lt;br/&gt;single Cypher query against Kuzu&lt;br/&gt;populates the threat queue&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="380" y="190" width="240" height="80" as="geometry" />
+        <mxCell id="start" value="START" style="ellipse;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="100" width="140" height="46" as="geometry" />
         </mxCell>
 
-        <!-- DEQUEUE (decision node) -->
-        <mxCell id="dequeue" value="&lt;b&gt;Dequeue&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;pop next threat&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="400" y="310" width="200" height="90" as="geometry" />
+        <mxCell id="s1" value="&lt;b&gt;1. Ingestion&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#666&quot;&gt;get threat queue from Kuzu&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="180" width="240" height="70" as="geometry" />
         </mxCell>
 
-        <!-- END (right of dequeue - queue empty branch) -->
-        <mxCell id="end" value="END" style="ellipse;whiteSpace=wrap;html=1;fillColor=#666666;strokeColor=#666666;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="770" y="330" width="120" height="50" as="geometry" />
+        <mxCell id="s2" value="&lt;b&gt;2. Compliance Mapper&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#CADCFC&quot;&gt;which FDA / IEC clauses apply&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;strokeWidth=2;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="290" width="240" height="70" as="geometry" />
         </mxCell>
 
-        <!-- COMPLIANCE MAPPER -->
-        <mxCell id="compliance" value="&lt;b&gt;2. Compliance Mapper&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#CADCFC&quot;&gt;retrieve candidate clauses (Chroma)&lt;br/&gt;walk graph for linked controls (Kuzu)&lt;br/&gt;LLM decides present / partial / missing&lt;br/&gt;&lt;b&gt;Gemini 2.5 Flash&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;strokeWidth=2;fontColor=#FFFFFF;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="360" y="450" width="280" height="90" as="geometry" />
+        <mxCell id="s3" value="&lt;b&gt;3. Code Analysis&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#CADCFC&quot;&gt;does the firmware have the control?&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;strokeWidth=2;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="400" width="240" height="70" as="geometry" />
         </mxCell>
 
-        <!-- CODE ANALYSIS (compound: planner + grep + interpreter) -->
-        <mxCell id="code-planner" value="&lt;b&gt;3a. Code Analysis · planner&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#CADCFC&quot;&gt;propose grep patterns for each control&lt;br/&gt;&lt;b&gt;Groq gpt-oss-120b&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="360" y="580" width="280" height="70" as="geometry" />
+        <mxCell id="s4" value="&lt;b&gt;⭐ 4. Threat / Control / Risk&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#666&quot;&gt;write the SRA entry (gpt-4o)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#FFAD1F;strokeWidth=3;fontColor=#1E2761;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="510" width="240" height="70" as="geometry" />
         </mxCell>
 
-        <mxCell id="grep" value="&lt;b&gt;Python: run each grep&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;against firmware/**/*.[ch]  ·  no LLM&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=1;dashed=1;dashPattern=4 3;fontColor=#1E2761;fontSize=11;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="360" y="670" width="280" height="50" as="geometry" />
+        <mxCell id="s5" value="&lt;b&gt;5. Report&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#666&quot;&gt;save entry to draft.md&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="620" width="240" height="70" as="geometry" />
         </mxCell>
 
-        <mxCell id="code-interp" value="&lt;b&gt;3b. Code Analysis · interpreter&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#CADCFC&quot;&gt;decide confirmed / insufficient / absent&lt;br/&gt;&lt;b&gt;Groq gpt-oss-120b&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="360" y="740" width="280" height="70" as="geometry" />
+        <mxCell id="dec" value="&lt;b&gt;More threats?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="220" y="730" width="160" height="70" as="geometry" />
         </mxCell>
 
-        <!-- TCR ⭐ -->
-        <mxCell id="tcr" value="&lt;b&gt;⭐ 4. Threat / Control / Risk&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#1E2761&quot;&gt;compose the 12-field SRA entry&lt;br/&gt;10 guardrails run over output (hard-fail + soft-warn)&lt;br/&gt;&lt;b&gt;OpenAI gpt-4o&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFAD1F;strokeColor=#1E2761;strokeWidth=3;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="70" y="600" width="260" height="90" as="geometry" />
+        <mxCell id="end" value="END" style="ellipse;whiteSpace=wrap;html=1;fillColor=#666666;strokeColor=#666666;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="742" width="120" height="46" as="geometry" />
         </mxCell>
 
-        <!-- REPORT GENERATOR -->
-        <mxCell id="report" value="&lt;b&gt;5. Report Generator&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;atomic upsert into draft.{md,json}&lt;br/&gt;replaces existing entry with same threat_id&lt;br/&gt;&lt;b&gt;no LLM&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=12;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="70" y="450" width="260" height="90" as="geometry" />
-        </mxCell>
-
-        <!-- ARROWS -->
-        <mxCell id="e-start-ingest" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;" edge="1" parent="1" source="start" target="ingestion">
+        <mxCell id="e0" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="start" target="s1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-ingest-dequeue" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;" edge="1" parent="1" source="ingestion" target="dequeue">
+        <mxCell id="e1" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s1" target="s2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s2" target="s3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s3" target="s4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s4" target="s5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s5" target="dec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="no" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#666;strokeWidth=2;fontSize=12;fontColor=#666;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="dec" target="end">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="e-dequeue-empty" value="queue empty" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#666666;strokeWidth=2;fontSize=10;fontColor=#666;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="dequeue" target="end">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="loop" value="yes  ·  next threat" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;dashed=1;fontSize=12;fontColor=#1E2761;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="dec" target="s2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="90" y="765" />
+              <mxPoint x="90" y="325" />
+            </Array>
+          </mxGeometry>
         </mxCell>
 
-        <mxCell id="e-dequeue-compliance" value="next threat" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;fontSize=10;fontColor=#666;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="dequeue" target="compliance">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e-compliance-plan" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="compliance" target="code-planner">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-plan-grep" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="code-planner" target="grep">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-grep-interp" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="grep" target="code-interp">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e-interp-tcr" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="code-interp" target="tcr">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e-tcr-report" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="tcr" target="report">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- LOOP BACK: report → dequeue -->
-        <mxCell id="e-loop" value="loop for next threat" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;strokeColor=#666666;strokeWidth=2;dashed=1;dashPattern=6 4;fontSize=10;fontStyle=2;fontColor=#666;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="report" target="dequeue">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- FOOTER -->
-        <mxCell id="footer" value="Solid arrows = state transitions   ·   Dashed = LangGraph loop-back edge   ·   Star = the only agent producing SRA content" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="50" y="850" width="900" height="20" as="geometry" />
+        <mxCell id="foot" value="Ingestion runs once  ·  agents 2 – 5 run once per threat  ·  dashed line = LangGraph loop-back" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666;" vertex="1" parent="1">
+          <mxGeometry x="50" y="840" width="600" height="20" as="geometry" />
         </mxCell>
 
       </root>
