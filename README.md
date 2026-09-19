@@ -15,6 +15,7 @@ Reference device: **[PMx-100 Connected Patient Monitor](https://github.com/balaj
   1. **[Pipeline flow (PNG)](docs/flow_1_pipeline.png)** — [drawio](docs/flow_1_pipeline.drawio) — LangGraph state machine with all transitions
   2. **[Per-threat data flow (PNG)](docs/flow_2_data.png)** — [drawio](docs/flow_2_data.drawio) — one threat (T-OTA-P01-T) walking through the pipeline
   3. **[Backend access pattern (PNG)](docs/flow_3_backends.png)** — [drawio](docs/flow_3_backends.drawio) — which agent hits which database via which MCP tool
+  4. **[MCP + Kuzu deep-dive (PNG)](docs/flow_4_mcp_kuzu.png)** — [drawio](docs/flow_4_mcp_kuzu.drawio) — what an MCP server is, one Cypher call end-to-end, and how the server is started (auto + manual)
 
   Open the `.drawio` files at [app.diagrams.net](https://app.diagrams.net) to edit.
 
