@@ -690,10 +690,22 @@ html, body, [class*="css"] {
   -webkit-font-smoothing: antialiased;
   color: #111827;
 }
-.main .block-container {
-  padding-top: 1.2rem;
-  padding-bottom: 3rem;
-  max-width: 1400px;
+.main .block-container,
+[data-testid="stMainBlockContainer"] {
+  padding-top: 1rem !important;
+  padding-bottom: 2rem !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+  max-width: 100% !important;
+}
+/* Sidebar narrower — gives more room to main content */
+section[data-testid="stSidebar"] {
+  width: 260px !important;
+  min-width: 260px !important;
+}
+section[data-testid="stSidebar"] > div:first-child {
+  width: 260px !important;
+  min-width: 260px !important;
 }
 #MainMenu, footer,
 .stDeployButton,
@@ -984,7 +996,7 @@ div[data-testid="stDataFrame"] {
 /* ---- compact table-style rows ---- */
 .row-header {
   display: grid;
-  grid-template-columns: 1.2fr 1.4fr 5fr 1.5fr 0.9fr 1.2fr;
+  grid-template-columns: 1fr 1.6fr 7fr 1.4fr 0.9fr 1.1fr;
   gap: 16px;
   padding: 8px 20px 6px;
   margin-bottom: 4px;
@@ -1156,7 +1168,7 @@ def main() -> None:
         page_title=f"Cybersecurity Risk Assessment — {DEVICE}",
         page_icon="🛡️",
         layout="wide",
-        initial_sidebar_state="expanded",
+        initial_sidebar_state="collapsed",
     )
     _inject_modern_css()
 
@@ -1359,7 +1371,7 @@ def _render_review_body(
 
             # -------- compact single-line row --------
             c_status, c_tid, c_title, c_cvss, c_prio, c_btn = st.columns(
-                [1.2, 1.4, 5, 1.5, 0.9, 1.2],
+                [1.0, 1.6, 7, 1.4, 0.9, 1.1],
                 vertical_alignment="center",
             )
             c_status.markdown(
