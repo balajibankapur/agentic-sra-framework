@@ -167,30 +167,38 @@ def ask_graph(query: str) -> list[dict] | str:
 
 
 def render_header(entries: list[dict], review_state: dict) -> None:
-    st.title(f"SRA Review — {DEVICE}")
-    st.caption("**One reviewer at a time.** State persists to "
-               f"`{STATE_JSON.name}` on every action.")
-
-    reviewer = st.text_input(
-        "Reviewer name (recorded in provenance):",
-        value=review_state.get("reviewer_name", ""),
-        key="reviewer_name_input",
-    )
-    if reviewer != review_state.get("reviewer_name", ""):
-        review_state["reviewer_name"] = reviewer
-        save_review_state(review_state)
-
-    # Progress summary
     decisions = review_state.get("decisions", {})
     from collections import Counter
     by_action = Counter(d.get("action", "pending") for d in decisions.values())
     reviewed = len(decisions)
     total = len(entries)
+    approved = by_action.get("approved", 0) + by_action.get("edited", 0)
+    pct = int(round(100 * reviewed / total)) if total else 0
+
+    reviewer_display = review_state.get("reviewer_name") or "unassigned"
+
+    st.markdown(
+        f"""
+        <div class="hero-band">
+          <div class="hero-row">
+            <div>
+              <div class="hero-title">SRA Review <span class="device-chip">device · {DEVICE}</span></div>
+              <div class="hero-sub">Human-in-the-loop review of the drafted Security Risk Assessment  ·  reviewer: <b>{reviewer_display}</b></div>
+            </div>
+            <div class="hero-badge">
+              <div class="hero-badge-num">{pct}%</div>
+              <div class="hero-badge-label">reviewed</div>
+            </div>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     col1, col2, col3, col4, col5 = st.columns(5)
     col1.metric("Total", total)
     col2.metric("Reviewed", reviewed)
-    col3.metric("Approved", by_action.get("approved", 0) + by_action.get("edited", 0))
+    col3.metric("Approved", approved)
     col4.metric("Rejected", by_action.get("rejected", 0))
     col5.metric("Deferred", by_action.get("deferred", 0))
     st.progress(reviewed / total if total else 0.0)
@@ -215,11 +223,31 @@ def render_entry_card(
     }.get(action, "⚪")
 
     cvss = entry.get("cvss_v31") or {}
+    severity = str(cvss.get("severity", "")).lower()
+    cvss_score = cvss.get("base_score", 0)
+    # Color the CVSS chip by severity using Streamlit's inline color markdown
+    if severity == "critical":
+        cvss_chip = f":red[**CVSS {cvss_score} {severity.upper()}**]"
+    elif severity == "high":
+        cvss_chip = f":orange[**CVSS {cvss_score} {severity.upper()}**]"
+    elif severity == "medium":
+        cvss_chip = f":blue[**CVSS {cvss_score} {severity.upper()}**]"
+    elif severity == "low":
+        cvss_chip = f":green[**CVSS {cvss_score} {severity.upper()}**]"
+    else:
+        cvss_chip = f"**CVSS {cvss_score}**"
+
+    priority = entry.get("priority", "")
+    prio_chip = (
+        f":red[**{priority}**]" if priority == "P0"
+        else f":orange[**{priority}**]" if priority == "P1"
+        else f"**{priority}**"
+    )
+
     header = (
-        f"{status_emoji} **{tid}** — {entry.get('title', '')[:70]}   "
-        f"· STRIDE {entry.get('stride', '?')}   "
-        f"· CVSS {cvss.get('base_score', 0)} {cvss.get('severity', '')}   "
-        f"· {entry.get('priority', '')}"
+        f"{status_emoji}  **{tid}**  ·  {entry.get('title', '')[:80]}  "
+        f"  ·  STRIDE **{entry.get('stride', '?')}**"
+        f"  ·  {cvss_chip}  ·  {prio_chip}"
     )
     with st.expander(header, expanded=(action == "pending" and idx < 3)):
         _render_entry_body(entry, review_state, decision)
@@ -307,24 +335,26 @@ def _render_entry_body(entry: dict, review_state: dict, decision: dict) -> None:
         )
 
     # Action buttons
+    st.markdown("")  # small spacer
     b1, b2, b3, b4, b5, b6 = st.columns(6)
-    if b1.button("✅ Approve", key=f"approve_{tid}"):
+    if b1.button("✅ Approve", key=f"approve_{tid}", type="primary", width="stretch"):
         record_decision(review_state, tid, "approved")
         st.rerun()
-    if b2.button("✏️ Edit", key=f"edit_btn_{tid}"):
+    if b2.button("✏️ Edit", key=f"edit_btn_{tid}", width="stretch"):
         st.session_state[f"edit_{tid}"] = True
         st.rerun()
-    if b3.button("❌ Reject", key=f"reject_btn_{tid}"):
+    if b3.button("❌ Reject", key=f"reject_btn_{tid}", width="stretch"):
         st.session_state[f"reject_prompt_{tid}"] = True
         st.rerun()
-    if b4.button("⏸️ Defer", key=f"defer_{tid}"):
+    if b4.button("⏸️ Defer", key=f"defer_{tid}", width="stretch"):
         record_decision(review_state, tid, "deferred")
         st.rerun()
-    if b5.button("🔍 Ask graph", key=f"ask_{tid}"):
+    if b5.button("🔍 Ask graph", key=f"ask_{tid}", width="stretch"):
         st.session_state[f"ask_prompt_{tid}"] = True
         st.rerun()
     rerun_disabled = job_manager.is_running(DEVICE)
     if b6.button("🔁 Rerun", key=f"rerun_btn_{tid}", disabled=rerun_disabled,
+                 width="stretch",
                  help=("Re-draft just this entry with additional reviewer context "
                        "appended to the TCR agent's prompt.")):
         st.session_state[f"rerun_prompt_{tid}"] = True
@@ -472,20 +502,345 @@ def _render_edit_form(entry: dict, review_state: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Modern UI styling
+
+
+_MODERN_CSS = """
+<style>
+/* ---- global reset ---- */
+html, body, [class*="css"] {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI",
+               "Roboto", system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  color: #111827;
+}
+.main .block-container {
+  padding-top: 1.2rem;
+  padding-bottom: 3rem;
+  max-width: 1400px;
+}
+#MainMenu, footer,
+.stDeployButton,
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"],
+[data-testid="stAppDeployButton"],
+[data-testid="stAppToolbar"] { visibility: hidden !important; height: 0 !important; }
+header[data-testid="stHeader"] { background: transparent; height: 0; }
+
+/* ---- headings ---- */
+h1, h2, h3, h4 {
+  color: #1E2761;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+h1 { font-size: 1.8rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; margin-top: 1rem; }
+
+/* ---- hero band ---- */
+.hero-band {
+  background: linear-gradient(135deg, #1E2761 0%, #2E3F8F 60%, #4356B2 100%);
+  color: white;
+  padding: 1.4rem 1.8rem;
+  border-radius: 16px;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 6px 24px rgba(30, 39, 97, 0.18);
+}
+.hero-band .hero-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.hero-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.hero-sub {
+  color: rgba(255,255,255,0.78);
+  font-size: 0.95rem;
+  margin-top: 6px;
+}
+.device-chip {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.28);
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-left: 10px;
+  vertical-align: middle;
+  letter-spacing: 0.02em;
+}
+.hero-badge {
+  text-align: center;
+  padding: 8px 20px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.24);
+  border-radius: 12px;
+  min-width: 110px;
+}
+.hero-badge-num {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #FFAD1F;
+  line-height: 1;
+}
+.hero-badge-label {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+/* ---- KPI metrics ---- */
+div[data-testid="stMetric"] {
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+div[data-testid="stMetric"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+div[data-testid="stMetric"] label {
+  color: #6B7280 !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+div[data-testid="stMetric"] [data-testid="stMetricValue"] {
+  color: #1E2761;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* ---- progress bar ---- */
+div[data-testid="stProgress"] > div > div > div {
+  background: linear-gradient(90deg, #1E2761 0%, #FFAD1F 100%);
+  border-radius: 999px;
+}
+div[data-testid="stProgress"] > div > div {
+  background: #F3F4F6;
+  border-radius: 999px;
+}
+
+/* ---- expanders (entry cards) ---- */
+div[data-testid="stExpander"] {
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+div[data-testid="stExpander"]:hover {
+  border-color: #C7D2FE;
+  box-shadow: 0 4px 14px rgba(30,39,97,0.08);
+}
+div[data-testid="stExpander"] summary {
+  padding: 12px 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+div[data-testid="stExpander"] summary:hover {
+  background: #F9FAFB;
+}
+
+/* ---- buttons ---- */
+.stButton > button {
+  border-radius: 8px;
+  border: 1px solid #D1D5DB;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  padding: 6px 14px;
+}
+.stButton > button:hover {
+  border-color: #1E2761;
+  color: #1E2761;
+  background: #F8FAFC;
+}
+.stButton > button[kind="primary"] {
+  background: #1E2761;
+  border: none;
+  color: white;
+  box-shadow: 0 2px 6px rgba(30,39,97,0.25);
+}
+.stButton > button[kind="primary"]:hover {
+  background: #2E3F8F;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(30,39,97,0.3);
+}
+
+/* ---- sidebar ---- */
+section[data-testid="stSidebar"] {
+  background: #F8FAFC;
+  border-right: 1px solid #E5E7EB;
+}
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+  font-size: 0.72rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #6B7280 !important;
+  font-weight: 700;
+  margin-top: 1rem;
+  margin-bottom: 6px;
+}
+section[data-testid="stSidebar"] hr {
+  margin: 12px 0;
+  border-color: #E5E7EB;
+}
+
+/* ---- tabs ---- */
+button[data-baseweb="tab"] {
+  font-weight: 500 !important;
+  padding: 10px 22px !important;
+  font-size: 0.95rem !important;
+}
+button[data-baseweb="tab"][aria-selected="true"] {
+  color: #1E2761 !important;
+  border-bottom-color: #1E2761 !important;
+  border-bottom-width: 3px !important;
+}
+div[data-baseweb="tab-list"] {
+  gap: 0 !important;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+/* ---- alerts ---- */
+div[data-testid="stAlert"] {
+  border-radius: 10px;
+  border: 1px solid transparent;
+  padding: 12px 16px;
+}
+div[data-testid="stAlert"][data-baseweb] { border-left: 3px solid; }
+
+/* ---- inputs ---- */
+div[data-testid="stTextInput"] input,
+div[data-testid="stTextArea"] textarea,
+div[data-testid="stNumberInput"] input,
+div[data-baseweb="select"] > div {
+  border-radius: 8px !important;
+  border-color: #D1D5DB !important;
+}
+div[data-testid="stTextInput"] input:focus,
+div[data-testid="stTextArea"] textarea:focus {
+  border-color: #1E2761 !important;
+  box-shadow: 0 0 0 3px rgba(30,39,97,0.12) !important;
+}
+
+/* ---- code + inline code ---- */
+code {
+  background: #F3F4F6;
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  font-size: 0.88em;
+  color: #1E2761;
+}
+div[data-testid="stCodeBlock"] {
+  border-radius: 10px;
+  border: 1px solid #E5E7EB;
+  overflow: hidden;
+}
+
+/* ---- dataframe ---- */
+div[data-testid="stDataFrame"] {
+  border-radius: 10px;
+  border: 1px solid #E5E7EB;
+  overflow: hidden;
+}
+
+/* ---- empty state card ---- */
+.empty-state {
+  background: linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%);
+  border: 1px dashed #C7D2FE;
+  border-radius: 16px;
+  padding: 3.5rem 2rem;
+  text-align: center;
+  margin: 1rem 0;
+}
+.empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-title { font-size: 1.3rem; font-weight: 700; color: #1E2761; margin-bottom: 6px; }
+.empty-sub { color: #6B7280; font-size: 0.95rem; line-height: 1.6; }
+.empty-sub code { background: #E0E7FF; color: #1E2761; }
+
+/* ---- divider ---- */
+hr { border-color: #E5E7EB; }
+</style>
+"""
+
+
+def _inject_modern_css() -> None:
+    st.markdown(_MODERN_CSS, unsafe_allow_html=True)
+
+
+def _render_reviewer_sidebar(review_state: dict) -> None:
+    """Reviewer identity input, tucked into the sidebar (set-and-forget)."""
+    with st.sidebar:
+        st.markdown("### Reviewer")
+        reviewer = st.text_input(
+            "Your name",
+            value=review_state.get("reviewer_name", ""),
+            key="reviewer_name_input",
+            label_visibility="collapsed",
+            placeholder="e.g. balaji@example.com",
+        )
+        if reviewer != review_state.get("reviewer_name", ""):
+            review_state["reviewer_name"] = reviewer
+            save_review_state(review_state)
+        st.caption(f"Recorded in `{STATE_JSON.name}` on every action.")
+
+
+# ---------------------------------------------------------------------------
 # Main
 
 
 def main() -> None:
-    st.set_page_config(page_title=f"SRA Review — {DEVICE}", layout="wide")
+    st.set_page_config(
+        page_title=f"SRA Review — {DEVICE}",
+        page_icon="🛡️",
+        layout="wide",
+        initial_sidebar_state="expanded",
+    )
+    _inject_modern_css()
 
     entries = load_draft()
     review_state = load_review_state()
+    _render_reviewer_sidebar(review_state)
 
     if not entries:
-        st.title(f"SRA Review — {DEVICE}")
-        st.warning(
-            f"**No draft yet.**  Use the *Analysis Control* block in the sidebar "
-            f"to start a draft — or run `sra draft --device {DEVICE}` in a terminal."
+        st.markdown(
+            f"""
+            <div class="hero-band">
+              <div class="hero-title">SRA Review <span class="device-chip">device · {DEVICE}</span></div>
+              <div class="hero-sub">Human-in-the-loop review of the drafted Security Risk Assessment</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            f"""
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <div class="empty-title">No draft yet</div>
+              <div class="empty-sub">Start a draft from <b>Analysis Control</b> in the sidebar,<br/>or run <code>sra draft --device {DEVICE}</code> in a terminal.</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
         _render_progress_banner()
         _render_job_control_sidebar()
