@@ -70,6 +70,170 @@ def _tool_backend(tool_name: str) -> tuple[str, str]:
     return TOOL_BACKEND.get(tool_name, ("(unknown)", "(unknown backend)"))
 
 
+# ---------------------------------------------------------------------------
+# Glossary — plain-English expansions of the abbreviations reviewers see.
+
+
+STRIDE_MEANING: dict[str, str] = {
+    "S": "Spoofing — an attacker pretends to be someone / something else",
+    "T": "Tampering — data or firmware is modified in an unauthorized way",
+    "R": "Repudiation — a user denies having taken an action, no proof exists",
+    "I": "Information disclosure — sensitive data leaks to someone not allowed to see it",
+    "D": "Denial of service — the device is made unavailable or unusable",
+    "E": "Elevation of privilege — a low-privilege actor gains higher access",
+}
+
+PRIORITY_MEANING: dict[str, str] = {
+    "P0": "P0 — Critical, must be fixed before the next release",
+    "P1": "P1 — High, planned for the next release window",
+    "P2": "P2 — Medium, backlog / next major version",
+    "P3": "P3 — Low, tracked but deferred",
+}
+
+SEVERITY_MEANING: dict[str, str] = {
+    "critical": "Critical — a working exploit would compromise patient safety or PHI",
+    "high":     "High — significant risk if exploited, needs prompt mitigation",
+    "medium":   "Medium — meaningful risk but partial mitigations exist",
+    "low":      "Low — limited impact, monitor and defer",
+    "none":     "None — no material risk beyond baseline",
+}
+
+# Full names for the regulatory standards that appear as clause id prefixes.
+STANDARD_FULL: dict[str, str] = {
+    "FDA-2023":    "FDA 2023 Premarket Cybersecurity Guidance",
+    "IEC-CR":      "IEC 62443-4-2 · Component Requirements",
+    "IEC":         "IEC 62443 series",
+    "AAMI-TIR57":  "AAMI TIR57 Principles for Medical Device Cybersecurity",
+    "AAMI":        "AAMI TIR57",
+    "NIST-800-193":"NIST SP 800-193 · Platform Firmware Resiliency",
+    "NIST":        "NIST SP 800-53 / 800-193",
+}
+
+# General acronym glossary. Each entry appears both in the top-of-page
+# glossary AND is auto-detected in the detail panel so we can list only the
+# ones used in the currently-open entry.
+ACRONYMS: list[tuple[str, str]] = [
+    # Framework / process
+    ("SRA",     "Security Risk Assessment — the FDA-required document this tool drafts"),
+    ("STRIDE",  "Threat category framework: Spoofing, Tampering, Repudiation, Info disclosure, Denial of service, Elevation of privilege"),
+    ("CVSS",    "Common Vulnerability Scoring System v3.1 — 0-10 severity score (0 none, 10 critical)"),
+    ("CVE",     "Common Vulnerabilities and Exposures — an entry in the public vulnerability database"),
+    ("CWE",     "Common Weakness Enumeration — the category of software weakness that leads to a CVE"),
+    ("DFD",     "Data Flow Diagram — element used in threat modeling (process, data store, external entity)"),
+    ("MCP",     "Model Context Protocol — the tool contract each agent uses to reach a database"),
+    # Regulatory
+    ("FDA",     "US Food and Drug Administration — the regulator this SRA is drafted for"),
+    ("IEC 62443","International standard for industrial-automation cybersecurity, applied to medical devices"),
+    ("AAMI TIR57","US medical-device cybersecurity technical report"),
+    ("NIST 800-193","US firmware-resilience standard: Protect, Detect, Recover"),
+    ("HIPAA",   "US Health Insurance Portability and Accountability Act — protects patient data (PHI)"),
+    ("PHI",     "Protected Health Information — patient data protected by HIPAA"),
+    ("PII",     "Personally Identifiable Information"),
+    # Attack patterns
+    ("MITM",    "Man-In-The-Middle — attacker sits between two parties and can read or modify traffic"),
+    ("DoS",     "Denial of Service — an attack that makes the device unusable"),
+    ("DDoS",    "Distributed Denial of Service — DoS from many attacker sources at once"),
+    ("RCE",     "Remote Code Execution — the attacker runs arbitrary code on the device"),
+    ("XSS",     "Cross-Site Scripting — attacker injects code into a web page viewed by others"),
+    ("CSRF",    "Cross-Site Request Forgery — trick a logged-in user into unwanted actions"),
+    ("Replay",  "Replay attack — attacker resends a captured valid message to cause an unintended action"),
+    ("Spoofing","Attacker pretends to be a trusted device or user"),
+    # Wireless / connectivity
+    ("BLE",     "Bluetooth Low Energy — the short-range wireless protocol the device uses"),
+    ("Wi-Fi",   "Wireless LAN (IEEE 802.11)"),
+    ("OTA",     "Over-The-Air firmware update — new firmware pushed to the device wirelessly"),
+    ("FOTA",    "Firmware Over-The-Air — same as OTA"),
+    # Crypto / auth
+    ("MFA",     "Multi-Factor Authentication — password plus at least one other factor"),
+    ("TLS",     "Transport Layer Security — encryption for data in transit (HTTPS uses TLS)"),
+    ("DTLS",    "Datagram TLS — TLS for UDP-based traffic"),
+    ("AES",     "Advanced Encryption Standard — symmetric block cipher"),
+    ("ECDSA",   "Elliptic Curve Digital Signature Algorithm — asymmetric signatures"),
+    ("RSA",     "Rivest-Shamir-Adleman — asymmetric encryption / signatures"),
+    ("SHA-256", "Secure Hash Algorithm 256-bit — cryptographic hash function"),
+    ("HMAC",    "Hash-based Message Authentication Code — signed hash for integrity"),
+    ("Ed25519", "Modern elliptic-curve signature scheme (safer default than ECDSA)"),
+    ("PSK",     "Pre-Shared Key — same secret key on both sides"),
+    ("RNG",     "Random Number Generator (should be cryptographic — CSPRNG)"),
+    ("PKI",     "Public Key Infrastructure — certificates + CAs"),
+    # Hardware / firmware
+    ("SPI",     "Serial Peripheral Interface — short-range hardware bus"),
+    ("I2C",     "Inter-Integrated Circuit — short-range hardware bus"),
+    ("UART",    "Universal Asynchronous Receiver-Transmitter — serial debug port"),
+    ("JTAG",    "Debug interface exposed on hardware (must be locked in production)"),
+    ("SWD",     "Serial Wire Debug — ARM debug interface"),
+    ("MCU",     "Microcontroller Unit — the embedded CPU"),
+    ("BOM",     "Bill of Materials — parts list, incl. software (SBOM)"),
+    ("SBOM",    "Software Bill of Materials — required by FDA 2023 guidance"),
+    ("HSM",     "Hardware Security Module — dedicated secure crypto chip"),
+    ("TEE",     "Trusted Execution Environment — isolated CPU mode for secrets"),
+    ("NVM",     "Non-Volatile Memory — retains data when powered off (flash)"),
+    # Medical / operational
+    ("EMR",     "Electronic Medical Record system — the hospital-side system the device talks to"),
+    ("HL7",     "Health Level 7 — medical data interchange standard"),
+    ("FHIR",    "Fast Healthcare Interoperability Resources — modern HL7 REST format"),
+    ("UDI",     "Unique Device Identifier — FDA per-device serial identifier"),
+]
+
+
+# Precompiled lookup for fast contains-check (case-insensitive whole-token match).
+_ACRONYM_LOOKUP = {a[0]: a[1] for a in ACRONYMS}
+
+
+def _terms_used_in(entry: dict) -> list[tuple[str, str]]:
+    """Return the acronyms from ACRONYMS that appear in the entry's text.
+
+    Scans title, narrative, residual-risk reason, existing/proposed controls,
+    and proposed doc/code changes. Matches on whole word boundaries so 'BLE'
+    doesn't fire on 'ABLE'.
+    """
+    import re
+    haystacks = [
+        entry.get("title", ""),
+        entry.get("narrative", ""),
+        entry.get("residual_risk_reason", ""),
+    ]
+    for c in entry.get("existing_controls", []) or []:
+        haystacks.append(c.get("description", ""))
+    for c in entry.get("proposed_controls", []) or []:
+        haystacks.append(c.get("description", ""))
+    for d in entry.get("proposed_doc_changes", []) or []:
+        haystacks.append(d.get("body", ""))
+    for c in entry.get("proposed_code_changes", []) or []:
+        haystacks.append(c.get("hunk", ""))
+    blob = "  ".join(str(h) for h in haystacks if h)
+
+    seen: list[tuple[str, str]] = []
+    for term, meaning in ACRONYMS:
+        # Word-boundary regex; special-case terms containing spaces/dots/dashes.
+        pat = r"(?<![A-Za-z0-9])" + re.escape(term) + r"(?![A-Za-z0-9])"
+        if re.search(pat, blob, flags=re.IGNORECASE):
+            seen.append((term, meaning))
+    return seen
+
+
+def _stride_short(letter: str) -> str:
+    """Return e.g. 'I — Info disclosure' for the compact table cell."""
+    short_map = {
+        "S": "S · Spoofing",
+        "T": "T · Tampering",
+        "R": "R · Repudiation",
+        "I": "I · Info disclosure",
+        "D": "D · Denial of service",
+        "E": "E · Elevation of privilege",
+    }
+    return short_map.get((letter or "").strip().upper()[:1], letter or "")
+
+
+def _standard_for(clause_id: str) -> str:
+    """Best-effort friendly name for an FDA-2023-V.B.3-style clause id."""
+    up = (clause_id or "").upper()
+    for prefix, name in STANDARD_FULL.items():
+        if up.startswith(prefix.upper()):
+            return name
+    return "—"
+
+
 def load_prompt_log() -> list[dict]:
     """Read every LLM turn from <device>_prompts.jsonl."""
     if not PROMPTS_JSONL.exists():
@@ -182,8 +346,8 @@ def render_header(entries: list[dict], review_state: dict) -> None:
         <div class="hero-band">
           <div class="hero-row">
             <div>
-              <div class="hero-title">SRA Review <span class="device-chip">device · {DEVICE}</span></div>
-              <div class="hero-sub">Human-in-the-loop review of the drafted Security Risk Assessment  ·  reviewer: <b>{reviewer_display}</b></div>
+              <div class="hero-title">Cybersecurity Risk Assessment <span class="device-chip">device · {DEVICE}</span></div>
+              <div class="hero-sub">Review each drafted entry and approve, edit, or reject it.  Reviewer: <b>{reviewer_display}</b></div>
             </div>
             <div class="hero-badge">
               <div class="hero-badge-num">{pct}%</div>
@@ -266,11 +430,22 @@ def _render_entry_body(entry: dict, review_state: dict, decision: dict) -> None:
         _render_edit_form(entry, review_state)
         return
 
-    # Read-only view
-    st.markdown(f"**Narrative.** {entry.get('narrative', '_(none)_')}")
-    st.markdown(f"**Residual risk:** {entry.get('residual_risk', '?')} — "
-                f"{entry.get('residual_risk_reason', '')}")
-    st.markdown(f"**Effort:** {entry.get('effort_engineer_weeks', 0):g} eng-weeks")
+    # Read-only view — facts strip at top for at-a-glance reading
+    cvss = entry.get("cvss_v31") or {}
+    facts_html = f"""
+    <div class="facts-strip">
+      <div class="fact-cell"><div class="fact-label">Priority</div><div class="fact-value">{entry.get('priority', '—')}</div></div>
+      <div class="fact-cell"><div class="fact-label">CVSS</div><div class="fact-value">{cvss.get('base_score', 0)} <span class="fact-tag">{cvss.get('severity', '')}</span></div></div>
+      <div class="fact-cell"><div class="fact-label">Residual risk</div><div class="fact-value">{entry.get('residual_risk', '—')}</div></div>
+      <div class="fact-cell"><div class="fact-label">Effort</div><div class="fact-value">{entry.get('effort_engineer_weeks', 0):g} <span class="fact-tag">eng-weeks</span></div></div>
+      <div class="fact-cell"><div class="fact-label">STRIDE</div><div class="fact-value">{entry.get('stride', '—')}</div></div>
+    </div>
+    """
+    st.markdown(facts_html, unsafe_allow_html=True)
+
+    st.markdown(f"**What's the risk?**  {entry.get('narrative', '_(none)_')}")
+    if entry.get("residual_risk_reason"):
+        st.caption(f"**Why residual risk is {entry.get('residual_risk', '?')}:** {entry['residual_risk_reason']}")
 
     # Existing controls
     if entry.get("existing_controls"):
@@ -280,10 +455,11 @@ def _render_entry_body(entry: dict, review_state: dict, decision: dict) -> None:
 
     # Gap analysis
     if entry.get("gap_analysis"):
-        st.markdown("**Gap analysis:**")
+        st.markdown("**Gap analysis — which regulation clauses are met, partially met, or missing:**")
         rows = [{
+            "Standard": _standard_for(g.get("clause_id", "")),
             "Clause": g.get("clause_id", ""),
-            "Verdict": g.get("verdict", ""),
+            "Verdict": (g.get("verdict", "") or "").title(),
             "Reason": g.get("reason", ""),
         } for g in entry["gap_analysis"]]
         st.dataframe(rows, hide_index=True, width="stretch")
@@ -764,6 +940,163 @@ div[data-testid="stDataFrame"] {
   overflow: hidden;
 }
 
+/* ---- facts strip (top of each entry) ---- */
+.facts-strip {
+  display: flex;
+  gap: 10px;
+  background: #F8FAFC;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.fact-cell {
+  flex: 1 1 100px;
+  min-width: 100px;
+}
+.fact-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6B7280;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.fact-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1E2761;
+}
+.fact-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #6B7280;
+  background: #EEF2FF;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---- entry cards ---- */
+.cards-header {
+  color: #6B7280;
+  font-size: 0.85rem;
+  margin: 8px 0 12px;
+}
+.card-tid {
+  font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: #6B7280;
+  letter-spacing: 0.02em;
+}
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1E2761;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+.card-summary {
+  color: #374151;
+  font-size: 0.94rem;
+  margin: 10px 0 14px;
+  line-height: 1.55;
+}
+.pill-wrap { text-align: right; padding-top: 4px; }
+.pill {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pill-approved, .pill-edited { background:#DCFCE7; color:#166534; }
+.pill-rejected               { background:#FEE2E2; color:#991B1B; }
+.pill-deferred               { background:#FEF3C7; color:#92400E; }
+.pill-pending                { background:#E5E7EB; color:#374151; }
+
+.card-chips { margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+.chip-sev-critical { background:#FEE2E2; color:#991B1B; border-color:#FCA5A5; }
+.chip-sev-high     { background:#FED7AA; color:#9A3412; border-color:#FDBA74; }
+.chip-sev-medium   { background:#DBEAFE; color:#1E40AF; border-color:#93C5FD; }
+.chip-sev-low      { background:#DCFCE7; color:#166534; border-color:#86EFAC; }
+.chip-sev-none     { background:#F3F4F6; color:#6B7280; border-color:#D1D5DB; }
+.chip-prio-p0      { background:#FEE2E2; color:#991B1B; border-color:#FCA5A5; }
+.chip-prio-p1      { background:#FED7AA; color:#9A3412; border-color:#FDBA74; }
+.chip-prio-p2      { background:#EEF2FF; color:#3730A3; border-color:#C7D2FE; }
+.chip-prio-p3, .chip-prio-na { background:#F3F4F6; color:#6B7280; border-color:#D1D5DB; }
+.chip-stride       { background:#F3F4F6; color:#374151; border-color:#D1D5DB; }
+
+.detail-inline-divider {
+  border-top: 1px dashed #E5E7EB;
+  margin: 14px -4px 12px;
+}
+
+/* Only bordered vertical blocks (i.e. st.container(border=True)) that CONTAIN
+   a .card-marker as a direct-child element get the card treatment.
+   Scoping via "> stElementContainer .card-marker" ensures we only match the
+   INNERMOST st.container — never an outer wrapping tab panel. */
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker) {
+  border-radius: 14px !important;
+  background: white !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  margin-bottom: 14px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker):hover {
+  box-shadow: 0 4px 14px rgba(30,39,97,0.08);
+}
+
+/* Hidden marker element — used only for :has() styling of the parent card. */
+.card-marker { display: none; }
+
+/* Zebra stripe (alternate rows) — noticeable but not distracting. */
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.row-even) {
+  background: #FFFFFF !important;
+}
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.row-odd) {
+  background: #EEF2FF !important;
+}
+
+/* Left color-bar keyed to severity. */
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker)::before {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 5px;
+  background: #D1D5DB;
+  z-index: 1;
+}
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.sev-critical)::before { background: #DC2626; }
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.sev-high)::before     { background: #F97316; }
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.sev-medium)::before   { background: #3B82F6; }
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.sev-low)::before      { background: #16A34A; }
+
+/* Selected card — navy tint + heavier left border. */
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.sel) {
+  background: #EEF2FF !important;
+  box-shadow: 0 6px 20px rgba(30,39,97,0.12);
+}
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.sel)::before {
+  width: 7px;
+}
+
 /* ---- empty state card ---- */
 .empty-state {
   background: linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%);
@@ -811,7 +1144,7 @@ def _render_reviewer_sidebar(review_state: dict) -> None:
 
 def main() -> None:
     st.set_page_config(
-        page_title=f"SRA Review — {DEVICE}",
+        page_title=f"Cybersecurity Risk Assessment — {DEVICE}",
         page_icon="🛡️",
         layout="wide",
         initial_sidebar_state="expanded",
@@ -826,8 +1159,8 @@ def main() -> None:
         st.markdown(
             f"""
             <div class="hero-band">
-              <div class="hero-title">SRA Review <span class="device-chip">device · {DEVICE}</span></div>
-              <div class="hero-sub">Human-in-the-loop review of the drafted Security Risk Assessment</div>
+              <div class="hero-title">Cybersecurity Risk Assessment <span class="device-chip">device · {DEVICE}</span></div>
+              <div class="hero-sub">Draft, review, and export an FDA-ready risk assessment for a connected medical device.</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -851,7 +1184,7 @@ def main() -> None:
     render_header(entries, review_state)
 
     # Sidebar filters (always visible regardless of active tab)
-    st.sidebar.header("Filters")
+    st.sidebar.header("Filter & sort")
     sort_by = st.sidebar.selectbox("Sort by",
                                     ["Priority + threat id", "Threat id (A→Z)", "CVSS score (high→low)"])
     show_only = st.sidebar.selectbox("Show",
@@ -868,17 +1201,35 @@ def main() -> None:
     # Sidebar — job control + actions
     _render_job_control_sidebar()
     st.sidebar.divider()
-    st.sidebar.header("Actions")
-    if st.sidebar.button("📤 Export final artifacts", width="stretch"):
+    st.sidebar.header("Export")
+    if st.sidebar.button("📤 Generate final report (PDF + DOCX)", width="stretch"):
         _run_export_ui(review_state)
     _render_reset_sidebar()
 
     # Main area: two tabs — reviewer workflow + agent activity log
-    tab_review, tab_agents = st.tabs(["📋 Review", "🔍 Agent Activity"])
+    n_turns = 0
+    if PROMPTS_JSONL.exists():
+        try:
+            n_turns = sum(1 for _ in PROMPTS_JSONL.open("r", encoding="utf-8", errors="ignore") if _.strip())
+        except OSError:
+            pass
+    tab_review, tab_agents = st.tabs([
+        f"📋  Review entries ({len(entries)})",
+        f"🔍  How the agents got the answer ({n_turns} steps)",
+    ])
     with tab_agents:
         render_agent_activity_tab()
     with tab_review:
         _render_review_body(entries, review_state, sort_by, show_only, page_size)
+
+
+_STATUS_DOTS = {
+    "approved": "🟢 Approved",
+    "edited":   "🟢 Edited",
+    "rejected": "🔴 Rejected",
+    "deferred": "🟡 Deferred",
+    "pending":  "⚪ Pending",
+}
 
 
 def _render_review_body(
@@ -886,28 +1237,22 @@ def _render_review_body(
     review_state: dict,
     sort_by: str,
     show_only: str,
-    page_size: int,
+    page_size: int,   # unused in master-detail mode; kept for signature compat
 ) -> None:
-    # Apply filters
+    # ---- filter ----------------------------------------------------------
     def _keep(e: dict) -> bool:
         a = review_state.get("decisions", {}).get(e["threat_id"], {}).get("action", "pending")
-        if show_only == "All":
-            return True
-        if show_only == "Pending only":
-            return a == "pending"
-        if show_only == "Approved":
-            return a in {"approved", "edited"}
-        if show_only == "Rejected":
-            return a == "rejected"
-        if show_only == "Deferred":
-            return a == "deferred"
-        if show_only == "Parse errors":
-            return bool(e.get("parse_error"))
+        if show_only == "All":          return True
+        if show_only == "Pending only": return a == "pending"
+        if show_only == "Approved":     return a in {"approved", "edited"}
+        if show_only == "Rejected":     return a == "rejected"
+        if show_only == "Deferred":     return a == "deferred"
+        if show_only == "Parse errors": return bool(e.get("parse_error"))
         return True
 
     display = [e for e in entries if _keep(e)]
 
-    # Apply sort
+    # ---- sort ------------------------------------------------------------
     if sort_by == "Threat id (A→Z)":
         display.sort(key=lambda e: e["threat_id"])
     elif sort_by == "CVSS score (high→low)":
@@ -916,71 +1261,166 @@ def _render_review_body(
         priority_rank = {"P0": 0, "P1": 1, "P2": 2}
         display.sort(key=lambda e: (priority_rank.get(e.get("priority", "P2"), 3), e["threat_id"]))
 
-    # Pagination
     total_display = len(display)
-    total_pages = max(1, (total_display + page_size - 1) // page_size)
-    current_page = min(st.session_state.get("_page", 0), total_pages - 1)
-    st.session_state["_page"] = current_page
-    start = current_page * page_size
-    end = min(start + page_size, total_display)
-    page_items = display[start:end]
+
+    # Glossary expander — collapsible reference so any reviewer can look up
+    # what CVSS / STRIDE / FDA-2023 etc. mean without leaving the page.
+    with st.expander("📖 What do these terms mean? (glossary)", expanded=False):
+        st.markdown(
+            "\n".join(f"- **{term}** — {meaning}" for term, meaning in ACRONYMS)
+        )
 
     st.markdown(
-        f"### {total_display} entries after filter "
-        f"({len(entries)} total)   ·   showing {start + 1}-{end}   ·   "
-        f"page {current_page + 1} of {total_pages}"
+        f"##### {total_display} entries after filter "
+        f"<span style='color:#6B7280;font-weight:400'>· {len(entries)} total</span>",
+        unsafe_allow_html=True,
     )
 
-    # Bulk action bar — approve all pending on this page
-    pending_on_page = [
-        e for e in page_items
+    # ---- bulk approve above table ---------------------------------------
+    pending_all = [
+        e for e in display
         if review_state.get("decisions", {}).get(e["threat_id"], {}).get("action", "pending") == "pending"
     ]
-    if pending_on_page:
-        col_bulk, col_note = st.columns([1, 3])
-        with col_bulk:
-            if st.button(
-                f"✅ Approve all {len(pending_on_page)} pending on this page",
-                key=f"bulk_approve_{current_page}",
-                width="stretch",
-            ):
-                for e in pending_on_page:
-                    record_decision(review_state, e["threat_id"], "approved")
-                st.rerun()
-        with col_note:
-            st.caption(
-                "_Only pending entries on the current page are approved. "
-                "Use the Show filter + a larger page size to scope wider._"
+    if pending_all:
+        cbulk, cnote = st.columns([1, 3])
+        if cbulk.button(
+            f"✅ Approve all {len(pending_all)} pending entries",
+            key="bulk_approve_all_filtered",
+            width="stretch",
+        ):
+            for e in pending_all:
+                record_decision(review_state, e["threat_id"], "approved")
+            st.rerun()
+        cnote.caption("_Approves every pending entry that matches the current filter._")
+
+    if not display:
+        st.info("No entries match the current filter.")
+        return
+
+    # Selection state — remembered across reruns so an Approve action
+    # keeps the same entry open.
+    _sel_key = "_selected_tid"
+
+    # ---- card grid ------------------------------------------------------
+    # Two cards per row when we have many; one per row keeps text readable.
+    # Using st.container(border=True) gives us the card frame; we render
+    # rich HTML inside for chips + description.
+    st.markdown(
+        "<div class='cards-header'>Threats — click <b>Review</b> to see the full analysis</div>",
+        unsafe_allow_html=True,
+    )
+
+    for idx, e in enumerate(display):
+        decision = review_state.get("decisions", {}).get(e["threat_id"], {}) or {}
+        action = decision.get("action", "pending")
+        cvss = e.get("cvss_v31") or {}
+        severity = (cvss.get("severity", "") or "").lower() or "none"
+        priority = e.get("priority", "") or ""
+        stride_letter = (e.get("stride", "") or "").strip().upper()[:1]
+        row_class = "odd" if idx % 2 else "even"
+
+        # Plain-English summary (first sentence of narrative or the title).
+        narr = (e.get("narrative") or "").strip()
+        if narr:
+            summary = narr.split(".")[0].strip()
+            if len(summary) > 260:
+                summary = summary[:257] + "…"
+        else:
+            summary = e.get("title", "")
+
+        status_pill_class = f"pill pill-{action}"
+        status_label = {
+            "approved": "Approved",
+            "edited":   "Edited",
+            "rejected": "Rejected",
+            "deferred": "Deferred",
+            "pending":  "Pending review",
+        }.get(action, "Pending review")
+
+        sev_class = f"chip chip-sev-{severity or 'none'}"
+        prio_class = f"chip chip-prio-{priority.lower() if priority else 'na'}"
+
+        is_selected = (st.session_state.get(_sel_key) == e["threat_id"])
+        sel_marker = "sel" if is_selected else "unsel"
+
+        with st.container(border=True):
+            # Hidden marker div — CSS uses :has() to style the parent card
+            # based on severity, row parity (zebra), and selection state.
+            st.markdown(
+                f"<div class='card-marker sev-{severity} row-{row_class} {sel_marker}'></div>",
+                unsafe_allow_html=True,
+            )
+            c_head, c_status = st.columns([4, 1])
+            with c_head:
+                st.markdown(
+                    f"""
+                    <div class='card-tid'>{e['threat_id']}</div>
+                    <div class='card-title'>{e.get('title', '')}</div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with c_status:
+                st.markdown(
+                    f"<div class='pill-wrap'><span class='{status_pill_class}'>{status_label}</span></div>",
+                    unsafe_allow_html=True,
+                )
+
+            st.markdown(
+                f"<div class='card-summary'>{summary}</div>",
+                unsafe_allow_html=True,
             )
 
-    # Render page
-    for i, e in enumerate(page_items):
-        render_entry_card(e, review_state, i)
-
-    # Pagination controls
-    if total_pages > 1:
-        st.divider()
-        col_prev, col_mid, col_next = st.columns([1, 3, 1])
-        with col_prev:
-            if st.button("◀ Prev", disabled=(current_page == 0), width="stretch"):
-                st.session_state["_page"] = max(0, current_page - 1)
-                st.rerun()
-        with col_mid:
-            new_page = st.number_input(
-                "Jump to page",
-                min_value=1,
-                max_value=total_pages,
-                value=current_page + 1,
-                step=1,
-                label_visibility="collapsed",
+            st.markdown(
+                f"""
+                <div class='card-chips'>
+                  <span class='{sev_class}'>CVSS {cvss.get('base_score', 0)} · {(cvss.get('severity', '') or '—').title()}</span>
+                  <span class='{prio_class}'>Priority {priority or '—'}</span>
+                  <span class='chip chip-stride'>Category {_stride_short(e.get('stride', ''))}</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
             )
-            if new_page - 1 != current_page:
-                st.session_state["_page"] = int(new_page) - 1
-                st.rerun()
-        with col_next:
-            if st.button("Next ▶", disabled=(current_page >= total_pages - 1), width="stretch"):
-                st.session_state["_page"] = min(total_pages - 1, current_page + 1)
-                st.rerun()
+
+            c_btn, c_meta = st.columns([1, 3])
+            with c_btn:
+                label = "▲ Hide details" if is_selected else "Review this entry ▶"
+                if st.button(
+                    label,
+                    key=f"open_{e['threat_id']}",
+                    type=("primary" if is_selected else "secondary"),
+                    width="stretch",
+                ):
+                    st.session_state[_sel_key] = (
+                        None if is_selected else e["threat_id"]
+                    )
+                    st.rerun()
+            with c_meta:
+                if action != "pending":
+                    st.caption(
+                        f"{status_label} by **{decision.get('reviewer', 'unknown')}**"
+                        f" at {(decision.get('timestamp_utc', '') or '')[:19].replace('T', ' ')} UTC"
+                    )
+
+            # ---- inline expansion: full analysis rendered INSIDE the card ----
+            if is_selected:
+                st.markdown(
+                    "<div class='detail-inline-divider'></div>",
+                    unsafe_allow_html=True,
+                )
+                st.caption(
+                    f"**Category:** {STRIDE_MEANING.get(stride_letter, stride_letter or '—')}  \n"
+                    f"**CVSS:** {cvss.get('base_score', 0)} / 10 — {SEVERITY_MEANING.get(severity, severity or '—')}  \n"
+                    f"**Priority:** {PRIORITY_MEANING.get(priority, priority or '—')}"
+                )
+                used = _terms_used_in(e)
+                if used:
+                    with st.expander(
+                        f"📖 Abbreviations used in this entry ({len(used)})",
+                        expanded=False,
+                    ):
+                        for term, meaning in used:
+                            st.markdown(f"- **{term}** — {meaning}")
+                _render_entry_body(e, review_state, decision)
 
 
 @st.fragment(run_every=3)
@@ -1006,7 +1446,7 @@ def _render_job_status_sidebar_fragment() -> None:
 def _render_job_control_sidebar() -> None:
     """Sidebar Analysis Control block — Start / Stop / status of a draft run."""
     st.sidebar.divider()
-    st.sidebar.header("Analysis Control")
+    st.sidebar.header("Run analysis")
 
     job_status = job_manager.status(DEVICE)
 
@@ -1015,7 +1455,7 @@ def _render_job_control_sidebar() -> None:
             _render_job_status_sidebar_fragment()
     else:
         with st.sidebar.form("start_draft_form", clear_on_submit=False):
-            st.markdown("**Start a new draft**")
+            st.markdown("**Draft a new assessment**")
             profile = st.selectbox(
                 "Profile",
                 ["hybrid", "free", "openai"],
@@ -1062,28 +1502,28 @@ def _render_job_control_sidebar() -> None:
 def _render_reset_sidebar() -> None:
     """Sidebar Reset block — three levels of scope, confirmation required."""
     st.sidebar.divider()
-    st.sidebar.header("Reset")
+    st.sidebar.header("Clear data")
 
     if job_manager.is_running(DEVICE):
         st.sidebar.caption("_(disabled while a draft is running)_")
         return
 
     scope = st.sidebar.radio(
-        "Scope",
-        ["Draft + review only", "…also indices", "…also cloned corpus"],
+        "What to clear",
+        ["Just the draft & my review", "…also the indices", "…also the cloned corpus"],
         index=0,
         help=(
-            "Draft + review only: wipe draft, prompts, review state, final artifacts.\n"
-            "…also indices: additionally drop Chroma + Kuzu + JSON extracts (needs `sra index` after).\n"
-            "…also cloned corpus: additionally drop input/<device>/ (needs `sra init` after)."
+            "Just the draft & my review: wipe draft, prompts, review state, final artifacts.\n"
+            "…also the indices: additionally drop Chroma + Kuzu + JSON extracts (needs `sra index` after).\n"
+            "…also the cloned corpus: additionally drop input/<device>/ (needs `sra init` after)."
         ),
     )
-    confirm = st.sidebar.checkbox("I'm sure — delete the listed files")
-    if st.sidebar.button("🗑 Reset", width="stretch", disabled=not confirm):
+    confirm = st.sidebar.checkbox("Yes, delete these files")
+    if st.sidebar.button("🗑 Clear now", width="stretch", disabled=not confirm):
         deleted = job_manager.reset(
             DEVICE,
-            include_indices=(scope == "…also indices" or scope == "…also cloned corpus"),
-            include_corpus=(scope == "…also cloned corpus"),
+            include_indices=(scope in {"…also the indices", "…also the cloned corpus"}),
+            include_corpus=(scope == "…also the cloned corpus"),
         )
         st.sidebar.success(f"Deleted {len(deleted)} items.")
         # Reset in-session UI state so a stale page render doesn't linger
