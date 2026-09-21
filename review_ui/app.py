@@ -706,7 +706,7 @@ header[data-testid="stHeader"] { background: transparent; }
 
 /* ---- headings ---- */
 h1, h2, h3, h4 {
-  color: #E5E7EB;
+  color: #1E2761;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -777,26 +777,26 @@ h3 { font-size: 1.1rem; margin-top: 1rem; }
 
 /* ---- KPI metrics ---- */
 div[data-testid="stMetric"] {
-  background: #1E293B;
-  border: 1px solid #334155;
+  background: white;
+  border: 1px solid #E5E7EB;
   border-radius: 12px;
   padding: 14px 18px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 div[data-testid="stMetric"]:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 div[data-testid="stMetric"] label {
-  color: #94A3B8 !important;
+  color: #6B7280 !important;
   font-size: 0.72rem !important;
   font-weight: 600 !important;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 div[data-testid="stMetric"] [data-testid="stMetricValue"] {
-  color: #FFAD1F;
+  color: #1E2761;
   font-size: 1.75rem;
   font-weight: 700;
 }
@@ -813,26 +813,25 @@ div[data-testid="stProgress"] > div > div {
 
 /* ---- expanders (entry cards) ---- */
 div[data-testid="stExpander"] {
-  border: 1px solid #334155;
+  border: 1px solid #E5E7EB;
   border-radius: 12px;
-  background: #1E293B;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   margin-bottom: 10px;
   overflow: hidden;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 div[data-testid="stExpander"]:hover {
-  border-color: #475569;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  border-color: #C7D2FE;
+  box-shadow: 0 4px 14px rgba(30,39,97,0.08);
 }
 div[data-testid="stExpander"] summary {
   padding: 12px 16px;
   font-weight: 500;
   cursor: pointer;
-  color: #E5E7EB;
 }
 div[data-testid="stExpander"] summary:hover {
-  background: #253248;
+  background: #F9FAFB;
 }
 
 /* ---- buttons ---- */
@@ -1009,10 +1008,9 @@ div[data-testid="stDataFrame"] {
 .row-title {
   font-size: 0.98rem;
   font-weight: 600;
-  color: #E5E7EB;
+  color: #1E2761;
   line-height: 1.35;
 }
-.row-tid { color: #94A3B8 !important; }
 .pill-wrap { text-align: right; padding-top: 4px; }
 .pill {
   display: inline-block;
@@ -1059,7 +1057,7 @@ div[data-testid="stDataFrame"] {
    don't sit on top of it. */
 div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker) {
   border-radius: 8px !important;
-  background: #1E293B !important;
+  background: white !important;
   margin-bottom: 4px !important;
   padding: 4px 8px 4px 18px !important;
   transition: box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
@@ -1067,27 +1065,28 @@ div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .
   overflow: hidden;
 }
 div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker):hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  box-shadow: 0 2px 8px rgba(30,39,97,0.08);
   z-index: 2;
 }
-/* Selected row — brighter, more padding */
+/* Selected row — subtle navy tint + more padding */
 div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.sel) {
   border-radius: 12px !important;
-  background: #263449 !important;
+  background: #EEF2FF !important;
   margin-top: 8px !important;
   margin-bottom: 8px !important;
   padding: 8px 12px 8px 20px !important;
+  box-shadow: 0 6px 20px rgba(30,39,97,0.12);
 }
 
 /* Hidden marker element — used only for :has() styling of the parent card. */
 .card-marker { display: none; }
 
-/* Zebra stripe (alternate rows) — dark, noticeable but not distracting. */
+/* Zebra stripe (alternate rows) — noticeable but not distracting. */
 div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.row-even) {
-  background: #1E293B !important;
+  background: #FFFFFF !important;
 }
 div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.row-odd) {
-  background: #253248 !important;
+  background: #F1F5F9 !important;
 }
 
 /* Left color-bar keyed to severity. */
