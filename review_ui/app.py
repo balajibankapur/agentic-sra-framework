@@ -981,30 +981,33 @@ div[data-testid="stDataFrame"] {
   letter-spacing: 0.04em;
 }
 
-/* ---- entry cards ---- */
-.cards-header {
-  color: #6B7280;
-  font-size: 0.85rem;
-  margin: 8px 0 12px;
+/* ---- compact table-style rows ---- */
+.row-header {
+  display: grid;
+  grid-template-columns: 1.2fr 1.4fr 5fr 1.5fr 0.9fr 1.2fr;
+  gap: 16px;
+  padding: 8px 20px 6px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #E5E7EB;
 }
-.card-tid {
+.row-header .rc {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6B7280;
+  font-weight: 600;
+}
+.row-tid {
   font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   color: #6B7280;
   letter-spacing: 0.02em;
 }
-.card-title {
-  font-size: 1.1rem;
-  font-weight: 700;
+.row-title {
+  font-size: 0.98rem;
+  font-weight: 600;
   color: #1E2761;
-  margin-top: 2px;
-  line-height: 1.3;
-}
-.card-summary {
-  color: #374151;
-  font-size: 0.94rem;
-  margin: 10px 0 14px;
-  line-height: 1.55;
+  line-height: 1.35;
 }
 .pill-wrap { text-align: right; padding-top: 4px; }
 .pill {
@@ -1047,20 +1050,26 @@ div[data-testid="stDataFrame"] {
 }
 
 /* Only bordered vertical blocks (i.e. st.container(border=True)) that CONTAIN
-   a .card-marker as a direct-child element get the card treatment.
-   Scoping via "> stElementContainer .card-marker" ensures we only match the
-   INNERMOST st.container — never an outer wrapping tab panel. */
+   a .card-marker as a direct-child element get the card treatment. */
 div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker) {
-  border-radius: 14px !important;
+  border-radius: 8px !important;
   background: white !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-  margin-bottom: 14px;
+  margin-bottom: 4px !important;
+  padding: 4px 0 !important;
   transition: box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
   position: relative;
   overflow: hidden;
 }
 div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker):hover {
-  box-shadow: 0 4px 14px rgba(30,39,97,0.08);
+  box-shadow: 0 2px 8px rgba(30,39,97,0.08);
+  z-index: 2;
+}
+/* Selected row gets larger padding + rounded corners restore */
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.sel) {
+  border-radius: 12px !important;
+  margin-top: 8px !important;
+  margin-bottom: 8px !important;
+  padding: 8px 0 !important;
 }
 
 /* Hidden marker element — used only for :has() styling of the parent card. */
@@ -1301,12 +1310,19 @@ def _render_review_body(
     # keeps the same entry open.
     _sel_key = "_selected_tid"
 
-    # ---- card grid ------------------------------------------------------
-    # Two cards per row when we have many; one per row keeps text readable.
-    # Using st.container(border=True) gives us the card frame; we render
-    # rich HTML inside for chips + description.
+    # ---- compact-row table with inline expansion ------------------------
+    # Header row (table column labels)
     st.markdown(
-        "<div class='cards-header'>Threats — click <b>Review</b> to see the full analysis</div>",
+        """
+        <div class='row-header'>
+          <div class='rc rc-status'>Status</div>
+          <div class='rc rc-tid'>Threat ID</div>
+          <div class='rc rc-title'>Title</div>
+          <div class='rc rc-cvss'>CVSS</div>
+          <div class='rc rc-prio'>Priority</div>
+          <div class='rc rc-act'></div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
@@ -1319,71 +1335,55 @@ def _render_review_body(
         stride_letter = (e.get("stride", "") or "").strip().upper()[:1]
         row_class = "odd" if idx % 2 else "even"
 
-        # Plain-English summary (first sentence of narrative or the title).
-        narr = (e.get("narrative") or "").strip()
-        if narr:
-            summary = narr.split(".")[0].strip()
-            if len(summary) > 260:
-                summary = summary[:257] + "…"
-        else:
-            summary = e.get("title", "")
-
         status_pill_class = f"pill pill-{action}"
         status_label = {
             "approved": "Approved",
             "edited":   "Edited",
             "rejected": "Rejected",
             "deferred": "Deferred",
-            "pending":  "Pending review",
-        }.get(action, "Pending review")
+            "pending":  "Pending",
+        }.get(action, "Pending")
 
-        sev_class = f"chip chip-sev-{severity or 'none'}"
+        sev_class = f"chip chip-sev-{severity}"
         prio_class = f"chip chip-prio-{priority.lower() if priority else 'na'}"
 
         is_selected = (st.session_state.get(_sel_key) == e["threat_id"])
         sel_marker = "sel" if is_selected else "unsel"
 
         with st.container(border=True):
-            # Hidden marker div — CSS uses :has() to style the parent card
-            # based on severity, row parity (zebra), and selection state.
+            # Hidden marker div — CSS :has() styles the parent row from this.
             st.markdown(
                 f"<div class='card-marker sev-{severity} row-{row_class} {sel_marker}'></div>",
                 unsafe_allow_html=True,
             )
-            c_head, c_status = st.columns([4, 1])
-            with c_head:
-                st.markdown(
-                    f"""
-                    <div class='card-tid'>{e['threat_id']}</div>
-                    <div class='card-title'>{e.get('title', '')}</div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-            with c_status:
-                st.markdown(
-                    f"<div class='pill-wrap'><span class='{status_pill_class}'>{status_label}</span></div>",
-                    unsafe_allow_html=True,
-                )
 
-            st.markdown(
-                f"<div class='card-summary'>{summary}</div>",
+            # -------- compact single-line row --------
+            c_status, c_tid, c_title, c_cvss, c_prio, c_btn = st.columns(
+                [1.2, 1.4, 5, 1.5, 0.9, 1.2],
+                vertical_alignment="center",
+            )
+            c_status.markdown(
+                f"<span class='{status_pill_class}'>{status_label}</span>",
                 unsafe_allow_html=True,
             )
-
-            st.markdown(
-                f"""
-                <div class='card-chips'>
-                  <span class='{sev_class}'>CVSS {cvss.get('base_score', 0)} · {(cvss.get('severity', '') or '—').title()}</span>
-                  <span class='{prio_class}'>Priority {priority or '—'}</span>
-                  <span class='chip chip-stride'>Category {_stride_short(e.get('stride', ''))}</span>
-                </div>
-                """,
+            c_tid.markdown(
+                f"<span class='row-tid'>{e['threat_id']}</span>",
                 unsafe_allow_html=True,
             )
-
-            c_btn, c_meta = st.columns([1, 3])
+            c_title.markdown(
+                f"<span class='row-title'>{e.get('title', '')}</span>",
+                unsafe_allow_html=True,
+            )
+            c_cvss.markdown(
+                f"<span class='{sev_class}'>{cvss.get('base_score', 0)} · {(cvss.get('severity', '') or '—').title()}</span>",
+                unsafe_allow_html=True,
+            )
+            c_prio.markdown(
+                f"<span class='{prio_class}'>{priority or '—'}</span>",
+                unsafe_allow_html=True,
+            )
             with c_btn:
-                label = "▲ Hide details" if is_selected else "Review this entry ▶"
+                label = "▲ Close" if is_selected else "Details ▶"
                 if st.button(
                     label,
                     key=f"open_{e['threat_id']}",
@@ -1394,24 +1394,26 @@ def _render_review_body(
                         None if is_selected else e["threat_id"]
                     )
                     st.rerun()
-            with c_meta:
-                if action != "pending":
-                    st.caption(
-                        f"{status_label} by **{decision.get('reviewer', 'unknown')}**"
-                        f" at {(decision.get('timestamp_utc', '') or '')[:19].replace('T', ' ')} UTC"
-                    )
 
-            # ---- inline expansion: full analysis rendered INSIDE the card ----
+            # -------- inline expansion --------
             if is_selected:
                 st.markdown(
                     "<div class='detail-inline-divider'></div>",
                     unsafe_allow_html=True,
+                )
+                st.markdown(
+                    f"##### {e.get('title', '')}"
                 )
                 st.caption(
                     f"**Category:** {STRIDE_MEANING.get(stride_letter, stride_letter or '—')}  \n"
                     f"**CVSS:** {cvss.get('base_score', 0)} / 10 — {SEVERITY_MEANING.get(severity, severity or '—')}  \n"
                     f"**Priority:** {PRIORITY_MEANING.get(priority, priority or '—')}"
                 )
+                if action != "pending":
+                    st.caption(
+                        f"_{status_label} by **{decision.get('reviewer', 'unknown')}** "
+                        f"at {(decision.get('timestamp_utc', '') or '')[:19].replace('T', ' ')} UTC_"
+                    )
                 used = _terms_used_in(e)
                 if used:
                     with st.expander(
