@@ -1193,28 +1193,33 @@ def main() -> None:
     _render_progress_banner()
     render_header(entries, review_state)
 
-    # Sidebar filters (always visible regardless of active tab)
-    st.sidebar.header("Filter & sort")
-    sort_by = st.sidebar.selectbox("Sort by",
-                                    ["Priority + threat id", "Threat id (A→Z)", "CVSS score (high→low)"])
-    show_only = st.sidebar.selectbox("Show",
-                                      ["All", "Pending only", "Approved", "Rejected", "Deferred", "Parse errors"])
-    page_size = st.sidebar.slider("Entries per page", min_value=10, max_value=100,
-                                   value=25, step=5)
-
-    # If the filter combo changed, reset to page 0.
-    filter_key = f"{sort_by}|{show_only}|{page_size}"
-    if st.session_state.get("_filter_key") != filter_key:
-        st.session_state["_filter_key"] = filter_key
-        st.session_state["_page"] = 0
-
-    # Sidebar — job control + actions
+    # Sidebar order (top → bottom, by priority of use):
+    #   1. Reviewer (already rendered above)
+    #   2. Run analysis — Start draft button (most-wanted action)
+    #   3. Export final report
+    #   4. Clear data (danger zone)
+    #   5. Filter & sort (only relevant once entries exist)
     _render_job_control_sidebar()
     st.sidebar.divider()
     st.sidebar.header("Export")
     if st.sidebar.button("📤 Generate final report (PDF + DOCX)", width="stretch"):
         _run_export_ui(review_state)
     _render_reset_sidebar()
+
+    st.sidebar.divider()
+    with st.sidebar.expander("Filter & sort", expanded=False):
+        sort_by = st.selectbox("Sort by",
+                               ["Priority + threat id", "Threat id (A→Z)", "CVSS score (high→low)"])
+        show_only = st.selectbox("Show",
+                                 ["All", "Pending only", "Approved", "Rejected", "Deferred", "Parse errors"])
+        page_size = st.slider("Entries per page", min_value=10, max_value=100,
+                              value=25, step=5)
+
+    # If the filter combo changed, reset to page 0.
+    filter_key = f"{sort_by}|{show_only}|{page_size}"
+    if st.session_state.get("_filter_key") != filter_key:
+        st.session_state["_filter_key"] = filter_key
+        st.session_state["_page"] = 0
 
     # Main area: two tabs — reviewer workflow + agent activity log
     n_turns = 0
