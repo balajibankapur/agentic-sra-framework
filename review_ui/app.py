@@ -453,16 +453,25 @@ def _render_entry_body(entry: dict, review_state: dict, decision: dict) -> None:
         for c in entry["existing_controls"]:
             st.markdown(f"- `{c.get('id', '?')}` — {c.get('description', '')}")
 
-    # Gap analysis
+    # Gap analysis — rendered as a markdown table so the Reason column wraps
+    # instead of being truncated the way st.dataframe truncates long cells.
     if entry.get("gap_analysis"):
         st.markdown("**Gap analysis — which regulation clauses are met, partially met, or missing:**")
-        rows = [{
-            "Standard": _standard_for(g.get("clause_id", "")),
-            "Clause": g.get("clause_id", ""),
-            "Verdict": (g.get("verdict", "") or "").title(),
-            "Reason": g.get("reason", ""),
-        } for g in entry["gap_analysis"]]
-        st.dataframe(rows, hide_index=True, width="stretch")
+        verdict_icon = {"present": "🟢", "partial": "🟡", "missing": "🔴"}
+        lines = [
+            "| Standard | Clause | Verdict | Reason |",
+            "|---|---|---|---|",
+        ]
+        for g in entry["gap_analysis"]:
+            verdict = (g.get("verdict", "") or "").lower()
+            reason = (g.get("reason", "") or "").replace("|", "\\|").replace("\n", " ")
+            lines.append(
+                f"| {_standard_for(g.get('clause_id', ''))} "
+                f"| `{g.get('clause_id', '')}` "
+                f"| {verdict_icon.get(verdict, '')} {verdict.title()} "
+                f"| {reason} |"
+            )
+        st.markdown("\n".join(lines))
 
     # Proposed controls
     if entry.get("proposed_controls"):
@@ -716,12 +725,12 @@ h3 { font-size: 1.1rem; margin-top: 1rem; }
 
 /* ---- hero band ---- */
 .hero-band {
-  background: linear-gradient(135deg, #1E2761 0%, #2E3F8F 60%, #4356B2 100%);
+  background: linear-gradient(135deg, #232C54 0%, #2E3A6B 60%, #3C4A80 100%);
   color: white;
   padding: 1.4rem 1.8rem;
   border-radius: 16px;
   margin-bottom: 1.2rem;
-  box-shadow: 0 6px 24px rgba(30, 39, 97, 0.18);
+  box-shadow: 0 4px 18px rgba(35, 44, 84, 0.14);
 }
 .hero-band .hero-row {
   display: flex;
@@ -764,7 +773,7 @@ h3 { font-size: 1.1rem; margin-top: 1rem; }
 .hero-badge-num {
   font-size: 1.9rem;
   font-weight: 700;
-  color: #FFAD1F;
+  color: #E9B45A;
   line-height: 1;
 }
 .hero-badge-label {
@@ -803,11 +812,11 @@ div[data-testid="stMetric"] [data-testid="stMetricValue"] {
 
 /* ---- progress bar ---- */
 div[data-testid="stProgress"] > div > div > div {
-  background: linear-gradient(90deg, #1E2761 0%, #FFAD1F 100%);
+  background: linear-gradient(90deg, #2E3A6B 0%, #C9924A 100%);
   border-radius: 999px;
 }
 div[data-testid="stProgress"] > div > div {
-  background: #F3F4F6;
+  background: #DFE3EA;
   border-radius: 999px;
 }
 
@@ -940,6 +949,38 @@ div[data-testid="stDataFrame"] {
   overflow: hidden;
 }
 
+/* ---- markdown tables (gap analysis) — wrap, never truncate ---- */
+.stMarkdown table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  margin: 6px 0 12px;
+}
+.stMarkdown table th {
+  background: #EFF2F9;
+  color: #1E2761;
+  font-weight: 600;
+  text-align: left;
+  padding: 7px 10px;
+  border-bottom: 2px solid #D7DDEA;
+  white-space: nowrap;
+}
+.stMarkdown table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #E8EBF1;
+  vertical-align: top;
+  white-space: normal;      /* wrap long reasons */
+  word-break: break-word;
+  color: #374151;
+}
+/* Standard / Clause / Verdict stay compact; Reason takes the rest */
+.stMarkdown table td:nth-child(1) { width: 18%; }
+.stMarkdown table td:nth-child(2) { width: 14%; white-space: nowrap; }
+.stMarkdown table td:nth-child(3) { width: 10%; white-space: nowrap; }
+.stMarkdown table td:nth-child(4) { width: 58%; }
+.stMarkdown table tr:last-child td { border-bottom: none; }
+
 /* ---- facts strip (top of each entry) ---- */
 .facts-strip {
   display: flex;
@@ -984,11 +1025,17 @@ div[data-testid="stDataFrame"] {
 /* ---- compact table-style rows ---- */
 .row-header {
   display: grid;
-  grid-template-columns: 1.3fr 1.6fr 6.5fr 1.4fr 0.9fr 1.1fr;
+  grid-template-columns: 1.3fr 1.6fr 5.8fr 1.3fr 0.8fr 1.7fr;
   gap: 16px;
   padding: 8px 20px 6px;
   margin-bottom: 4px;
   border-bottom: 1px solid #E5E7EB;
+}
+/* Keep button labels on one line */
+div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker) .stButton > button {
+  white-space: nowrap;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 /* Prevent status pill from wrapping */
 .pill { white-space: nowrap; }
@@ -1071,22 +1118,22 @@ div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .
 /* Selected row — subtle navy tint + more padding */
 div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.sel) {
   border-radius: 12px !important;
-  background: #EEF2FF !important;
+  background: #EFF2F9 !important;
   margin-top: 8px !important;
   margin-bottom: 8px !important;
   padding: 8px 12px 8px 20px !important;
-  box-shadow: 0 6px 20px rgba(30,39,97,0.12);
+  box-shadow: 0 6px 20px rgba(35,44,84,0.10);
 }
 
 /* Hidden marker element — used only for :has() styling of the parent card. */
 .card-marker { display: none; }
 
-/* Zebra stripe (alternate rows) — noticeable but not distracting. */
+/* Zebra stripe (alternate rows) — white cards on the tinted page ground. */
 div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.row-even) {
   background: #FFFFFF !important;
 }
 div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .card-marker.row-odd) {
-  background: #F1F5F9 !important;
+  background: #FAFBFD !important;
 }
 
 /* Left color-bar keyed to severity. */
@@ -1370,7 +1417,7 @@ def _render_review_body(
 
             # -------- compact single-line row --------
             c_status, c_tid, c_title, c_cvss, c_prio, c_btn = st.columns(
-                [1.3, 1.6, 6.5, 1.4, 0.9, 1.1],
+                [1.3, 1.6, 5.8, 1.3, 0.8, 1.7],
                 vertical_alignment="center",
             )
             c_status.markdown(
