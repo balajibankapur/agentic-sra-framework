@@ -1542,6 +1542,17 @@ def _render_job_control_sidebar() -> None:
                     "pilot (limit 25–50) where you want to exercise VULN recall."
                 ),
             )
+            n_done = len(load_draft())
+            resume = st.checkbox(
+                f"Resume — skip the {n_done} already drafted",
+                value=bool(n_done),
+                help=(
+                    "Threats already in the draft are skipped, so an "
+                    "interrupted run picks up where it stopped. Entries that "
+                    "failed guardrails are retried. With a threat limit set, "
+                    "the limit counts NEW threats."
+                ),
+            )
             submitted = st.form_submit_button("▶ Start draft", width="stretch",
                                                type="primary")
             if submitted:
@@ -1552,6 +1563,7 @@ def _render_job_control_sidebar() -> None:
                         limit=(int(limit_val) or None),
                         category=(category.strip() or None),
                         strategy=strategy,
+                        resume=resume,
                     )
                     st.sidebar.success("Draft started in background.")
                     st.rerun()

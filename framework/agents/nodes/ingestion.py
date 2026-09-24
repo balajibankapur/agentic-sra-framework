@@ -7,10 +7,32 @@ carried on SRAState.
 
 from __future__ import annotations
 
+import json
+
 import kuzu
 
 from framework.agents.state import SRAState
 from framework.config import KUZU_DIR
+
+
+def _already_drafted(state: SRAState) -> set[str]:
+    """Threat ids already present in the draft JSON, for --resume.
+
+    Entries that failed guardrails are NOT treated as done — a parse_error
+    entry is a placeholder holding the raw LLM output, so resuming should
+    take another run at it.
+    """
+    path = state.draft_json_path
+    if not path.exists():
+        return set()
+    try:
+        entries = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return set()
+    return {
+        e["threat_id"] for e in entries
+        if e.get("threat_id") and not e.get("parse_error")
+    }
 
 
 def run_ingestion(
@@ -20,6 +42,7 @@ def run_ingestion(
     threat: str | None = None,
     limit: int | None = None,
     strategy: str = "priority",
+    resume: bool = False,
 ) -> dict:
     """Populate state.threat_queue via Cypher.
 
@@ -27,6 +50,10 @@ def run_ingestion(
       priority     order by priority band then id (default; matches SDD §2.1)
       code-linked  prioritise threats reachable to seeded VULN CodeArtifacts
                    (better for a small pilot targeting the code-side eval)
+
+    With resume=True, threats already drafted are removed from the queue
+    BEFORE --limit is applied, so `--limit 25 --resume` means "25 more",
+    not "top up to 25 total".
     """
     db_path = KUZU_DIR / f"{state.device}.kuzu"
     conn = kuzu.Connection(kuzu.Database(str(db_path)))
@@ -41,7 +68,15 @@ def run_ingestion(
         params["category"] = f"-{category}-"
 
     where_sql = "WHERE " + " AND ".join(where_clauses) if where_clauses else ""
-    limit_sql = f"LIMIT {int(limit)}" if limit else ""
+    # When resuming, the SQL LIMIT must not fire — already-drafted threats are
+    # filtered out in Python afterwards, and limiting first would starve the
+    # queue. Both strategy branches truncate to `limit` at the end instead.
+    limit_sql = f"LIMIT {int(limit)}" if (limit and not resume) else ""
+
+    done = _already_drafted(state) if resume else set()
+    if resume:
+        print(f"  resume: {len(done)} threats already drafted — skipping them",
+              flush=True)
 
     if strategy == "code-linked":
         # Two-phase rank: post-process in Python because Kuzu can't easily
@@ -96,7 +131,9 @@ def run_ingestion(
         # Round-robin across VULN-linked subsystems first (skip _unmatched
         # until every subsystem has been sampled). Deduplicates ids that
         # matched multiple tokens.
-        seen: set[str] = set()
+        # Seeding `seen` with already-drafted ids makes both round-robin
+        # loops skip them without any extra branching.
+        seen: set[str] = set(done)
         result: list[str] = []
         active_subs = sorted(s for s in buckets if s != "_unmatched")
         # Round-robin the VULN-linked buckets
@@ -143,4 +180,8 @@ def run_ingestion(
     ids: list[str] = []
     while res.has_next():
         ids.append(res.get_next()[0])
+    if done:
+        ids = [t for t in ids if t not in done]
+    if limit:
+        ids = ids[: int(limit)]
     return {"threat_queue": ids}

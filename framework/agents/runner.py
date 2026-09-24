@@ -51,6 +51,7 @@ def run_draft(
     limit: int | None = None,
     strategy: str = "priority",
     extra_context: str = "",
+    resume: bool = False,
 ) -> SRAState:
     """Kick off the LangGraph draft pipeline for one device.
 
@@ -112,12 +113,13 @@ def run_draft(
     console.print(f"[bold]sra draft[/] · device=[cyan]{device}[/] profile=[cyan]{profile}[/]"
                   + (f" category=[cyan]{category}[/]" if category else "")
                   + (f" threat=[cyan]{threat}[/]" if threat else "")
-                  + (f" limit=[cyan]{limit}[/]" if limit else ""))
+                  + (f" limit=[cyan]{limit}[/]" if limit else "")
+                  + (" [green]resume[/]" if resume else ""))
     console.print(f"  corpus commit:    [dim]{initial_state.corpus_commit_sha[:12]}[/]")
     console.print(f"  framework commit: [dim]{initial_state.framework_commit_sha[:12]}[/]")
 
     graph = build_graph(category=category, threat=threat, limit=limit,
-                        strategy=strategy)
+                        strategy=strategy, resume=resume)
 
     # Stream state updates so we can show a live counter as entries land.
     # graph.stream() yields the FINAL state accumulator on completion.

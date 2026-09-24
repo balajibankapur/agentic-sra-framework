@@ -114,6 +114,7 @@ def start_draft(
     threat: str | None = None,
     extra_context: str = "",
     strategy: str = "priority",
+    resume: bool = False,
 ) -> JobStatus:
     """Spawn `sra draft` as a detached background subprocess.
 
@@ -139,6 +140,8 @@ def start_draft(
         cmd += ["--extra-context", extra_context]
     if strategy and strategy != "priority":
         cmd += ["--strategy", strategy]
+    if resume:
+        cmd += ["--resume"]
 
     log_fh = log_p.open("ab", buffering=0)
     # start_new_session so the child survives if the Streamlit process reloads

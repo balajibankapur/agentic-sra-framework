@@ -30,6 +30,7 @@ def build_graph(
     threat: str | None = None,
     limit: int | None = None,
     strategy: str = "priority",
+    resume: bool = False,
 ):
     """Compile the LangGraph state machine for one `sra draft` run."""
     g = StateGraph(SRAState)
@@ -37,7 +38,7 @@ def build_graph(
     # Ingestion is closed over the CLI filter args
     def _ingestion(state: SRAState) -> dict:
         return run_ingestion(state, category=category, threat=threat,
-                             limit=limit, strategy=strategy)
+                             limit=limit, strategy=strategy, resume=resume)
 
     g.add_node("ingestion", _ingestion)
     g.add_node("dequeue", run_dequeue)

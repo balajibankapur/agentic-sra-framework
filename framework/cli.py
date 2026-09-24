@@ -342,6 +342,11 @@ def draft(
         "", "--extra-context",
         help="Reviewer-supplied additional guidance appended to TCR's user message "
              "(most useful with --threat for a targeted re-run)."),
+    resume: bool = typer.Option(
+        False, "--resume",
+        help="Skip threats already drafted in output/<device>_sra_draft.json. "
+             "Entries that failed guardrails are retried. With --limit, the "
+             "limit counts NEW threats."),
 ) -> None:
     """Run the LangGraph pipeline over each threat and write output/<device>_sra_draft.{md,json}."""
     from framework.agents.runner import run_draft
@@ -352,7 +357,8 @@ def draft(
         console.print(f"[red]--strategy must be one of priority|code-linked (got {strategy!r})[/]")
         raise typer.Exit(code=2)
     run_draft(device=device, profile=profile, category=category, threat=threat,
-              limit=limit, strategy=strategy, extra_context=extra_context)
+              limit=limit, strategy=strategy, extra_context=extra_context,
+              resume=resume)
 
 
 @app.command()
