@@ -70,9 +70,16 @@ def run_draft(
 
     targeted_rerun = bool(threat)   # single-threat re-run keeps prior state
 
-    if not targeted_rerun:
-        # Full or filtered runs: wipe stale draft-side outputs so the new run
-        # is unbiased. review_state is wiped too — old decisions were made
+    # A resume run MUST keep the draft — ingestion reads it to work out which
+    # threats to skip. Wiping it first (as a fresh run does) would leave
+    # nothing to resume from and silently redraft everything.
+    if resume:
+        console.print(f"[cyan]Resuming[/] — draft, prompts log and review "
+                      f"decisions preserved; already-drafted threats will be "
+                      f"skipped.")
+    elif not targeted_rerun:
+        # Fresh full or filtered runs: wipe stale draft-side outputs so the new
+        # run is unbiased. review_state is wiped too — old decisions were made
         # against a previous draft and silently reapplying them would corrupt
         # the final. Save the file first if you want to preserve decisions.
         for p in (draft_md, draft_json, prompt_log, review_state):
