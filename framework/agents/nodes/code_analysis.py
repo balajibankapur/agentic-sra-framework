@@ -104,16 +104,16 @@ def run_code_analysis(state: SRAState) -> dict:
     )
     if turn1.parsed_json is None:
         return {"code_findings": [],
-                "warnings": [f"code_analysis[{state.current_threat}]: planner returned unparseable JSON"]}
+                "warnings": list(state.warnings) + [f"code_analysis[{state.current_threat}]: planner returned unparseable JSON"]}
     try:
         planner_out = PlannerOutput.model_validate(turn1.parsed_json)
     except Exception as e:
         return {"code_findings": [],
-                "warnings": [f"code_analysis[{state.current_threat}]: planner schema fail: {e}"]}
+                "warnings": list(state.warnings) + [f"code_analysis[{state.current_threat}]: planner schema fail: {e}"]}
 
     if not planner_out.probes:
         return {"code_findings": [],
-                "warnings": [f"code_analysis[{state.current_threat}]: planner produced no probes"]}
+                "warnings": list(state.warnings) + [f"code_analysis[{state.current_threat}]: planner produced no probes"]}
 
     # ---- Python: run the greps -------------------------------------------
     probe_results: list[dict] = []
@@ -155,7 +155,7 @@ def run_code_analysis(state: SRAState) -> dict:
     )
     if turn2.parsed_json is None:
         return {"code_findings": [],
-                "warnings": [f"code_analysis[{state.current_threat}]: interpreter returned unparseable JSON"]}
+                "warnings": list(state.warnings) + [f"code_analysis[{state.current_threat}]: interpreter returned unparseable JSON"]}
 
     # ---- Guardrails on interpreter output ---------------------------------
     ctx = GuardrailContext(
@@ -167,7 +167,7 @@ def run_code_analysis(state: SRAState) -> dict:
     warnings: list[str] = list(soft)
     if not passed:
         return {"code_findings": [],
-                "warnings": warnings + [f"code_analysis[{state.current_threat}]: hard-fail — {h}"
+                "warnings": list(state.warnings) + warnings + [f"code_analysis[{state.current_threat}]: hard-fail — {h}"
                                         for h in hard]}
 
     # ---- Convert to CodeFinding models -----------------------------------
@@ -184,7 +184,7 @@ def run_code_analysis(state: SRAState) -> dict:
         except (KeyError, TypeError):
             continue
 
-    return {"code_findings": findings_out, "warnings": warnings}
+    return {"code_findings": findings_out, "warnings": list(state.warnings) + warnings}
 
 
 # ---------------------------------------------------------------------------

@@ -117,7 +117,11 @@ def run_threat_control_risk(state: SRAState) -> dict:
         agent_name=AGENT_NAME,
     )
     passed, hard, soft = run_guardrails(result.parsed_json, ctx, prompt.guardrails_post)
-    warnings = list(soft)
+    # Carry upstream warnings (compliance_mapper, code_analysis) onto the
+    # entry. Without this a dropped clause finding or a truncated compliance
+    # response left the reviewer staring at an empty Gap analysis section
+    # with no explanation of why it was empty.
+    warnings = list(state.warnings) + list(soft)
 
     if not passed:
         # Hard-fail: emit a marked entry so reviewer sees the raw LLM output

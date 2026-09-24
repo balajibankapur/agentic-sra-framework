@@ -18,4 +18,9 @@ def run_dequeue(state: SRAState) -> dict:
         # reset per-threat findings
         "compliance_findings": [],
         "code_findings": [],
+        # Reset per-threat warnings too. `warnings` has no LangGraph reducer,
+        # so each node's return replaces it; upstream nodes accumulate onto
+        # the list explicitly and Threat/Control/Risk copies the result onto
+        # the SRA entry, so the reviewer sees why a section is missing.
+        "warnings": [],
     }

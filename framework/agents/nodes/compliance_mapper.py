@@ -64,7 +64,7 @@ def run_compliance_mapper(state: SRAState) -> dict:
     )
     if not threat_rows:
         return {"compliance_findings": [],
-                "warnings": [f"compliance_mapper: threat {state.current_threat} not in graph"]}
+                "warnings": list(state.warnings) + [f"compliance_mapper: threat {state.current_threat} not in graph"]}
     threat = threat_rows[0]
 
     control_rows = tools.graph_cypher(
@@ -85,7 +85,7 @@ def run_compliance_mapper(state: SRAState) -> dict:
     )
     if not clause_hits:
         return {"compliance_findings": [],
-                "warnings": [f"compliance_mapper: no regulatory clauses retrieved for {state.current_threat} "
+                "warnings": list(state.warnings) + [f"compliance_mapper: no regulatory clauses retrieved for {state.current_threat} "
                              f"— was `sra index --regulatory` run?"]}
 
     # 3. Build the user message
@@ -104,7 +104,7 @@ def run_compliance_mapper(state: SRAState) -> dict:
     )
     if result.parsed_json is None:
         return {"compliance_findings": [],
-                "warnings": [f"compliance_mapper: LLM returned unparseable JSON for {state.current_threat}"]}
+                "warnings": list(state.warnings) + [f"compliance_mapper: LLM returned unparseable JSON for {state.current_threat}"]}
 
     # 5. Guardrails
     ctx = GuardrailContext(
@@ -114,19 +114,26 @@ def run_compliance_mapper(state: SRAState) -> dict:
         device=state.device,
         agent_name=AGENT_NAME,
     )
-    passed, hard, soft = run_guardrails(result.parsed_json, ctx, prompt.guardrails_post)
-    warnings: list[str] = list(soft)
-    if not passed:
-        return {
-            "compliance_findings": [],
-            "warnings": warnings + [
-                f"compliance_mapper[{state.current_threat}]: hard-fail — {h}" for h in hard
-            ],
-        }
-
-    # 6. Convert to ClauseFinding models
+    # Guardrails run PER FINDING, not over the whole batch. A single bad
+    # quote used to discard every finding for the threat, which left the SRA
+    # entry with no gap analysis at all; now only the offending clause is
+    # dropped and the rest survive.
+    raw_findings = result.parsed_json.get("findings", []) or []
+    warnings: list[str] = []
     findings_out: list[ClauseFinding] = []
-    for f in result.parsed_json.get("findings", []):
+    dropped: list[str] = []
+
+    for f in raw_findings:
+        clause_id = (f or {}).get("clause_id", "<unknown clause>")
+        passed, hard, soft = run_guardrails({"findings": [f]}, ctx,
+                                            prompt.guardrails_post)
+        warnings.extend(f"compliance_mapper[{clause_id}]: {s}" for s in soft)
+        if not passed:
+            dropped.append(clause_id)
+            warnings.extend(
+                f"compliance_mapper[{clause_id}]: dropped — {h}" for h in hard
+            )
+            continue
         try:
             findings_out.append(ClauseFinding(
                 clause_id=f["clause_id"],
@@ -136,10 +143,19 @@ def run_compliance_mapper(state: SRAState) -> dict:
                 reason=f.get("reason", "")[:300],
                 existing_controls=list(f.get("existing_controls", [])),
             ))
-        except (KeyError, TypeError):
-            continue
+        except (KeyError, TypeError) as e:
+            dropped.append(clause_id)
+            warnings.append(
+                f"compliance_mapper[{clause_id}]: dropped — malformed finding ({e})")
 
-    return {"compliance_findings": findings_out, "warnings": warnings}
+    if dropped:
+        warnings.append(
+            f"compliance_mapper[{state.current_threat}]: kept "
+            f"{len(findings_out)} of {len(raw_findings)} clause findings; "
+            f"dropped {', '.join(dropped)}"
+        )
+
+    return {"compliance_findings": findings_out, "warnings": list(state.warnings) + warnings}
 
 
 def _build_user_message(threat: dict, controls: list[dict], clauses: list[dict]) -> str:

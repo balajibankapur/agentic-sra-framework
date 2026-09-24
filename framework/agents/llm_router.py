@@ -37,6 +37,17 @@ litellm.suppress_debug_info = True
 
 MAX_INPUT_TOKENS = 10_000
 MAX_OUTPUT_TOKENS = 4_000
+
+# Per-agent output caps. compliance_mapper emits up to 6 clause findings, each
+# carrying a verbatim quote plus a reason, and was hitting the 4k default
+# mid-string — the truncated JSON failed to parse and the threat lost its
+# entire gap analysis. threat_control_risk writes a 12-field entry that can
+# include code hunks. Agents not listed here use MAX_OUTPUT_TOKENS.
+MAX_OUTPUT_TOKENS_BY_AGENT: dict[str, int] = {
+    "compliance_mapper": 8_000,
+    "threat_control_risk": 6_000,
+}
+
 FALLBACK_MODEL = "openai/gpt-4o-mini"
 MAX_ATTEMPTS = 3
 
@@ -96,7 +107,8 @@ class LLMRouter:
                         {"role": "user", "content": user_message},
                     ],
                     temperature=prompt.temperature,
-                    max_tokens=MAX_OUTPUT_TOKENS,
+                    max_tokens=MAX_OUTPUT_TOKENS_BY_AGENT.get(
+                        agent_name, MAX_OUTPUT_TOKENS),
                     response_format={"type": "json_object"},
                 )
                 latency = int((time.perf_counter() - t0) * 1000)
@@ -112,6 +124,20 @@ class LLMRouter:
                     parsed = json.loads(content)
                 except json.JSONDecodeError:
                     parsed = None
+                    # Distinguish "model hit the output cap and the JSON was
+                    # cut off mid-string" from "model emitted malformed JSON".
+                    # The first is our config's fault and used to fail silently.
+                    finish = getattr(resp.choices[0], "finish_reason", "") or ""
+                    if finish == "length":
+                        cap = MAX_OUTPUT_TOKENS_BY_AGENT.get(
+                            agent_name, MAX_OUTPUT_TOKENS)
+                        print(
+                            f"  [!] {agent_name}[{threat_id}] response truncated at "
+                            f"the {cap}-token output cap ({tokens_out} emitted) — "
+                            f"JSON is incomplete. Raise "
+                            f"MAX_OUTPUT_TOKENS_BY_AGENT['{agent_name}'].",
+                            flush=True,
+                        )
 
                 result = LLMCallResult(
                     content=content,
