@@ -24,6 +24,7 @@ from litellm import completion
 from litellm.exceptions import (
     APIConnectionError,
     APIError,
+    BadRequestError,
     InternalServerError,
     RateLimitError,
     ServiceUnavailableError,
@@ -51,6 +52,42 @@ MAX_OUTPUT_TOKENS_BY_AGENT: dict[str, int] = {
 FALLBACK_MODEL = "openai/gpt-4o-mini"
 MAX_ATTEMPTS = 3
 
+# Substrings that mark a provider refusal as "out of quota" rather than a
+# genuinely malformed request. LiteLLM surfaces Gemini's free-tier daily cap
+# as BadRequestError wrapping a 429, so matching on the type alone is not
+# enough — a real bad request must still raise rather than burn retries.
+_QUOTA_MARKERS = (
+    "resource_exhausted",
+    "exceeded your current quota",
+    "quota exceeded",
+    "rate_limit",
+    "ratelimit",
+    "too many requests",
+    "insufficient_quota",
+    " 429",
+    "code\": 429",
+)
+
+
+def _is_quota_error(exc: Exception) -> bool:
+    """True when the provider refused us for quota/rate reasons."""
+    blob = f"{exc}".lower()
+    return any(m in blob for m in _QUOTA_MARKERS)
+
+
+def _is_daily_quota_error(exc: Exception) -> bool:
+    """True when the quota is a per-DAY cap that will not recover this run.
+
+    Retrying or re-selecting the same model after a daily cap just burns
+    wall-clock on backoff sleeps, so the model is retired for the run.
+    """
+    blob = f"{exc}".lower()
+    return _is_quota_error(exc) and (
+        "perday" in blob.replace("_", "").replace("-", "")
+        or "free_tier_requests" in blob
+        or "requests per day" in blob
+    )
+
 
 @dataclass
 class LLMCallResult:
@@ -73,6 +110,10 @@ class LLMRouter:
     prompt_log_path: Path
     total_cost_usd: float = 0.0
     fallbacks: dict[str, str] = field(default_factory=dict)
+    # Models retired for the rest of the run after a per-day quota refusal.
+    # Without this a 225-threat run keeps re-selecting an exhausted free-tier
+    # model and spends its wall-clock sleeping between doomed retries.
+    exhausted_models: set[str] = field(default_factory=set)
 
     def call(
         self,
@@ -93,7 +134,10 @@ class LLMRouter:
                 f"No model configured for agent={agent_name} profile={self.profile}"
             )
 
+        # A model retired earlier in this run is skipped outright.
         model = primary_model
+        if model in self.exhausted_models and model != FALLBACK_MODEL:
+            model = FALLBACK_MODEL
         attempt = 1
         result: LLMCallResult | None = None
 
@@ -156,9 +200,42 @@ class LLMRouter:
                 return result
 
             except (RateLimitError, Timeout, APIConnectionError,
-                    APIError, InternalServerError, ServiceUnavailableError) as e:
+                    APIError, InternalServerError, ServiceUnavailableError,
+                    BadRequestError) as e:
+                # LiteLLM reports Gemini's free-tier daily cap as a
+                # BadRequestError wrapping a 429. A BadRequestError that is
+                # NOT quota-related is a genuinely malformed request, and
+                # retrying or falling back will not fix it — re-raise.
+                if isinstance(e, BadRequestError) and not _is_quota_error(e):
+                    raise
+
                 latency = int((time.perf_counter() - t0) * 1000)
                 error_msg = f"{type(e).__name__}: {e}"
+
+                # A per-day cap will not recover during this run. Retire the
+                # model so every later agent call skips straight to fallback.
+                if _is_daily_quota_error(e) and model != FALLBACK_MODEL:
+                    if model not in self.exhausted_models:
+                        self.exhausted_models.add(model)
+                        print(
+                            f"  [!] {model} hit its per-day quota — retiring it "
+                            f"for the rest of this run, falling back to "
+                            f"{FALLBACK_MODEL}.",
+                            flush=True,
+                        )
+                    self._log(
+                        agent_name, threat_id, prompt, user_message,
+                        LLMCallResult(
+                            content="", parsed_json=None, model_used=model,
+                            prompt_version=prompt.version, tokens_in=0,
+                            tokens_out=0, latency_ms=latency, cost_usd_est=0.0,
+                            fallback_used=None, error=error_msg,
+                        ),
+                        tool_calls_log,
+                    )
+                    model = FALLBACK_MODEL
+                    attempt = 1
+                    continue
                 # Log the failed attempt
                 self._log(
                     agent_name, threat_id, prompt, user_message,
