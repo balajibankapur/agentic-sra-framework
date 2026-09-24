@@ -10,7 +10,8 @@ Reference device: **[PMx-100 Connected Patient Monitor](https://github.com/balaj
 
 - **[Slide deck (.pptx)](output/capstone_deck.pptx)** — 14 slides · full narrative from problem to results
 - **[Demo script](docs/demo_script.md)** — 10-min live walkthrough with timestamps + fallbacks
-- **Architecture** — [PNG](docs/architecture_diagram.png) · [drawio (editable)](docs/architecture_diagram.drawio) · [SVG](docs/architecture_diagram.svg)
+- **Architecture (overview)** — [PNG](docs/architecture_diagram.png) · [drawio (editable)](docs/architecture_diagram.drawio) · [SVG](docs/architecture_diagram.svg)
+- **Architecture (technical)** — [PNG](docs/architecture_technical.png) · [drawio](docs/architecture_technical.drawio) — agents · LLM Router · MCP tool layer · data stores with types and volumes
 - **Agent flow diagrams** — how the agents actually work:
   1. **[Pipeline flow (PNG)](docs/flow_1_pipeline.png)** — [drawio](docs/flow_1_pipeline.drawio) — LangGraph state machine with all transitions
   2. **[Per-threat data flow (PNG)](docs/flow_2_data.png)** — [drawio](docs/flow_2_data.drawio) — one threat (T-OTA-P01-T) walking through the pipeline
