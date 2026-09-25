@@ -1364,6 +1364,32 @@ def _render_review_body(
         st.info("No entries match the current filter.")
         return
 
+    # Each row is a bordered container holding six columns and a button, so a
+    # 225-entry draft would build thousands of widgets and stall every
+    # interaction. Page the rows instead — page_size comes from the sidebar.
+    per_page = max(5, int(page_size or 25))
+    n_pages = max(1, (len(display) + per_page - 1) // per_page)
+    page = min(st.session_state.get("_page", 0), n_pages - 1)
+    st.session_state["_page"] = page
+
+    if n_pages > 1:
+        cp, cinfo = st.columns([1, 3])
+        with cp:
+            picked = st.number_input(
+                "Page", min_value=1, max_value=n_pages, value=page + 1, step=1,
+                key="page_picker", label_visibility="collapsed",
+            )
+            if int(picked) - 1 != page:
+                st.session_state["_page"] = int(picked) - 1
+                st.rerun()
+        lo, hi = page * per_page, min((page + 1) * per_page, len(display))
+        cinfo.caption(
+            f"Page **{page + 1}** of {n_pages} — showing entries "
+            f"**{lo + 1}–{hi}** of {len(display)}. "
+            f"Change 'Entries per page' under Filter & sort in the sidebar."
+        )
+        display = display[lo:hi]
+
     # Selection state — remembered across reruns so an Approve action
     # keeps the same entry open.
     _sel_key = "_selected_tid"
@@ -1708,9 +1734,33 @@ def render_agent_activity_tab() -> None:
         return True
 
     filtered = [t for t in turns if _keep_turn(t)]
-    st.caption(f"{len(filtered)} of {len(turns)} turns")
 
-    for i, t in enumerate(filtered):
+    # Each turn card is an expander holding three nested tabs and several code
+    # blocks. Rendering every turn of a 225-threat run means thousands of
+    # widgets and a page that takes ~30 s to paint on EVERY interaction, so
+    # only the most recent slice is built. Use the filters above to reach
+    # older turns rather than raising this.
+    PAGE = 25
+    total = len(filtered)
+    if total > PAGE:
+        show_all = st.checkbox(
+            f"Render all {total} turns (slow — builds {total} expanders)",
+            value=False, key="agent_show_all",
+        )
+        shown = filtered if show_all else filtered[-PAGE:]
+        if not show_all:
+            st.caption(
+                f"Showing the **{len(shown)} most recent** of {total} turns "
+                f"({len(turns)} total in the log). Filter by agent or threat "
+                f"above to reach earlier turns."
+            )
+        else:
+            st.caption(f"{total} of {len(turns)} turns")
+    else:
+        shown = filtered
+        st.caption(f"{total} of {len(turns)} turns")
+
+    for i, t in enumerate(shown):
         _render_turn_card(t, i)
 
 
