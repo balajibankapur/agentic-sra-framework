@@ -43,7 +43,7 @@
         <mxCell id="brace" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;direction=north;flipV=1;strokeColor=#6B7A99;strokeWidth=2;" vertex="1" parent="1">
           <mxGeometry x="22" y="122" width="1195" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="pt" value="&lt;b&gt;~30 seconds&lt;/b&gt;  per threat  ·  every claim grounded in the graph and vector index  ·  10 guardrails verify the output" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontColor=#1A2B5E;" vertex="1" parent="1">
+        <mxCell id="pt" value="&lt;b&gt;~21 seconds&lt;/b&gt;  per threat  ·  every claim grounded in the graph and vector index  ·  10 guardrails verify the output" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontColor=#1A2B5E;" vertex="1" parent="1">
           <mxGeometry x="22" y="146" width="1195" height="22" as="geometry" />
         </mxCell>
 
@@ -54,7 +54,7 @@
         <mxCell id="eq" value="=" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=26;fontStyle=1;fontColor=#1A2B5E;" vertex="1" parent="1">
           <mxGeometry x="600" y="208" width="48" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="total" value="&lt;b&gt;&lt;font style=&quot;font-size:26px&quot;&gt;under 2 hours&lt;/font&gt;&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:13px&quot;&gt;≈ $4 in model calls  ·  vs 450 – 900 hours by hand&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDEDE1;strokeColor=#E8620A;strokeWidth=3;fontColor=#1A2B5E;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="total" value="&lt;b&gt;&lt;font style=&quot;font-size:26px&quot;&gt;under 1.5 hours&lt;/font&gt;&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:13px&quot;&gt;≈ $4 in model calls  ·  vs 450 – 900 hours by hand&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDEDE1;strokeColor=#E8620A;strokeWidth=3;fontColor=#1A2B5E;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="655" y="188" width="450" height="72" as="geometry" />
         </mxCell>
 
