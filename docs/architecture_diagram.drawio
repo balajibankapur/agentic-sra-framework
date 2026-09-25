@@ -5,47 +5,47 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <mxCell id="title" value="Agentic SRA Framework" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#1E2761;" vertex="1" parent="1">
+        <mxCell id="title" value="Agentic SRA Framework" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#1A2B5E;" vertex="1" parent="1">
           <mxGeometry x="100" y="30" width="800" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="subtitle" value="Legacy corpus in  →  agents draft the SRA  →  human reviews  →  final SRA out" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontColor=#666;" vertex="1" parent="1">
+        <mxCell id="subtitle" value="Legacy corpus in  →  agents draft the SRA  →  human reviews  →  final SRA out" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontColor=#4A4C55;" vertex="1" parent="1">
           <mxGeometry x="100" y="66" width="800" height="20" as="geometry" />
         </mxCell>
 
-        <mxCell id="b1" value="&lt;b&gt;Corpus&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;docs · firmware&lt;br/&gt;threat model" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="b1" value="&lt;b&gt;Corpus&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;docs · firmware&lt;br/&gt;threat model" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="40" y="150" width="160" height="150" as="geometry" />
         </mxCell>
 
-        <mxCell id="b2" value="&lt;b&gt;Indices&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Chroma (vector)&lt;br/&gt;Kuzu (graph)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="b2" value="&lt;b&gt;Indices&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Chroma (vector)&lt;br/&gt;Kuzu (graph)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E4FF;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="240" y="150" width="160" height="150" as="geometry" />
         </mxCell>
 
-        <mxCell id="b3" value="&lt;b&gt;5 Agents&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;LangGraph&lt;br/&gt;⭐ = gpt-4o" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;strokeWidth=2;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="b3" value="&lt;b&gt;5 Agents&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;LangGraph&lt;br/&gt;⭐ = gpt-4o" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1A2B5E;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="440" y="150" width="160" height="150" as="geometry" />
         </mxCell>
 
-        <mxCell id="b4" value="&lt;b&gt;Review&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Streamlit UI&lt;br/&gt;approve · edit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="b4" value="&lt;b&gt;Review&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Streamlit UI&lt;br/&gt;approve · edit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="640" y="150" width="160" height="150" as="geometry" />
         </mxCell>
 
-        <mxCell id="b5" value="&lt;b&gt;Final SRA&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;PDF · DOCX&lt;br/&gt;JSON" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="b5" value="&lt;b&gt;Final SRA&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;PDF · DOCX&lt;br/&gt;JSON" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="840" y="150" width="120" height="150" as="geometry" />
         </mxCell>
 
-        <mxCell id="a1" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b1" target="b2">
+        <mxCell id="a1" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b1" target="b2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="a2" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b2" target="b3">
+        <mxCell id="a2" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b2" target="b3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="a3" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b3" target="b4">
+        <mxCell id="a3" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b3" target="b4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="a4" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b4" target="b5">
+        <mxCell id="a4" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b4" target="b5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="foot" value="Vector DB · Graph DB · MCP tools · LangGraph agents · guardrails · human-in-the-loop" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666;" vertex="1" parent="1">
+        <mxCell id="foot" value="Vector DB · Graph DB · MCP tools · LangGraph agents · guardrails · human-in-the-loop" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#4A4C55;" vertex="1" parent="1">
           <mxGeometry x="100" y="350" width="800" height="20" as="geometry" />
         </mxCell>
 

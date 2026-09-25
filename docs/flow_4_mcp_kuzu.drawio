@@ -5,55 +5,55 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <mxCell id="title" value="How the Kuzu graph is read via MCP" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#1E2761;" vertex="1" parent="1">
+        <mxCell id="title" value="How the Kuzu graph is read via MCP" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#1A2B5E;" vertex="1" parent="1">
           <mxGeometry x="50" y="24" width="800" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="sub" value="One example call, top → bottom" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontColor=#666;" vertex="1" parent="1">
+        <mxCell id="sub" value="One example call, top → bottom" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontColor=#4A4C55;" vertex="1" parent="1">
           <mxGeometry x="50" y="58" width="800" height="20" as="geometry" />
         </mxCell>
 
-        <mxCell id="s1" value="&lt;b&gt;① Agent&lt;/b&gt;&#160;&#160;asks the graph a question&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#666&quot;&gt;&quot;which controls mitigate threat T-OTA-P01-T?&quot;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=15;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="s1" value="&lt;b&gt;① Agent&lt;/b&gt;&#160;&#160;asks the graph a question&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#4A4C55&quot;&gt;&quot;which controls mitigate threat T-OTA-P01-T?&quot;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=15;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="100" y="110" width="700" height="80" as="geometry" />
         </mxCell>
 
-        <mxCell id="a1" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s1" target="s2">
+        <mxCell id="a1" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s1" target="s2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="s2" value="&lt;b&gt;② MCP server&lt;/b&gt;&#160;&#160;a small Python subprocess&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#666&quot;&gt;receives the question · checks it is read-only · forwards it to Kuzu&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=15;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="s2" value="&lt;b&gt;② MCP server&lt;/b&gt;&#160;&#160;a small Python subprocess&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#4A4C55&quot;&gt;receives the question · checks it is read-only · forwards it to Kuzu&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E4FF;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=15;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="100" y="230" width="700" height="80" as="geometry" />
         </mxCell>
 
-        <mxCell id="a2" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s2" target="s3">
+        <mxCell id="a2" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s2" target="s3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="s3" value="&lt;b&gt;③ Kuzu graph DB&lt;/b&gt;&#160;&#160;runs the query&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#666&quot;&gt;returns 2 controls:  CRC-32 image check, OTA signature verify&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=15;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="s3" value="&lt;b&gt;③ Kuzu graph DB&lt;/b&gt;&#160;&#160;runs the query&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#4A4C55&quot;&gt;returns 2 controls:  CRC-32 image check, OTA signature verify&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=15;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="100" y="350" width="700" height="80" as="geometry" />
         </mxCell>
 
-        <mxCell id="a3" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s3" target="s4">
+        <mxCell id="a3" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="s3" target="s4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="s4" value="&lt;b&gt;④ Agent gets real control names&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#666&quot;&gt;uses them in the gpt-4o prompt · no hallucinated names&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#FFAD1F;strokeWidth=3;fontColor=#1E2761;fontSize=15;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="s4" value="&lt;b&gt;④ Agent gets real control names&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#4A4C55&quot;&gt;uses them in the gpt-4o prompt · no hallucinated names&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDEDE1;strokeColor=#E8620A;strokeWidth=3;fontColor=#1A2B5E;fontSize=15;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="100" y="470" width="700" height="80" as="geometry" />
         </mxCell>
 
         <!-- Divider -->
-        <mxCell id="div" value="" style="line;strokeColor=#CADCFC;strokeWidth=1;" vertex="1" parent="1">
+        <mxCell id="div" value="" style="line;strokeColor=#D6E4FF;strokeWidth=1;" vertex="1" parent="1">
           <mxGeometry x="50" y="600" width="800" height="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="hs" value="WHAT IS AN MCP SERVER, AND HOW DOES IT START?" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#1E2761;letterSpacing=2;" vertex="1" parent="1">
+        <mxCell id="hs" value="WHAT IS AN MCP SERVER, AND HOW DOES IT START?" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#1A2B5E;letterSpacing=2;" vertex="1" parent="1">
           <mxGeometry x="50" y="620" width="800" height="20" as="geometry" />
         </mxCell>
 
-        <mxCell id="h1" value="&lt;b&gt;What it is&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;A small Python program that speaks a fixed set of tools (cypher, neighbors, path).&lt;br/&gt;&lt;br/&gt;No web server. No port. Just stdin / stdout." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=top;spacingLeft=14;spacingRight=14;spacingTop=10;shadow=1;" vertex="1" parent="1">
+        <mxCell id="h1" value="&lt;b&gt;What it is&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;A small Python program that speaks a fixed set of tools (cypher, neighbors, path).&lt;br/&gt;&lt;br/&gt;No web server. No port. Just stdin / stdout." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=13;verticalAlign=top;spacingLeft=14;spacingRight=14;spacingTop=10;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="60" y="660" width="380" height="200" as="geometry" />
         </mxCell>
 
-        <mxCell id="h2" value="&lt;b&gt;How it starts&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;When you run &lt;font face=&quot;Courier New&quot;&gt;sra draft&lt;/font&gt;, the pipeline launches it as a child process. It closes when the run ends.&lt;br/&gt;&lt;br/&gt;You can also start it standalone: &lt;font face=&quot;Courier New&quot;&gt;sra mcp graph&lt;/font&gt;. Then Claude Code or Cursor can query the same graph." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=top;spacingLeft=14;spacingRight=14;spacingTop=10;shadow=1;" vertex="1" parent="1">
+        <mxCell id="h2" value="&lt;b&gt;How it starts&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;When you run &lt;font face=&quot;Courier New&quot;&gt;sra draft&lt;/font&gt;, the pipeline launches it as a child process. It closes when the run ends.&lt;br/&gt;&lt;br/&gt;You can also start it standalone: &lt;font face=&quot;Courier New&quot;&gt;sra mcp graph&lt;/font&gt;. Then Claude Code or Cursor can query the same graph." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=13;verticalAlign=top;spacingLeft=14;spacingRight=14;spacingTop=10;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="460" y="660" width="380" height="200" as="geometry" />
         </mxCell>
 

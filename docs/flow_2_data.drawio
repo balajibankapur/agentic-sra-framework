@@ -5,69 +5,69 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <mxCell id="title" value="What each agent produces" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#1E2761;" vertex="1" parent="1">
+        <mxCell id="title" value="What each agent produces" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#1A2B5E;" vertex="1" parent="1">
           <mxGeometry x="50" y="24" width="700" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="sub" value="Example threat: T-OTA-P01-T  —  &quot;unsigned firmware image accepted at install&quot;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontColor=#666;" vertex="1" parent="1">
+        <mxCell id="sub" value="Example threat: T-OTA-P01-T  —  &quot;unsigned firmware image accepted at install&quot;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontColor=#4A4C55;" vertex="1" parent="1">
           <mxGeometry x="50" y="58" width="700" height="20" as="geometry" />
         </mxCell>
 
-        <mxCell id="in" value="&lt;b&gt;Input threat&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#666&quot;&gt;T-OTA-P01-T&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="in" value="&lt;b&gt;Input threat&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#4A4C55&quot;&gt;T-OTA-P01-T&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E4FF;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=14;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="280" y="100" width="240" height="60" as="geometry" />
         </mxCell>
 
-        <mxCell id="r1a" value="&lt;b&gt;1. Ingestion&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="r1a" value="&lt;b&gt;1. Ingestion&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1A2B5E;strokeColor=#1A2B5E;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="60" y="200" width="200" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="r1b" value="&lt;b&gt;Threat added to queue&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#666&quot;&gt;pulled from Kuzu · 225 total&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="r1b" value="&lt;b&gt;Threat added to queue&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#4A4C55&quot;&gt;pulled from Kuzu · 225 total&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="300" y="195" width="440" height="60" as="geometry" />
         </mxCell>
 
-        <mxCell id="r2a" value="&lt;b&gt;2. Compliance&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="r2a" value="&lt;b&gt;2. Compliance&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1A2B5E;strokeColor=#1A2B5E;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="60" y="290" width="200" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="r2b" value="&lt;b&gt;6 gap findings&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#666&quot;&gt;FDA-2023-V.B.3 → MISSING&lt;br/&gt;IEC-CR-3.10 → PARTIAL · NIST-4.2 → MISSING&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="r2b" value="&lt;b&gt;6 gap findings&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#4A4C55&quot;&gt;FDA-2023-V.B.3 → MISSING&lt;br/&gt;IEC-CR-3.10 → PARTIAL · NIST-4.2 → MISSING&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="300" y="280" width="440" height="80" as="geometry" />
         </mxCell>
 
-        <mxCell id="r3a" value="&lt;b&gt;3. Code Analysis&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="r3a" value="&lt;b&gt;3. Code Analysis&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1A2B5E;strokeColor=#1A2B5E;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="60" y="400" width="200" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="r3b" value="&lt;b&gt;Firmware check&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#666&quot;&gt;crc-32 found in install_handler.c:82&lt;br/&gt;verify_signature() → ABSENT&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="r3b" value="&lt;b&gt;Firmware check&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#4A4C55&quot;&gt;crc-32 found in install_handler.c:82&lt;br/&gt;verify_signature() → ABSENT&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="300" y="390" width="440" height="80" as="geometry" />
         </mxCell>
 
-        <mxCell id="r4a" value="&lt;b&gt;⭐ 4. TCR (gpt-4o)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFAD1F;strokeColor=#FFAD1F;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="r4a" value="&lt;b&gt;⭐ 4. TCR (gpt-4o)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8620A;strokeColor=#E8620A;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="60" y="510" width="200" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="r4b" value="&lt;b&gt;SRA entry (12 fields)&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#666&quot;&gt;CVSS 10.0 Critical · priority P0&lt;br/&gt;proposed: ed25519 signature check&lt;br/&gt;10 guardrails verify output&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#FFAD1F;strokeWidth=3;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="r4b" value="&lt;b&gt;SRA entry (12 fields)&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#4A4C55&quot;&gt;CVSS 10.0 Critical · priority P0&lt;br/&gt;proposed: ed25519 signature check&lt;br/&gt;10 guardrails verify output&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDEDE1;strokeColor=#E8620A;strokeWidth=3;fontColor=#1A2B5E;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="300" y="490" width="440" height="100" as="geometry" />
         </mxCell>
 
-        <mxCell id="r5a" value="&lt;b&gt;5. Report&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="r5a" value="&lt;b&gt;5. Report&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1A2B5E;strokeColor=#1A2B5E;fontColor=#FFFFFF;fontSize=14;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="60" y="640" width="200" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="r5b" value="&lt;b&gt;Written to draft.md + draft.json&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#666&quot;&gt;upserted by threat_id · no duplicates&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
+        <mxCell id="r5b" value="&lt;b&gt;Written to draft.md + draft.json&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:11px;color:#4A4C55&quot;&gt;upserted by threat_id · no duplicates&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;fontSize=13;verticalAlign=middle;shadow=1;" vertex="1" parent="1">
           <mxGeometry x="300" y="630" width="440" height="70" as="geometry" />
         </mxCell>
 
-        <mxCell id="e1" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="in" target="r1b">
+        <mxCell id="e1" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="in" target="r1b">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e2" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r1b" target="r2b">
+        <mxCell id="e2" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r1b" target="r2b">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e3" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r2b" target="r3b">
+        <mxCell id="e3" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r2b" target="r3b">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e4" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r3b" target="r4b">
+        <mxCell id="e4" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r3b" target="r4b">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e5" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1E2761;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r4b" target="r5b">
+        <mxCell id="e5" style="edgeStyle=none;html=1;endArrow=classic;endFill=1;strokeColor=#1A2B5E;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r4b" target="r5b">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="foot" value="Left = agent that runs  ·  Right = what it produces" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666;" vertex="1" parent="1">
+        <mxCell id="foot" value="Left = agent that runs  ·  Right = what it produces" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#4A4C55;" vertex="1" parent="1">
           <mxGeometry x="50" y="740" width="700" height="20" as="geometry" />
         </mxCell>
 

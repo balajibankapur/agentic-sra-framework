@@ -5,116 +5,116 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <mxCell id="title" value="Which agent uses which backend" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#1E2761;" vertex="1" parent="1">
+        <mxCell id="title" value="Which agent uses which backend" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#1A2B5E;" vertex="1" parent="1">
           <mxGeometry x="50" y="24" width="800" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="sub" value="Reads go through MCP tools  ·  Report is the only writer" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontColor=#666;" vertex="1" parent="1">
+        <mxCell id="sub" value="Reads go through MCP tools  ·  Report is the only writer" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontColor=#4A4C55;" vertex="1" parent="1">
           <mxGeometry x="50" y="58" width="800" height="20" as="geometry" />
         </mxCell>
 
         <!-- header row -->
-        <mxCell id="hAg" value="AGENT" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1E2761;strokeColor=#1E2761;fontColor=#FFFFFF;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="hAg" value="AGENT" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1A2B5E;strokeColor=#1A2B5E;fontColor=#FFFFFF;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="60" y="120" width="260" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="hKu" value="Kuzu&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;graph DB&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;fontColor=#1E2761;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="hKu" value="Kuzu&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;graph DB&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D6E4FF;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="320" y="120" width="140" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="hCh" value="Chroma&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;vector DB&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;fontColor=#1E2761;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="hCh" value="Chroma&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;vector DB&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D6E4FF;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="460" y="120" width="140" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="hFi" value="Files&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;firmware source&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#CADCFC;strokeColor=#1E2761;fontColor=#1E2761;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="hFi" value="Files&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;firmware source&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D6E4FF;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="600" y="120" width="140" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="hDr" value="draft.md&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;local disk&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#666;fontColor=#333;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="hDr" value="draft.md&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;local disk&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#4A4C55;fontColor=#374151;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="740" y="120" width="100" height="50" as="geometry" />
         </mxCell>
 
         <!-- Row 1: Ingestion -->
-        <mxCell id="r1" value="&lt;b&gt;1. Ingestion&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;get threat queue&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#1E2761;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="r1" value="&lt;b&gt;1. Ingestion&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#4A4C55&quot;&gt;get threat queue&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="60" y="170" width="260" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r1k" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#1E2761;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r1k" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="320" y="170" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r1c" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r1c" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="460" y="170" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r1f" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r1f" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="600" y="170" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r1d" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r1d" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#4A4C55;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="740" y="170" width="100" height="60" as="geometry" />
         </mxCell>
 
         <!-- Row 2: Compliance -->
-        <mxCell id="r2" value="&lt;b&gt;2. Compliance Mapper&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;map threat → clauses&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#1E2761;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="r2" value="&lt;b&gt;2. Compliance Mapper&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#4A4C55&quot;&gt;map threat → clauses&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="60" y="230" width="260" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r2k" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#1E2761;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r2k" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="320" y="230" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r2c" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#1E2761;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r2c" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="460" y="230" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r2f" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r2f" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="600" y="230" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r2d" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r2d" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#4A4C55;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="740" y="230" width="100" height="60" as="geometry" />
         </mxCell>
 
         <!-- Row 3: Code -->
-        <mxCell id="r3" value="&lt;b&gt;3. Code Analysis&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;check firmware for controls&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#1E2761;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="r3" value="&lt;b&gt;3. Code Analysis&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#4A4C55&quot;&gt;check firmware for controls&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="60" y="290" width="260" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r3k" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#1E2761;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r3k" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="320" y="290" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r3c" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r3c" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="460" y="290" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r3f" value="reads + grep" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#1E2761;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r3f" value="reads + grep" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="600" y="290" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r3d" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r3d" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#4A4C55;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="740" y="290" width="100" height="60" as="geometry" />
         </mxCell>
 
         <!-- Row 4: TCR -->
-        <mxCell id="r4" value="&lt;b&gt;⭐ 4. Threat / Control / Risk&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;write SRA entry (gpt-4o)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#FFAD1F;strokeWidth=2;fontColor=#1E2761;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="r4" value="&lt;b&gt;⭐ 4. Threat / Control / Risk&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#4A4C55&quot;&gt;write SRA entry (gpt-4o)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FDEDE1;strokeColor=#E8620A;strokeWidth=2;fontColor=#1A2B5E;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="60" y="350" width="260" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r4k" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#FFAD1F;strokeWidth=2;fontColor=#1E2761;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r4k" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FDEDE1;strokeColor=#E8620A;strokeWidth=2;fontColor=#1A2B5E;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="320" y="350" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r4c" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#FFAD1F;strokeWidth=2;fontColor=#1E2761;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r4c" value="reads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FDEDE1;strokeColor=#E8620A;strokeWidth=2;fontColor=#1A2B5E;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="460" y="350" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r4f" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#FFAD1F;strokeWidth=2;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r4f" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FDEDE1;strokeColor=#E8620A;strokeWidth=2;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="600" y="350" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r4d" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#FFAD1F;strokeWidth=2;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r4d" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FDEDE1;strokeColor=#E8620A;strokeWidth=2;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="740" y="350" width="100" height="60" as="geometry" />
         </mxCell>
 
         <!-- Row 5: Report -->
-        <mxCell id="r5" value="&lt;b&gt;5. Report&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#666&quot;&gt;save SRA entries&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#1E2761;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="r5" value="&lt;b&gt;5. Report&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;color:#4A4C55&quot;&gt;save SRA entries&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#1A2B5E;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="60" y="410" width="260" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r5k" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r5k" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="320" y="410" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r5c" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r5c" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="460" y="410" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r5f" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1E2761;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r5f" value="—" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#1A2B5E;fontColor=#CCC;fontSize=14;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="600" y="410" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="r5d" value="writes" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#666;fontColor=#333;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="r5d" value="writes" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#4A4C55;fontColor=#374151;fontSize=12;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="740" y="410" width="100" height="60" as="geometry" />
         </mxCell>
 
-        <mxCell id="foot" value="&quot;reads&quot; = via an MCP tool  ·  &quot;writes&quot; = direct disk write  ·  &quot;—&quot; = not used" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#666;" vertex="1" parent="1">
+        <mxCell id="foot" value="&quot;reads&quot; = via an MCP tool  ·  &quot;writes&quot; = direct disk write  ·  &quot;—&quot; = not used" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#4A4C55;" vertex="1" parent="1">
           <mxGeometry x="50" y="500" width="800" height="20" as="geometry" />
         </mxCell>
 
