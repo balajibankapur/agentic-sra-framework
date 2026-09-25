@@ -1,0 +1,75 @@
+<mxfile host="app.diagrams.net" agent="hand-authored" version="24.7.0">
+  <diagram name="Business problem" id="bizprob">
+    <mxGraphModel dx="1200" dy="580" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="500" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="kicker" value="THE BUSINESS PROBLEM" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=1;fontColor=#6B7A99;letterSpacing=3;" vertex="1" parent="1">
+          <mxGeometry x="24" y="14" width="500" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="head" value="A cybersecurity assessment is now mandatory — but doing it well and doing it fast pull in opposite directions." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=15;fontColor=#1A2B5E;" vertex="1" parent="1">
+          <mxGeometry x="24" y="34" width="1150" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== three context cards ===== -->
+        <mxCell id="c1" value="&lt;div align=&quot;left&quot;&gt;&lt;font style=&quot;font-size:11px;color:#E8620A&quot;&gt;&lt;b&gt;REGULATORY&lt;/b&gt;&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:13px&quot;&gt;&lt;b&gt;FDA 2023 makes it mandatory&lt;/b&gt;&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#4A4C55&quot;&gt;Every connected device needs a Security Risk Assessment to reach or stay on the market — legacy products included.&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#DDE3F0;strokeWidth=2;fontColor=#1A2B5E;verticalAlign=top;spacingLeft=12;spacingRight=12;spacingTop=10;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="24" y="66" width="376" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" value="&lt;div align=&quot;left&quot;&gt;&lt;font style=&quot;font-size:11px;color:#E8620A&quot;&gt;&lt;b&gt;COST&lt;/b&gt;&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:13px&quot;&gt;&lt;b&gt;3 – 6 months of scarce expertise&lt;/b&gt;&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#4A4C55&quot;&gt;A thorough assessment is hundreds of hours of a security engineer who is hard to hire and harder to keep.&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#DDE3F0;strokeWidth=2;fontColor=#1A2B5E;verticalAlign=top;spacingLeft=12;spacingRight=12;spacingTop=10;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="412" y="66" width="376" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" value="&lt;div align=&quot;left&quot;&gt;&lt;font style=&quot;font-size:11px;color:#E8620A&quot;&gt;&lt;b&gt;SCALE&lt;/b&gt;&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:13px&quot;&gt;&lt;b&gt;It is a portfolio, not one device&lt;/b&gt;&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#4A4C55&quot;&gt;Each product in the catalogue needs its own assessment, and each one re-opens when the threat landscape moves.&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#DDE3F0;strokeWidth=2;fontColor=#1A2B5E;verticalAlign=top;spacingLeft=12;spacingRight=12;spacingTop=10;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="66" width="376" height="92" as="geometry" />
+        </mxCell>
+
+        <!-- ===== quadrant ===== -->
+        <mxCell id="qlabel" value="TODAY YOU HAVE TO PICK ONE" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=1;fontColor=#6B7A99;letterSpacing=3;" vertex="1" parent="1">
+          <mxGeometry x="24" y="176" width="500" height="18" as="geometry" />
+        </mxCell>
+
+        <!-- y axis -->
+        <mxCell id="yax" value="Defensible to a regulator&#160;&#160;→" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#1A2B5E;horizontal=0;" vertex="1" parent="1">
+          <mxGeometry x="10" y="206" width="24" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="yline" value="" style="endArrow=classic;html=1;strokeColor=#6B7A99;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="48" y="462" as="sourcePoint" />
+            <mxPoint x="48" y="202" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- x axis -->
+        <mxCell id="xline" value="" style="endArrow=classic;html=1;strokeColor=#6B7A99;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="48" y="462" as="sourcePoint" />
+            <mxPoint x="1176" y="462" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="xax" value="Fast enough to cover the whole portfolio&#160;&#160;→" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#1A2B5E;" vertex="1" parent="1">
+          <mxGeometry x="400" y="468" width="420" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- TL : manual, defensible but slow -->
+        <mxCell id="tl" value="&lt;div align=&quot;left&quot;&gt;&lt;font style=&quot;font-size:13px&quot;&gt;&lt;b&gt;Manual expert review&lt;/b&gt;&lt;/font&gt;&#160;&lt;font style=&quot;font-size:11px;color:#4A4C55&quot;&gt;— today&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#4A4C55&quot;&gt;Defensible and traceable, but months per device. Launches slip and the backlog never clears.&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6E4FF;strokeColor=#1A2B5E;strokeWidth=2;fontColor=#1A2B5E;verticalAlign=top;spacingLeft=12;spacingRight=12;spacingTop=10;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="62" y="206" width="540" height="116" as="geometry" />
+        </mxCell>
+
+        <!-- TR : the gap -->
+        <mxCell id="tr" value="&lt;div align=&quot;left&quot;&gt;&lt;font style=&quot;font-size:11px;color:#E8620A&quot;&gt;&lt;b&gt;THE GAP&lt;/b&gt;&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:13px&quot;&gt;&lt;b&gt;Grounded AND fast&lt;/b&gt;&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#4A4C55&quot;&gt;Every claim traceable to the device&#39;s own documents and code, produced in hours rather than months. Nothing occupies this quadrant today.&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDEDE1;strokeColor=#E8620A;strokeWidth=3;fontColor=#1A2B5E;verticalAlign=top;spacingLeft=12;spacingRight=12;spacingTop=10;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="206" width="540" height="116" as="geometry" />
+        </mxCell>
+
+        <!-- BL : slow and weak -->
+        <mxCell id="bl" value="&lt;div align=&quot;left&quot;&gt;&lt;font style=&quot;font-size:13px;color:#6B7A99&quot;&gt;&lt;b&gt;Outsourced, thin&lt;/b&gt;&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#6B7A99&quot;&gt;Slow &lt;i&gt;and&lt;/i&gt; generic — consultant hours spent without device-specific evidence.&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#DDE3F0;strokeWidth=2;fontColor=#6B7A99;verticalAlign=top;spacingLeft=12;spacingRight=12;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="62" y="332" width="540" height="116" as="geometry" />
+        </mxCell>
+
+        <!-- BR : fast and weak -->
+        <mxCell id="br" value="&lt;div align=&quot;left&quot;&gt;&lt;font style=&quot;font-size:13px;color:#8B0000&quot;&gt;&lt;b&gt;Templated / rushed&lt;/b&gt;&lt;/font&gt;&lt;br/&gt;&lt;font style=&quot;font-size:12px;color:#4A4C55&quot;&gt;Quick to produce, but boilerplate that cites nothing in the actual device. The cost lands later — deficiency letters, rework, resubmission.&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F7FC;strokeColor=#8B0000;strokeWidth=2;fontColor=#1A2B5E;verticalAlign=top;spacingLeft=12;spacingRight=12;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="620" y="332" width="540" height="116" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
