@@ -78,6 +78,28 @@ def run_threat_control_risk(state: SRAState) -> dict:
         if chunk:
             retrieved_chunks[cid] = chunk["text"]
 
+    # Existing design-document requirements relevant to this threat.
+    # Without these the agent has no real item id to amend, so every
+    # proposed_doc_change came back as "add SRS-SEC-NEW-01" — a placeholder.
+    # Retrieving them lets it propose `modify` against the requirement that
+    # already exists but is insufficient, which is the stronger finding.
+    # STRICT allow-list. device_docs also holds threat_catalog_exhaustive.md,
+    # threat_model.md and — critically — vulnerability_plan.md, which is the
+    # 34-entry seeded ground truth the eval scores against. Letting the agent
+    # retrieve that would leak the answer key and make the recall number
+    # meaningless, so only the four design documents are admissible here.
+    _DESIGN_DOCS = {"SRS.md", "SDS.md", "SDD.md", "SAD.md"}
+    _raw_hits = tools.vector_search(
+        query=f"{threat.get('title', '')} — {threat.get('description', '')[:600]}",
+        k=24,                       # over-fetch; most hits are filtered out
+        collection="device_docs",
+    )
+    doc_hits = [
+        h for h in _raw_hits
+        if (h.get("metadata") or {}).get("source") in _DESIGN_DOCS
+        and (h.get("metadata") or {}).get("item_id")
+    ][:8]
+
     # Known node ids for citation_verify — controls in graph + code artifacts in graph
     known_ids: set[str] = set()
     for r in tools.graph_cypher("MATCH (c:Control) RETURN c.id AS id;", params={}):
@@ -92,6 +114,7 @@ def run_threat_control_risk(state: SRAState) -> dict:
     user_msg = _build_user_message(threat, linked_controls, dfd_ids,
                                    state.compliance_findings, state.code_findings,
                                    firmware_paths=all_paths,
+                                   doc_items=doc_hits,
                                    extra_context=state.extra_context)
     result = router.call(
         agent_name=AGENT_NAME,
@@ -178,6 +201,7 @@ def _build_user_message(
     compliance_findings,
     code_findings,
     firmware_paths: list[dict] | None = None,
+    doc_items: list[dict] | None = None,
     extra_context: str = "",
 ) -> str:
     parts: list[str] = []
@@ -249,6 +273,30 @@ def _build_user_message(
             parts.append(f"    note: {get(f, 'note')}")
     else:
         parts.append("  (none)")
+    parts.append("</CORPUS_UNTRUSTED>\n")
+
+    # Existing design-document requirements retrieved for this threat. These
+    # are the ONLY real item ids the agent has; without them every doc change
+    # can only be "add <something>-NEW-01".
+    parts.append("Existing design-document items relevant to this threat "
+                 "(these ids are REAL — amend one of these with action=modify "
+                 "when it already covers the area but is insufficient):")
+    parts.append("<CORPUS_UNTRUSTED>")
+    if doc_items:
+        for h in doc_items:
+            md = (h.get("metadata") or {})
+            item_id = md.get("item_id")
+            if not item_id:
+                continue
+            parts.append(f"  - item_id: {item_id}")
+            parts.append(f"    doc: {md.get('source', '?')}")
+            parts.append(f"    title: {md.get('title', '')}")
+            if md.get("traces_to"):
+                parts.append(f"    traces_to: {md.get('traces_to')}")
+            body = (h.get("text") or "").replace("\n", " ").strip()
+            parts.append(f"    text: {body[:280]}")
+    else:
+        parts.append("  (none retrieved)")
     parts.append("</CORPUS_UNTRUSTED>\n")
 
     if extra_context and extra_context.strip():

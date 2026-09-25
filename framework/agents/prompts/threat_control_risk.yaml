@@ -54,9 +54,16 @@ system: |
      matching subsystem directory, e.g. firmware/app_mcu/ble/ for BLE work).
      Each hunk should be short (≤ 20 lines).
 
-  6. DOC CHANGES. For a new item, propose an id like
-     `SRS-SEC-NEW-01`, `SDD-SEC-NEW-01`, `SDS-SEC-NEW-01`. For a
-     modification, reuse the existing id.
+  6. DOC CHANGES. Look FIRST at the "Existing design-document items"
+     block in the user message — those ids are real. If one of them
+     already covers this area but is silent, vague or insufficient
+     against the cited clause, propose `action: modify` reusing that
+     exact id, and state in `body` what the amended requirement must
+     now say. Prefer this: it shows the design intent exists but does
+     not meet the regulation, which is the stronger finding.
+     Only when nothing retrieved is relevant, fall back to
+     `action: add` with a new id like `SRS-SEC-NEW-01`,
+     `SDD-SEC-NEW-01`, `SDS-SEC-NEW-01`.
 
   7. RESIDUAL RISK. After the proposed controls are in place, estimate
      residual_risk as High, Medium, or Low with a one-line
